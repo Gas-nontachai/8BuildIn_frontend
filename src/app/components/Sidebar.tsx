@@ -13,13 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import NextLink from './NextLink';
+import Menu from './Menu';
 
 
 const drawerWidth = 240;
@@ -82,18 +76,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-end',
 }));
 
-export default function Sidebar() {
+export default function Sidebar({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
     const theme = useTheme();
-    const [open, setOpen] = React.useState(true);
-
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
-
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -102,7 +86,7 @@ export default function Sidebar() {
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
-                        onClick={handleDrawerOpen}
+                        onClick={() => setOpen(true)}
                         edge="start"
                         sx={[
                             {
@@ -114,7 +98,7 @@ export default function Sidebar() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Persistent drawer
+                        8 บิ้วอิน
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -132,12 +116,12 @@ export default function Sidebar() {
                 open={open}
             >
                 <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton onClick={() => setOpen(!open)}>
                         {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                <NextLink />
+                <Menu />
             </Drawer>
             <Main open={open}>
                 <DrawerHeader />
