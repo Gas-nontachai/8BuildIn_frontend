@@ -9,17 +9,17 @@ export default function SidebarMenu() {
     const [openAcc, setOpenAcc] = useState(false);
 
     const Factory = [
-        { text: "Factory Dashboard", href: "/factory-dashboard", icon: <FactoryIcon /> },
+        { text: "Factory Dashboard", href: "/dash-fac", icon: <FactoryIcon /> },
         { text: "Production", href: "/production", icon: <StoreIcon /> },
         { text: "Maintenance", href: "/maintenance", icon: <StoreIcon /> }
     ];
     const Employee = [
-        { text: "Employee Management", href: "/employee-management", icon: <GroupIcon /> },
+        { text: "Employee Dashboard", href: "/dash-em", icon: <GroupIcon /> },
         { text: "Employee Profiles", href: "/employee-profiles", icon: <GroupIcon /> },
         { text: "Attendance", href: "/attendance", icon: <TaskIcon /> }
     ];
     const Account = [
-        { text: "Account Settings", href: "/account-settings", icon: <AccountIcon /> },
+        { text: "Account Dashboard", href: "/dash-acc", icon: <AccountIcon /> },
         { text: "Billing", href: "/billing", icon: <AttachMoneyIcon /> },
         { text: "Transaction History", href: "/transaction-history", icon: <AttachMoneyIcon /> }
     ];

@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               transition: "margin 0.3s ease-in-out",
             }}
           >
-            <div className="max-h-screen w-100 p-3 -mt-16">
+            <div className="max-h-screen w-100 p-3 -mt-12 bg-white text-black rounded-md">
               {children}
             </div>
           </Box>
