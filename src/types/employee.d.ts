@@ -1,6 +1,6 @@
 export type Employee = {
     employee_id: string;
-    employee_name: string;
+    employee_username: string;
     employee_password: string;
     employee_prefix: string;
     employee_firstname: string;

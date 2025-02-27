@@ -1,19 +1,27 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { ModeEdit, Delete } from "@mui/icons-material";
-import { FormControl, Select, InputLabel, MenuItem } from "@mui/material";
+import AddEmployeeForm from "@/app/components/Employee/AddEmployeeForm";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField } from "@mui/material";
 
 const Employee = () => {
+  const [isAddDialog, setIsAddDialog] = useState(false);
+
   const [data, setData] = useState([
     { id: 1, name: "John Doe", role: "Admin" },
     { id: 2, name: "Jane Smith", role: "User" },
   ]);
-
+  
   return (
     <>
       <div className="flex justify-between">
         <h1 className="text-xl font-bold mb-4">Example Pattern</h1>
-        <button className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded">เพิ่มพนักงงาน</button>
+        <button
+          className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
+          onClick={() => setIsAddDialog(true)}
+        >
+          เพิ่มพนักงงาน
+        </button>
       </div>
       <table className="w-full border-collapse bg-white shadow-md">
         <thead>
@@ -60,6 +68,10 @@ const Employee = () => {
           ))}
         </tbody>
       </table>
+ 
+      <AddEmployeeForm open={isAddDialog} onClose={() => setIsAddDialog(false)} />
+
+
     </>
   );
 };
