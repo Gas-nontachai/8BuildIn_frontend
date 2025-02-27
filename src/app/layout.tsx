@@ -5,18 +5,18 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import theme from "./theme";
 import "./globals.css";
-import Navbar from "./components/Navbar";
 
-const Sidebar = dynamic(() => import("./components/Sidebar"), { ssr: false });
-
+const Sidebar = dynamic(() => import("./components/Sidebar"), { ssr: false }); 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(true);
-
+  const [open, setOpen] = useState(true); 
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <title>8BuildIn System</title>
+      </head>
       <body>
         <ThemeProvider theme={theme}>
-          <Navbar />
           <Sidebar open={open} setOpen={setOpen} />
           <Box
             component="main"
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               transition: "margin 0.3s ease-in-out",
             }}
           >
-            <div className="max-h-screen w-100 p-3 -mt-28">
+            <div className="max-h-screen w-100 p-3 -mt-16">
               {children}
             </div>
           </Box>

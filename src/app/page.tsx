@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react";
+import { ModeEdit, Delete } from "@mui/icons-material";
 
 const Page = () => {
   const [data, setData] = useState([
@@ -7,14 +8,12 @@ const Page = () => {
     { id: 2, name: "Jane Smith", role: "User" },
   ]);
 
-  const handleDelete = (id: number) => {
-    setData(data.filter((item) => item.id !== id));
-  };
-
   return (
     <>
-      <h1 className="text-xl font-bold mb-4">จัดการข้อมูล</h1>
-      <button className="mb-4 px-4 py-2 bg-blue-500 text-white rounded">+ เพิ่มข้อมูล</button>
+      <div className="flex justify-between">
+        <h1 className="text-xl font-bold mb-4">Example Pattern</h1>
+        <button className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded">เพิ่มข้อมูล</button>
+      </div>
       <table className="w-full border-collapse bg-white shadow-md">
         <thead>
           <tr className="bg-gray-200">
@@ -30,13 +29,32 @@ const Page = () => {
               <td className="border p-2">{item.id}</td>
               <td className="border p-2">{item.name}</td>
               <td className="border p-2">{item.role}</td>
-              <td className="border p-2">
-                <button className="px-3 py-1 bg-yellow-500 text-white rounded mr-2">แก้ไข</button>
+              <td className="border p-2  flex justify-center gap-2">
                 <button
-                  onClick={() => handleDelete(item.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded"
+                  className="inline-flex items-center gap-2 
+                             px-3 py-1 
+                             bg-blue-600 text-white 
+                             rounded-md 
+                             hover:bg-blue-700 
+                             focus:outline-none focus:ring-2 focus:ring-blue-300 
+                             transition-colors shadow-sm"
                 >
-                  ลบ
+                  <ModeEdit className="w-5 h-5" />
+                  <span>แก้ไข</span>
+                </button>
+
+                {/* ปุ่มลบ */}
+                <button
+                  className="inline-flex items-center gap-2 
+                             px-3 py-1 
+                             bg-red-600 text-white 
+                             rounded-md 
+                             hover:bg-red-700 
+                             focus:outline-none focus:ring-2 focus:ring-red-300 
+                             transition-colors shadow-sm"
+                >
+                  <Delete className="w-5 h-5" />
+                  <span>ลบ</span>
                 </button>
               </td>
             </tr>
