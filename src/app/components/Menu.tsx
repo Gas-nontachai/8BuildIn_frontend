@@ -24,7 +24,7 @@ export default function SidebarMenu() {
     const Employee = [
         { text: "หน้าหลัก", href: "/dash-em", icon: <HomeIcon /> },
         { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
-        { text: "จัดการข้อมูลพนักงาน", href: "/employees", icon: <PeopleIcon /> }
+        { text: "จัดการข้อมูลพนักงาน", href: "/employee", icon: <PeopleIcon /> }
     ];
 
     const Customer = [
