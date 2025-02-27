@@ -6,9 +6,9 @@ import { Box } from "@mui/material";
 import theme from "./theme";
 import "./globals.css";
 
-const Sidebar = dynamic(() => import("./components/Sidebar"), { ssr: false }); 
+const Sidebar = dynamic(() => import("./components/Sidebar"), { ssr: false });
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(true); 
+  const [open, setOpen] = useState(true);
   return (
     <html lang="en">
       <head>

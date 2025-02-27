@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react";
 import { ModeEdit, Delete } from "@mui/icons-material";
+import { FormControl, Select, InputLabel, MenuItem } from "@mui/material";
 
 const Page = () => {
   const [data, setData] = useState([
@@ -42,8 +43,6 @@ const Page = () => {
                   <ModeEdit className="w-5 h-5" />
                   <span>แก้ไข</span>
                 </button>
-
-                {/* ปุ่มลบ */}
                 <button
                   className="inline-flex items-center gap-2 
                              px-3 py-1 
