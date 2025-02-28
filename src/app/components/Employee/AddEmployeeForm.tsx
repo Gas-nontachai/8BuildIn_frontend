@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Employee } from "@/types/types";
+import { Employee } from "@/misc/types";
 import { Close } from "@mui/icons-material";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, IconButton, Grid, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 

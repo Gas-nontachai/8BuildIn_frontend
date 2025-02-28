@@ -11,8 +11,8 @@ export type Employee = {
     employee_gender: string;
     employee_address: string;
     license_id: string;
-    addby: string;
-    adddate: Date | string;
-    updateby: string;
-    lastupdate: Date | string;
+    addby?: string;
+    adddate?: Date | string;
+    updateby?: string;
+    lastupdate?: Date | string;
 };

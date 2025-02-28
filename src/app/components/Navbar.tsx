@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -11,6 +11,10 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
+import { MenuItem, Menu } from "@mui/material";
+import { ExitToApp } from "@mui/icons-material";
+import { AuthProvider } from "@/context/AuthContext";
+
 
 const drawerWidth = 240;
 
@@ -36,10 +40,16 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+  const { logout } = AuthProvider();
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+
   return (
-    <AppBar position="fixed" open={open} sx={{
-      backgroundColor: "#262626"
-    }}>
+    <AppBar position="fixed" open={open} sx={{ backgroundColor: "#262626" }}>
       <Toolbar>
         <IconButton
           color="inherit"
@@ -53,11 +63,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
 
         {!open && (
           <Typography variant="h6" noWrap component="div">
-            <img
-              src="/logo.jpg"
-              alt="Logo"
-              style={{ width: "auto", height: "40px" }}
-            />
+            <img src="/logo.jpg" alt="Logo" style={{ width: "auto", height: "40px" }} />
           </Typography>
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
@@ -71,9 +77,19 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          <IconButton color="inherit" sx={{ ml: 2 }}>
+          <IconButton color="inherit" sx={{ ml: 2 }} onClick={handleClick}>
             <AccountCircleIcon />
           </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem onClick={() => logout()}>
+              <ExitToApp sx={{ mr: 1 }} />
+              <Typography>ออกจากระบบ</Typography>
+            </MenuItem>
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>

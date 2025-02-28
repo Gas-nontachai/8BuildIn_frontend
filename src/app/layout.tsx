@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { Box } from "@mui/material";
 import "./globals.css";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider, createTheme } from "@mui/material/styles"; 
 
 const theme = createTheme({
   typography: {
@@ -12,23 +13,29 @@ const theme = createTheme({
 });
 
 const Sidebar = dynamic(() => import("./components/Sidebar"), { ssr: false });
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
   const [open, setOpen] = useState(true);
+  const pathname = usePathname();
+
+  const isAuthPage = pathname === "/login" || pathname === "/register";
+
   return (
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" />
-        <title>8BuildIn System</title>
+        <title>8BUILT - IN</title>
       </head>
       <body>
         <ThemeProvider theme={theme}>
-          <Sidebar open={open} setOpen={setOpen} />
+          {!isAuthPage && <Sidebar open={open} setOpen={setOpen} />}
           <Box
             component="main"
             sx={{
               flexGrow: 1,
               p: 3,
-              marginLeft: open ? "240px" : "0px",
+              marginLeft: !isAuthPage && open ? "240px" : "0px",
               transition: "margin 0.3s ease-in-out",
             }}
           >
@@ -38,6 +45,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Box>
         </ThemeProvider>
       </body>
-    </html >
+    </html>
   );
 }

@@ -1,6 +1,7 @@
-"use client"
-import { useState } from "react";
-import { ModeEdit, Delete } from "@mui/icons-material";
+"use client";
+import { useState, useEffect } from "react";
+import { ModeEdit, Delete } from "@mui/icons-material"; 
+
 const Page = () => {
   const [data, setData] = useState([
     { id: 1, name: "John Doe", role: "Admin" },
@@ -13,6 +14,7 @@ const Page = () => {
         <h1 className="text-xl font-bold mb-4">Example Pattern</h1>
         <button className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded">เพิ่มข้อมูล</button>
       </div>
+
       <table className="w-full border-collapse bg-white shadow-md">
         <thead>
           <tr className="bg-gray-200">
