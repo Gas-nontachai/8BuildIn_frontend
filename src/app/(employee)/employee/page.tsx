@@ -11,7 +11,7 @@ const Employee = () => {
     { id: 1, name: "John Doe", role: "Admin" },
     { id: 2, name: "Jane Smith", role: "User" },
   ]);
-  
+
   return (
     <>
       <div className="flex justify-between">
@@ -68,10 +68,7 @@ const Employee = () => {
           ))}
         </tbody>
       </table>
- 
       <AddEmployeeForm open={isAddDialog} onClose={() => setIsAddDialog(false)} />
-
-
     </>
   );
 };

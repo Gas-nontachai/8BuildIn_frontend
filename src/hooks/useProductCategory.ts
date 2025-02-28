@@ -1,14 +1,8 @@
-import axios from 'axios';
-import { API_URL } from '@/utils/API_URL';
-import { ProductCategory } from '@/misc/product-category'
+import { API_URL } from '@/utils/api_url';
+import axiosInstance from '@/utils/axiosInstance';
+import { ProductCategory } from '@/misc/types'
 
 const prefix = 'product-category';
-
-const axiosInstance = axios.create({
-    headers: {
-        'Content-Type': 'application/json',
-    }
-});
 
 const getProductCategoryBy = (data: any = {}): Promise<{ docs: ProductCategory[], totalDocs: number }> => {
     return axiosInstance.post(`${API_URL}${prefix}/getProductCategoryBy`, data);

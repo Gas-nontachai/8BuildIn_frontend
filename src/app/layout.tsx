@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { Box } from "@mui/material";
 import "./globals.css";
-import { ThemeProvider, createTheme } from "@mui/material/styles"; 
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
@@ -35,16 +35,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             sx={{
               flexGrow: 1,
               p: 3,
+              pt: 1,
               marginLeft: !isAuthPage && open ? "240px" : "0px",
               transition: "margin 0.3s ease-in-out",
             }}
           >
-            <div className="max-h-screen w-100 p-3 -mt-12 bg-gray-100 text-black rounded-xl">
+            <div className="max-h-screen w-100 p-5 bg-gray-100 text-black rounded-xl">
               {children}
             </div>
           </Box>
         </ThemeProvider>
       </body>
-    </html>
+    </html >
   );
 }
