@@ -28,8 +28,8 @@ const SupplierPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { docs: res } = await getSupplierBy();
-      setSuppliers(res);
+      // const { docs: res } = await getSupplierBy();
+      // setSuppliers(res);
     } catch (error) {
       console.error("Error fetching suppliers:", error);
     }

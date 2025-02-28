@@ -7,8 +7,8 @@ export type Product = {
     material_id: string;
     product_img: string;
     stock_in_id: string;
-    addby: string;
-    adddate: Date | string;
-    updateby: string;
-    lastupdate: Date | string;
+    addby?: string;
+    adddate?: Date | string;
+    updateby?: string;
+    lastupdate?: Date | string;
 }

@@ -16,17 +16,29 @@ import {
 } from "@mui/material";
 import Swal from 'sweetalert2';
 
-import useSupplier from "@/hooks/useSupplier";
-import { Supplier } from '@/misc/types';
+// import useProduct from "@/hooks/useProduct";
+import { Product } from '@/misc/types';
 
-const { getSupplierByID, updateSupplierBy } = useSupplier();
+// const { getProductByID, updateProductBy } = useProduct();
 
-interface AddSupplierProps {
+interface AddProductProps {
     onClose: () => void;
     open: boolean;
 }
 
-const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
+const AddProduct: React.FC<AddProductProps> = ({ onClose, open }) => {
+
+    const [product, setProduct] = useState<Product>({
+        product_id: '',
+        product_category_id: '',
+        product_name: '',
+        product_quantity: '',
+        unit_id: '',
+        material_id: '',
+        product_img: '',
+        stock_in_id: ''
+    })
+    // =====================
     const [name, setName] = useState<string>("");
     const [contacts, setContacts] = useState<{ type: string, value: string }[]>([]);
 
@@ -54,14 +66,14 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
     };
 
     const handleSubmit = () => {
-        const supplierData: Supplier = {
-            supplier_id: "",
-            supplier_name: name,
-            supplier_contact: JSON.stringify(contacts),
-        };
+        // const productData: Product = {
+        //     product_id: "",
+        //     product_name: name,
+        //     product_contact: JSON.stringify(contacts),
+        // };
 
-        console.log("Supplier Data:", supplierData);
-        console.log("Supplier Data Contact parsse:", JSON.parse(supplierData.supplier_contact));
+        // console.log("Product Data:", productData);
+        // console.log("Product Data Contact parsse:", JSON.parse(productData.product_contact));
         // onClose();
     };
 
@@ -69,20 +81,46 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>
-                เพิ่มข้อมูลผู้จำหน่าย
+                เพิ่มสินค้า
                 <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
                     <Close />
                 </IconButton>
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <FormLabel component="legend" className="mb-2">ชื่อผู้จำหน่าย <span className="text-red-500">*</span></FormLabel>
+                    <Grid item xs={6}>
                         <TextField
                             fullWidth
+                            label="รหัสนำเข้า"
                             variant="outlined"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={product.stock_in_id}
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="ชื่อสินค้า"
+                            variant="outlined"
+                            value={product.product_name}
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="จำนวนสินค้า"
+                            variant="outlined"
+                            value={product.product_quantity}
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="หน่วยสินค้า"
+                            variant="outlined"
+                            value={product.unit_id}
                             required
                         />
                     </Grid>
@@ -122,7 +160,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
 
                     <Grid item xs={12}>
                         <Button onClick={handleAddContact} startIcon={<Add />} color="primary">
-                            เพิ่มช่องติดต่อ
+                            เพิ่มข้อมูลวัสดุ
                         </Button>
                     </Grid>
                 </Grid>
@@ -136,4 +174,4 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
     );
 };
 
-export default AddSupplier;
+export default AddProduct;
