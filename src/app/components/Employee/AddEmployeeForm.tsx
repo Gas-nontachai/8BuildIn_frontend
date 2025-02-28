@@ -77,13 +77,14 @@ const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ onClose, open }) => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>คำนำหน้า</InputLabel>
+              <FormControl fullWidth margin="normal"> 
                 <Select
                   name="employee_prefix"
                   value={employeeData.employee_prefix}
                   onChange={handleChange}
+                  displayEmpty
                 >
+                  <MenuItem value="" disabled>เลือกคำนำหน้า</MenuItem>
                   {prefix_name.map((item, index) => (
                     <MenuItem key={index} value={item.prefix}>
                       {item.prefix}
