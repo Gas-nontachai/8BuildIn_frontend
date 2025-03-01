@@ -1,5 +1,5 @@
-import { API_URL } from '@/utils/api_url';
-import axiosInstance from '@/utils/axiosInstance';
+import { API_URL } from '@/utils/congig';
+import axiosInstance from '@/utils/fetch';
 import { Product } from '@/misc/types'
 
 const prefix = 'product-category';

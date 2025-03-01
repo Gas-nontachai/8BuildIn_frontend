@@ -1,5 +1,5 @@
-//  import { API_URL } from '@/utils/api_url';
-import axiosInstance from '@/utils/axiosInstance';
+//  import { API_URL } from '@/utils/API_URL';
+import axiosInstance from '@/utils/fetch';
 import { Supplier } from '@/misc/types'
 
 const prefix = 'supplier';

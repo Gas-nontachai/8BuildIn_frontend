@@ -1,27 +1,27 @@
-import { API_URL } from '@/utils/api_url';
-import axiosInstance from '@/utils/axiosInstance';
+import { API_URL } from '@/utils/congig';
+import preSecureFetch from '@/utils/fetch';
 import { Material } from '@/misc/types'
 
-const prefix = 'material-category';
+const prefix = 'material';
 
 const getMaterialBy = (data: any = {}): Promise<{ docs: Material[], totalDocs: number }> => {
-    return axiosInstance.post(`${API_URL}${prefix}/getMaterialBy`, data);
+    return preSecureFetch.post(`${API_URL}${prefix}/getMaterialBy`, data);
 };
 
 const getMaterialByID = (data: { material_id: string }): Promise<Material> => {
-    return axiosInstance.post(`${API_URL}${prefix}/getMaterialByID`, data);
+    return preSecureFetch.post(`${API_URL}${prefix}/getMaterialByID`, data);
 };
 
 const insertMaterial = async (data: Material): Promise<Material> => {
-    return await axiosInstance.post(`${API_URL}${prefix}/insertMaterial`, data);
+    return await preSecureFetch.post(`${API_URL}${prefix}/insertMaterial`, data);
 };
 
 const updateMaterialBy = async (data: Material): Promise<Material> => {
-    return await axiosInstance.post(`${API_URL}${prefix}/updateMaterialBy`, data);
+    return await preSecureFetch.post(`${API_URL}${prefix}/updateMaterialBy`, data);
 };
 
 const deleteMaterialBy = (data: { material_id: string }): Promise<Material> => {
-    return axiosInstance.post(`${API_URL}${prefix}/deleteMaterialBy`, data);
+    return preSecureFetch.post(`${API_URL}${prefix}/deleteMaterialBy`, data);
 };
 
 export default function useMaterial() {

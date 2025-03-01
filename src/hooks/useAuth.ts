@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL } from '@/utils/api_url';
+import { API_URL } from '@/utils/congig';
 // import {  } from "~~/misc/types";
 
 const prefix = 'auth';
