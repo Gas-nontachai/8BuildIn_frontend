@@ -11,7 +11,10 @@ import {
     Build as BuildIcon,
     ExpandLess,
     ExpandMore,
-    Home
+    Home,
+    Store,
+    Inventory,
+    Dashboard
 } from "@mui/icons-material";
 
 
@@ -20,6 +23,9 @@ export default function SidebarMenu() {
     const [openStock, setOpenStock] = useState(false);
     const [openEmp, setOpenEmp] = useState(false);
     const [openAcc, setOpenAcc] = useState(false);
+
+    const [openMaterial, setOpenMaterial] = useState(false);
+    const [openProduct, setOpenProduct] = useState(false);
 
     const Employee = [
         { text: "หน้าหลัก", href: "/dash-em", icon: <HomeIcon /> },
@@ -39,13 +45,20 @@ export default function SidebarMenu() {
 
     const StockStore = [
         { text: "หน้าหลัก", href: "/dash-stock-store", icon: <HomeIcon /> },
-        { text: "จัดการข้อมูลสินค้า", href: "/product", icon: <InventoryIcon /> },
-        { text: "จัดการวัสดุ", href: "/material", icon: <BuildIcon /> }
     ];
-
 
     const MenuList = [
         { text: "หนักหลัก", href: "/", icon: <Home /> },
+    ];
+
+    const Material = [
+        { text: "แดชบอร์ด", href: "/dash-stock-store", icon: <Dashboard /> },  
+        { text: "จัดการวัสดุ", href: "/product", icon: <Store /> }, 
+    ];
+
+    const Product = [
+        { text: "แดชบอร์ด", href: "/dash-stock-store", icon: <Dashboard /> }, 
+        { text: "จัดการสินค้า", href: "/product", icon: <Inventory /> },  
     ];
 
     return (
@@ -104,7 +117,7 @@ export default function SidebarMenu() {
                 <Divider />
             </Collapse>
 
-            {/* Manage Sotck */}
+            {/* Manage Stock */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenStock(!openStock)}>
                     <ListItemText primary="จัดการสต็อกสินค้า" />
@@ -125,7 +138,52 @@ export default function SidebarMenu() {
                     </ListItem>
                 ))}
                 <Divider />
+                {/* วัสดุ */}
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => setOpenMaterial(!openMaterial)} >
+                        <ListItemText primary="วัสดุ" />
+                        <IconButton edge="end">
+                            {openMaterial ? <ExpandLess /> : <ExpandMore />}
+                        </IconButton>
+                    </ListItemButton>
+                </ListItem>
+                <Collapse in={openMaterial} timeout="auto" unmountOnExit>
+                    {Material.map((item) => (
+                        <ListItem key={item.text} disablePadding>
+                            <Link href={item.href} passHref legacyBehavior>
+                                <ListItemButton component="a" sx={{ pl: 4 }}>
+                                    <ListItemIcon>{item.icon}</ListItemIcon>
+                                    <ListItemText primary={item.text} />
+                                </ListItemButton>
+                            </Link>
+                        </ListItem>
+                    ))}
+                </Collapse>
+                <Divider />
+                {/* สินค้า */}
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => setOpenProduct(!openProduct)} >
+                        <ListItemText primary="สินค้า" />
+                        <IconButton edge="end">
+                            {openProduct ? <ExpandLess /> : <ExpandMore />}
+                        </IconButton>
+                    </ListItemButton>
+                </ListItem>
+                <Collapse in={openProduct} timeout="auto" unmountOnExit>
+                    {Product.map((item) => (
+                        <ListItem key={item.text} disablePadding>
+                            <Link href={item.href} passHref legacyBehavior>
+                                <ListItemButton component="a" sx={{ pl: 4 }}>
+                                    <ListItemIcon>{item.icon}</ListItemIcon>
+                                    <ListItemText primary={item.text} />
+                                </ListItemButton>
+                            </Link>
+                        </ListItem>
+                    ))}
+                </Collapse>
+                <Divider />
             </Collapse>
+
 
             {/* Manage Customer */}
             <ListItem disablePadding>
@@ -149,6 +207,6 @@ export default function SidebarMenu() {
                 ))}
                 <Divider />
             </Collapse>
-        </List>
+        </List >
     );
 }
