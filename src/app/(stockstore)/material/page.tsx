@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ModeEdit, Delete } from "@mui/icons-material";
 import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Checkbox } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddMaterial from "@/app/components/Material/Add";
@@ -71,7 +71,7 @@ const MaterialPage = () => {
             className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
             onClick={() => setIsAddDialogOpen(true)}
           >
-            เพิ่มวัสดุ
+            แก้ไขวัสดุ
           </button>
         </div>
       </div>
@@ -87,16 +87,13 @@ const MaterialPage = () => {
             <Table>
               <TableHead>
                 <TableRow className="bg-gray-200">
-                  <TableCell>#</TableCell>
-                  <TableCell>ชื่อวัสดุ</TableCell>
-                  <TableCell>ประเภท</TableCell>
-                  <TableCell>จำนวน</TableCell>
-                  <TableCell>ราคา</TableCell>
-                  <TableCell>หน่วย</TableCell>
-                  <TableCell>รูปภาพ</TableCell>
-                  <TableCell>ประเภท</TableCell>
-                  <TableCell>ประเภท</TableCell>
-                  <TableCell align="center">จัดการ</TableCell>
+                  <TableCell padding="checkbox" align="center"><Checkbox /></TableCell>
+                  <TableCell align="center">ประเภท</TableCell>
+                  <TableCell align="center">ชื่อวัสดุ</TableCell>
+                  <TableCell align="center">รูปภาพ</TableCell>
+                  <TableCell align="center">ราคา</TableCell>
+                  <TableCell align="center">จำนวน</TableCell>
+                  <TableCell align="center">หน่วย</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

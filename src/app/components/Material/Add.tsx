@@ -10,12 +10,13 @@ import {
     Button,
     TextField,
     IconButton,
-    Grid,
     FormControl,
     Select,
     MenuItem,
     FormLabel
 } from "@mui/material";
+
+import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
 
 // import useMaterial from "@/hooks/useMaterial";
@@ -34,8 +35,9 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
     const [material, setMaterial] = useState()
     // =====================
     const [name, setName] = useState<string>("");
-    const [contacts, setContacts] = useState<{ type: string, value: string }[]>([]);
-
+    const [contacts, setContacts] = useState<{ type: string, value: string }[]>([
+        { type: "", value: "" }
+    ]);
     const option_contact = ['ไม้', 'เหล็ก', 'ระเบิด'];
 
     const handleContactChange = (index: number, value: string) => {
@@ -50,9 +52,6 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
         setContacts(updatedContacts);
     };
 
-    const handleAddContact = () => {
-        setContacts([...contacts, { type: "", value: "" }]);
-    };
 
     const handleRemoveContact = (index: number) => {
         const updatedContacts = contacts.filter((_, i) => i !== index);
@@ -60,21 +59,12 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
     };
 
     const handleSubmit = () => {
-        // const materialData: Material = {
-        //     material_id: "",
-        //     material_name: name,
-        //     material_contact: JSON.stringify(contacts),
-        // };
-
-        // console.log("Material Data:", materialData);
-        // console.log("Material Data Contact parsse:", JSON.parse(materialData.material_contact));
-        // onClose();
     };
     const [file, setFile] = useState<File>();
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>
-                เพิ่มวัสดุ
+                แก้ไขวัสดุ
                 <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
                     <Close />
                 </IconButton>
@@ -82,9 +72,9 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
                     {contacts.map((contact, index) => (
-                        <Grid item xs={12} key={index}>
+                        <Grid size={12} key={index}>
                             <Grid container spacing={2}>
-                                <Grid item md={6}>
+                                <Grid size={6}>
                                     <FormControl fullWidth>
                                         <Select
                                             value={contact.type}
@@ -98,7 +88,7 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid item md={6}>
+                                <Grid size={6}>
                                     <TextField
                                         label="ชื่อวัสดุ"
                                         fullWidth
@@ -106,7 +96,7 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                                         onChange={(e) => handleContactChange(index, e.target.value)}
                                     />
                                 </Grid>
-                                <Grid item md={4}>
+                                <Grid size={4}>
                                     <TextField
                                         label="ราคา"
                                         fullWidth
@@ -114,7 +104,7 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                                         onChange={(e) => handleContactChange(index, e.target.value)}
                                     />
                                 </Grid>
-                                <Grid item md={2} >
+                                <Grid size={2} >
                                     <TextField
                                         label="บาท"
                                         fullWidth
@@ -123,7 +113,7 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                                         variant="outlined"
                                     />
                                 </Grid>
-                                <Grid item md={4}>
+                                <Grid size={4}>
                                     <TextField
                                         label="จำนวน"
                                         fullWidth
@@ -131,7 +121,7 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                                         onChange={(e) => handleContactChange(index, e.target.value)}
                                     />
                                 </Grid>
-                                <Grid item md={2}>
+                                <Grid size={2}>
                                     <FormControl fullWidth>
                                         <Select
                                             value={contact.type}
@@ -145,7 +135,7 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid item md={12}>
+                                <Grid size={12}>
                                     <div className="flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md">
                                         <label className="flex flex-col items-center w-full cursor-pointer">
                                             <div className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-400 rounded-lg bg-white hover:border-gray-600 transition">
@@ -162,25 +152,41 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                                         </button>
                                     </div>
                                 </Grid>
-                                <Grid item xs={1}>
-                                    <IconButton onClick={() => handleRemoveContact(index)} color="error">
-                                        <DeleteForeverRounded />
-                                    </IconButton>
+                                <Grid size={12}>
+                                    <div className="flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md">
+                                        <label className="flex flex-row items-center w-full cursor-pointer">
+                                            <Grid size={6}>
+                                                <label>เพิ่มข้อมูลโดย :</label>
+                                                <label>นายเทพระเบิด</label>
+                                            </Grid>
+                                            <Grid size={6}>
+                                                <label>แก้ไขข้อมูลโดย :</label>
+                                                <label>นายเทพระเบิด</label>
+                                            </Grid>
+                                        </label>
+                                        <label className="flex flex-row items-center w-full cursor-pointer">
+                                            <Grid size={6}>
+                                                <label>วันที่เพิ่ม :</label>
+                                                <label> 01/03/2568 18:28</label>
+                                            </Grid>
+                                            <Grid size={6}>
+                                                <label>วันที่แก้ไข :</label>
+                                                <label> 01/03/2568 18:28</label>
+                                            </Grid>
+                                        </label>
+                                    </div>
                                 </Grid>
                             </Grid>
                         </Grid>
                     ))}
-
-                    <Grid item xs={12}>
-                        <Button onClick={handleAddContact} startIcon={<Add />} color="primary">
-                            เพิ่มข้อมูลวัสดุ
-                        </Button>
-                    </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions sx={{ justifyContent: "center" }}>
-                <Button onClick={handleSubmit} color="success" variant="contained">
+                <Button /* onClick={handleSubmit} */ color="success" variant="contained">
                     บันทึก
+                </Button>
+                <Button /* onClick={handleSubmit} */ color="error" variant="contained">
+                    ยกเลิก
                 </Button>
             </DialogActions>
         </Dialog>
