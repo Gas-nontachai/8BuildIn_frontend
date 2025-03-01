@@ -2,13 +2,13 @@ import { API_URL } from '@/utils/config';
 import axiosInstance from '@/utils/fetch';
 import { MaterialCategory } from '@/misc/types'
 
-const prefix = 'materialcategory-category';
+const prefix = 'material-category';
 
 const getMaterialCategoryBy = (data: any = {}): Promise<{ docs: MaterialCategory[], totalDocs: number }> => {
     return axiosInstance.post(`${API_URL}${prefix}/getMaterialCategoryBy`, data);
 };
 
-const getMaterialCategoryByID = (data: { materialcategory_id: string }): Promise<MaterialCategory> => {
+const getMaterialCategoryByID = (data: { material_category_id: string }): Promise<MaterialCategory> => {
     return axiosInstance.post(`${API_URL}${prefix}/getMaterialCategoryByID`, data);
 };
 
@@ -20,7 +20,7 @@ const updateMaterialCategoryBy = async (data: MaterialCategory): Promise<Materia
     return await axiosInstance.post(`${API_URL}${prefix}/updateMaterialCategoryBy`, data);
 };
 
-const deleteMaterialCategoryBy = (data: { materialcategory_id: string }): Promise<MaterialCategory> => {
+const deleteMaterialCategoryBy = (data: { material_category_id: string }): Promise<MaterialCategory> => {
     return axiosInstance.post(`${API_URL}${prefix}/deleteMaterialCategoryBy`, data);
 };
 

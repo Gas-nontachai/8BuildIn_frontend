@@ -24,12 +24,12 @@ import { Material } from '@/misc/types';
 
 // const { getMaterialByID, updateMaterialBy } = useMaterial();
 
-interface AddMaterialProps {
+interface UpdateMaterialProps {
     onClose: () => void;
     open: boolean;
 }
 
-const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
+const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onClose, open }) => {
 
 
     const [material, setMaterial] = useState()
@@ -185,12 +185,9 @@ const AddMaterial: React.FC<AddMaterialProps> = ({ onClose, open }) => {
                 <Button /* onClick={handleSubmit} */ color="success" variant="contained">
                     บันทึก
                 </Button>
-                <Button /* onClick={handleSubmit} */ color="error" variant="contained">
-                    ยกเลิก
-                </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-export default AddMaterial;
+export default UpdateMaterial;

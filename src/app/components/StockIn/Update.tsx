@@ -13,7 +13,8 @@ import {
     FormControl,
     Select,
     MenuItem,
-    InputLabel,
+    FormLabel,
+    CircularProgress
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
@@ -28,11 +29,12 @@ const { getStockInByID, updateStockInBy } = useStockIn();
 
 interface UpdateStockInProps {
     onClose: () => void;
+    onRefresh: () => void;
     open: boolean;
     stock_in_id: string;
 }
 
-const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, open, stock_in_id }) => {
+const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open, stock_in_id }) => {
     const [formData, setFormData] = useState<StockIn>({
         stock_in_id: "",
         product: "",
@@ -43,6 +45,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, open, stock_in_i
         adddate: ''
     });
 
+    const [loading, setLoading] = useState(false)
     const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([]);
     const [product, setProduct] = useState<{ product_name: string, product_quantity: number, product_price: number }[]>([]);
     const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, material_price: number }[]>([]);
@@ -74,6 +77,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, open, stock_in_i
             setMaterial([])
             setProduct([])
             await onClose()
+            await onRefresh()
             Swal.fire({
                 title: 'Success!',
                 text: 'Stock has been successfully added.',
@@ -129,12 +133,14 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, open, stock_in_i
 
     const fetchSupplier = async () => {
         try {
+            setLoading(true)
             const { docs: res } = await getSupplierBy();
             setSuppliers(res.map(item => ({ id: item.supplier_id, name: item.supplier_name })))
         } catch (error) {
             console.error("Error fetching supplier data:", error);
             Swal.fire("Error", "ไม่สามารถดึงข้อมูลผู้จำหน่ายได้", "error");
         }
+        setLoading(false)
     };
 
     const fetchData = async () => {
@@ -157,129 +163,141 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, open, stock_in_i
                     <Close />
                 </IconButton>
             </DialogTitle>
-            <DialogContent sx={{ p: 3 }}>
-                <Grid container spacing={2}>
-                    <Grid size={12}>
-                        <FormControl fullWidth>
-                            <InputLabel>ผู้จัดจำหน่าย</InputLabel>
-                            <Select
-                                name="supplier_id"
-                                value={formData.supplier_id}
-                                onChange={handleChange}
-                            >
-                                {suppliers.map((supplier) => (
-                                    <MenuItem key={supplier.id} value={supplier.id}>
-                                        {supplier.name}
-                                    </MenuItem>
+            {
+                loading ? (
+                    <div className="flex justify-center flex-col items-center text-[15px] mb-3" >
+                        <CircularProgress />
+                        <span> กำลังโหลดข้อมูล...</span>
+                    </div>
+                ) : (
+                    <DialogContent sx={{ p: 3 }}>
+                        <Grid container spacing={2}>
+                            <Grid size={8}>
+                                <FormLabel component="legend">ผู้จัดจำหน่าย <span className="text-red-500">*</span></FormLabel>
+                                <FormControl fullWidth>
+                                    <Select
+                                        name="supplier_id"
+                                        value={formData.supplier_id}
+                                        onChange={handleChange}
+                                    >
+                                        {suppliers.map((supplier) => (
+                                            <MenuItem key={supplier.id} value={supplier.id}>
+                                                {supplier.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid size={4}>
+                                <FormLabel component="legend">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
+                                <TextField
+                                    fullWidth
+                                    type="number"
+                                    value={formData.stock_in_price}
+                                    onChange={(e) => setFormData({ ...formData, stock_in_price: e.target.value })}
+                                />
+                            </Grid>
+                            <Grid size={12}>
+                                <Button onClick={() => handleAddContact("product")} startIcon={<Add />} color="primary">
+                                    เพิ่มสินค้า
+                                </Button>
+                                <Button onClick={() => handleAddContact("material")} startIcon={<Add />} color="primary">
+                                    เพิ่มวัสดุ
+                                </Button>
+                            </Grid>
+                            {product.length > 0 && (
+                                <>
+                                    <FormLabel component="legend">สินค้า <span className="text-red-500">*</span></FormLabel>
+                                </>
+                            )}
+                            <Grid size={12}>
+                                {product.map((contact, index) => (
+                                    <Grid container spacing={2} key={index} sx={{
+                                        mb: 1
+                                    }}>
+                                        <Grid size={5}>
+                                            <TextField
+                                                label="ชื่อสินค้า"
+                                                fullWidth
+                                                value={contact.product_name}
+                                                onChange={(e) => handleDataChange(index, "product_name", e.target.value, "product")}
+                                            />
+                                        </Grid>
+                                        <Grid size={3}>
+                                            <TextField
+                                                label="จำนวน"
+                                                fullWidth
+                                                value={contact.product_quantity}
+                                                type="number"
+                                                onChange={(e) => handleDataChange(index, "product_quantity", e.target.value, "product")}
+                                            />
+                                        </Grid>
+                                        <Grid size={3}>
+                                            <TextField
+                                                label="ราคาทั้งหมด"
+                                                fullWidth
+                                                value={contact.product_price}
+                                                type="number"
+                                                onChange={(e) => handleDataChange(index, "product_price", e.target.value, "product")}
+                                            />
+                                        </Grid>
+                                        <Grid size={1}>
+                                            <IconButton onClick={() => handleRemoveContact(index, "product")} color="error">
+                                                <DeleteForeverRounded />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+
                                 ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid size={3}>
-                        <TextField
-                            label="ราคานำเข้าทั้งหมด"
-                            fullWidth
-                            type="number"
-                            value={formData.stock_in_price}
-                            onChange={(e) => setFormData({ ...formData, stock_in_price: e.target.value })}
-                        />
-                    </Grid>
-                    <Grid size={12}>
-                        <Button onClick={() => handleAddContact("product")} startIcon={<Add />} color="primary">
-                            เพิ่มสินค้า
-                        </Button>
-                        <Button onClick={() => handleAddContact("material")} startIcon={<Add />} color="primary">
-                            เพิ่มวัสดุ
-                        </Button>
-                    </Grid>
-                    {product.length > 0 && (
-                        <>
-                            <span>สินค้า</span>
-                        </>
-                    )}
-                    <Grid size={12}>
-                        {product.map((contact, index) => (
-                            <Grid container spacing={2} key={index}>
-                                <Grid size={5}>
-                                    <TextField
-                                        label="ชื่อสินค้า"
-                                        fullWidth
-                                        value={contact.product_name}
-                                        onChange={(e) => handleDataChange(index, "product_name", e.target.value, "product")}
-                                    />
-                                </Grid>
-                                <Grid size={3}>
-                                    <TextField
-                                        label="จำนวน"
-                                        fullWidth
-                                        value={contact.product_quantity}
-                                        type="number"
-                                        onChange={(e) => handleDataChange(index, "product_quantity", e.target.value, "product")}
-                                    />
-                                </Grid>
-                                <Grid size={3}>
-                                    <TextField
-                                        label="ราคาทั้งหมด"
-                                        fullWidth
-                                        value={contact.product_price}
-                                        type="number"
-                                        onChange={(e) => handleDataChange(index, "product_price", e.target.value, "product")}
-                                    />
-                                </Grid>
-                                <Grid size={1}>
-                                    <IconButton onClick={() => handleRemoveContact(index, "product")} color="error">
-                                        <DeleteForeverRounded />
-                                    </IconButton>
-                                </Grid>
                             </Grid>
+                            {material.length > 0 && (
+                                <>
+                                    <FormLabel component="legend">วัสดุ <span className="text-red-500">*</span></FormLabel>
+                                </>
+                            )}
+                            <Grid size={12}>
+                                {material.map((contact, index) => (
+                                    <Grid container spacing={2} key={index} sx={{
+                                        mb: 1
+                                    }}>
+                                        <Grid size={5}>
+                                            <TextField
+                                                label="ชื่อวัสดุ"
+                                                fullWidth
+                                                value={contact.material_name}
+                                                onChange={(e) => handleDataChange(index, "material_name", e.target.value, "material")}
+                                            />
+                                        </Grid>
+                                        <Grid size={3}>
+                                            <TextField
+                                                label="จำนวน"
+                                                fullWidth
+                                                value={contact.material_quantity}
+                                                type="number"
+                                                onChange={(e) => handleDataChange(index, "material_quantity", e.target.value, "material")}
+                                            />
+                                        </Grid>
+                                        <Grid size={3}>
+                                            <TextField
+                                                label="ราคาทั้งหมด"
+                                                fullWidth
+                                                value={contact.material_price}
+                                                type="number"
+                                                onChange={(e) => handleDataChange(index, "material_price", e.target.value, "material")}
+                                            />
+                                        </Grid>
+                                        <Grid size={1}>
+                                            <IconButton onClick={() => handleRemoveContact(index, "material")} color="error">
+                                                <DeleteForeverRounded />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
 
-                        ))}
-                    </Grid>
-                    {material.length > 0 && (
-                        <>
-                            <span>วัสดุ</span>
-                        </>
-                    )}
-                    <Grid size={12}>
-                        {material.map((contact, index) => (
-                            <Grid container spacing={2} key={index}>
-                                <Grid size={5}>
-                                    <TextField
-                                        label="ชื่อวัสดุ"
-                                        fullWidth
-                                        value={contact.material_name}
-                                        onChange={(e) => handleDataChange(index, "material_name", e.target.value, "material")}
-                                    />
-                                </Grid>
-                                <Grid size={3}>
-                                    <TextField
-                                        label="จำนวน"
-                                        fullWidth
-                                        value={contact.material_quantity}
-                                        type="number"
-                                        onChange={(e) => handleDataChange(index, "material_quantity", e.target.value, "material")}
-                                    />
-                                </Grid>
-                                <Grid size={3}>
-                                    <TextField
-                                        label="ราคาทั้งหมด"
-                                        fullWidth
-                                        value={contact.material_price}
-                                        type="number"
-                                        onChange={(e) => handleDataChange(index, "material_price", e.target.value, "material")}
-                                    />
-                                </Grid>
-                                <Grid size={1}>
-                                    <IconButton onClick={() => handleRemoveContact(index, "material")} color="error">
-                                        <DeleteForeverRounded />
-                                    </IconButton>
-                                </Grid>
+                                ))}
                             </Grid>
-
-                        ))}
-                    </Grid>
-                </Grid>
-            </DialogContent>
+                        </Grid>
+                    </DialogContent>
+                )}
             <DialogActions sx={{ justifyContent: "center" }}>
                 <Button onClick={handleSubmit} color="success" variant="contained">
                     บันทึก

@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete } from "@mui/icons-material";
+import { ModeEdit, Delete, Add, Edit, ManageAccounts } from "@mui/icons-material";
 import Swal from 'sweetalert2';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Checkbox } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
-import AddMaterial from "@/app/components/Material/Add";
+import UpdateMaterial from "@/app/components/Material/Update";
+import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
 
 import useSupplier from "@/hooks/useSupplier";
 import { Supplier } from '@/misc/types';
@@ -15,7 +16,11 @@ const { getSupplierBy, deleteSupplierBy } = useSupplier();
 const MaterialPage = () => {
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isUpdateDialog, setIsUpdateDialog] = useState(false);
+  const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
+
+
+
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const supplier_id = useRef('')
@@ -59,20 +64,15 @@ const MaterialPage = () => {
 
   return (
     <>
-      <div className="flex justify-between">
-        <span className="text-xl font-[400] mb-4">จัดการข้อมูลวัสดุ</span>
+      <div className="flex justify-between  mb-4">
+        <span className="text-xl font-[400]">จัดการข้อมูลวัสดุ</span>
         <div className="flex gap-2">
-          <button
-            className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
-          >
+          <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทวัสดุ
-          </button>
-          <button
-            className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
-            onClick={() => setIsAddDialogOpen(true)}
-          >
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => setIsUpdateDialog(true)} startIcon={<Edit />}>
             แก้ไขวัสดุ
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -137,7 +137,8 @@ const MaterialPage = () => {
         </Paper>
       )}
 
-      <AddMaterial open={isAddDialogOpen} onClose={async () => { setIsAddDialogOpen(false); await fetchData(); }} />
+      <UpdateMaterial open={isUpdateDialog} onClose={async () => { setIsUpdateDialog(false); await fetchData(); }} />
+      <ManageMaterialCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
 
     </>
   );

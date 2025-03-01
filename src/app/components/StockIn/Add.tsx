@@ -14,7 +14,8 @@ import {
     Select,
     MenuItem,
     InputLabel,
-    Divider
+    Divider,
+    FormLabel
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
@@ -29,10 +30,11 @@ const { insertStockIn } = useStockIn();
 
 interface AddStockInProps {
     onClose: () => void;
+    onRefresh: () => void;
     open: boolean;
 }
 
-const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
+const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => {
     const [formData, setFormData] = useState<StockIn>({
         stock_in_id: "",
         product: "",
@@ -74,6 +76,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
             setMaterial([])
             setProduct([])
             await onClose()
+            await onRefresh()
             Swal.fire({
                 title: 'Success!',
                 text: 'Stock has been successfully added.',
@@ -146,13 +149,14 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
-                    <Grid size={12}>
+                    <Grid size={8}>
+                        <FormLabel component="legend" className="mb-2">ผู้จัดจำหน่าย <span className="text-red-500">*</span></FormLabel>
                         <FormControl fullWidth>
-                            <InputLabel>ผู้จัดจำหน่าย</InputLabel>
                             <Select
                                 name="supplier_id"
                                 value={formData.supplier_id}
                                 onChange={handleChange}
+                                size="small"
                             >
                                 {suppliers.map((supplier) => (
                                     <MenuItem key={supplier.id} value={supplier.id}>
@@ -162,11 +166,12 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={3}>
+                    <Grid size={4}>
+                        <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
                         <TextField
-                            label="ราคานำเข้าทั้งหมด"
                             fullWidth
                             type="number"
+                            size="small"
                             value={formData.stock_in_price}
                             onChange={(e) => setFormData({ ...formData, stock_in_price: e.target.value })}
                         />
@@ -181,15 +186,18 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
                     </Grid>
                     {product.length > 0 && (
                         <>
-                            <span>สินค้า</span>
+                            <FormLabel component="legend">สินค้า <span className="text-red-500">*</span></FormLabel>
                         </>
                     )}
                     <Grid size={12}>
                         {product.map((contact, index) => (
-                            <Grid container spacing={2} key={index}>
+                            <Grid container spacing={2} key={index} sx={{
+                                mb: 1
+                            }}>
                                 <Grid size={5}>
                                     <TextField
                                         label="ชื่อสินค้า"
+                                        size="small"
                                         fullWidth
                                         value={contact.product_name}
                                         onChange={(e) => handleDataChange(index, "product_name", e.target.value, "product")}
@@ -198,6 +206,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
                                 <Grid size={3}>
                                     <TextField
                                         label="จำนวน"
+                                        size="small"
                                         fullWidth
                                         value={contact.product_quantity}
                                         type="number"
@@ -207,6 +216,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
                                 <Grid size={3}>
                                     <TextField
                                         label="ราคาทั้งหมด"
+                                        size="small"
                                         fullWidth
                                         value={contact.product_price}
                                         type="number"
@@ -224,15 +234,18 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
                     </Grid>
                     {material.length > 0 && (
                         <>
-                            <span>วัสดุ</span>
+                           <FormLabel component="legend">วัสดุ <span className="text-red-500">*</span></FormLabel>
                         </>
                     )}
                     <Grid size={12}>
                         {material.map((contact, index) => (
-                            <Grid container spacing={2} key={index}>
+                            <Grid container spacing={2} key={index} sx={{
+                                mb: 1
+                            }}>
                                 <Grid size={5}>
                                     <TextField
                                         label="ชื่อวัสดุ"
+                                        size="small"
                                         fullWidth
                                         value={contact.material_name}
                                         onChange={(e) => handleDataChange(index, "material_name", e.target.value, "material")}
@@ -241,6 +254,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
                                 <Grid size={3}>
                                     <TextField
                                         label="จำนวน"
+                                        size="small"
                                         fullWidth
                                         value={contact.material_quantity}
                                         type="number"
@@ -250,6 +264,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open }) => {
                                 <Grid size={3}>
                                     <TextField
                                         label="ราคาทั้งหมด"
+                                        size="small"
                                         fullWidth
                                         value={contact.material_price}
                                         type="number"
