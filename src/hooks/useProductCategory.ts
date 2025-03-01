@@ -1,4 +1,4 @@
-import { API_URL } from '@/utils/congig';
+import { API_URL } from '@/utils/config';
 import axiosInstance from '@/utils/fetch';
 import { ProductCategory } from '@/misc/types'
 

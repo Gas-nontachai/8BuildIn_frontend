@@ -1,4 +1,4 @@
-import { API_URL } from '@/utils/congig';
+import { API_URL } from '@/utils/config';
 import preSecureFetch from '@/utils/fetch';
 import { Material } from '@/misc/types'
 
