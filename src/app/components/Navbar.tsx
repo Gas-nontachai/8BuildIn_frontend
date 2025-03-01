@@ -47,7 +47,6 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
     setAnchorEl(event.currentTarget);
   };
 
-
   return (
     <AppBar position="fixed" open={open} sx={{ backgroundColor: "#262626" }}>
       <Toolbar>

@@ -44,7 +44,11 @@ export default function SidebarMenu() {
     ];
 
     const StockStore = [
+
         { text: "หน้าหลัก", href: "/dashboard-stock", icon: <HomeIcon /> },
+        { text: "จัดการสต็อกเข้า", href: "/stock-in", icon: <HomeIcon /> },
+        { text: "จัดการข้อมูลสินค้า", href: "/product", icon: <InventoryIcon /> },
+        { text: "จัดการวัสดุ", href: "/material", icon: <BuildIcon /> }
     ];
 
     const MenuList = [
