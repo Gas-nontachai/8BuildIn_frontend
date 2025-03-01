@@ -44,7 +44,7 @@ export default function SidebarMenu() {
     ];
 
     const StockStore = [
-        { text: "หน้าหลัก", href: "/dash-stock-store", icon: <HomeIcon /> },
+        { text: "หน้าหลัก", href: "/dashboard-stock", icon: <HomeIcon /> },
     ];
 
     const MenuList = [
@@ -52,13 +52,13 @@ export default function SidebarMenu() {
     ];
 
     const Material = [
-        { text: "แดชบอร์ด", href: "/dash-stock-store", icon: <Dashboard /> },  
-        { text: "จัดการวัสดุ", href: "/product", icon: <Store /> }, 
+        { text: "แดชบอร์ด", href: "/dashboard-material", icon: <Dashboard /> },
+        { text: "จัดการวัสดุ", href: "/material", icon: <Store /> },
     ];
 
     const Product = [
-        { text: "แดชบอร์ด", href: "/dash-stock-store", icon: <Dashboard /> }, 
-        { text: "จัดการสินค้า", href: "/product", icon: <Inventory /> },  
+        { text: "แดชบอร์ด", href: "/dashboard-product", icon: <Dashboard /> },
+        { text: "จัดการสินค้า", href: "/product", icon: <Inventory /> },
     ];
 
     return (
