@@ -63,7 +63,7 @@ const ProductPage = () => {
         <span className="text-xl font-[400] mb-4">จัดการข้อมูลสินค้า</span>
         <div className="flex gap-2">
           <button
-            className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded" 
+            className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
           >
             เพิ่มประเภทสินค้า
           </button>
