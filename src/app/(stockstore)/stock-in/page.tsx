@@ -5,20 +5,21 @@ import Swal from 'sweetalert2';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
-import AddMaterial from "@/app/components/Material/Add";
+import AddStockin from "@/app/components/StockIn/Add";
+import UpdateStockin from "@/app/components/StockIn/Update";
 
 import useStockIn from "@/hooks/useStockIn";
-import { Supplier } from '@/misc/types';
+import { StockIn } from '@/misc/types';
 
-const { } = useStockIn();
+const { getStockInBy, deleteStockInBy } = useStockIn();
 
 const StockInPage = () => {
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [loading, setLoading] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-    const supplier_id = useRef('')
+    const [stockIn, setStockIn] = useState<StockIn[]>([]);
+    const stock_in_id = useRef('')
 
     useEffect(() => {
         fetchData();
@@ -27,15 +28,15 @@ const StockInPage = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            // const { docs: res } = await getSupplierBy();
-            // setSuppliers(res);
+            const { docs: res } = await getStockInBy();
+            setStockIn(res);
         } catch (error) {
-            console.error("Error fetching suppliers:", error);
+            console.error("Error fetching StockIn:", error);
         }
         setLoading(false);
     };
 
-    const onDelete = async (supplierId: string) => {
+    const onDelete = async (stock_in_id: string) => {
         const result = await Swal.fire({
             title: "คุณแน่ใจหรือไม่?",
             text: "คุณจะไม่สามารถย้อนกลับการกระทำนี้ได้!",
@@ -48,7 +49,7 @@ const StockInPage = () => {
 
         if (result.isConfirmed) {
             try {
-
+                await deleteStockInBy({ stock_in_id: stock_in_id })
                 Swal.fire("ลบแล้ว!", "ข้อมูลผู้จัดจำหน่ายถูกลบเรียบร้อยแล้ว", "success");
                 await fetchData();
             } catch (error) {
@@ -86,22 +87,24 @@ const StockInPage = () => {
                                         <TableCell># </TableCell>
                                         < TableCell > ชื่อสต็อกเข้า </TableCell>
                                         < TableCell > ประเภท </TableCell>
-                                        < TableCell > จำนวน </TableCell>
-                                        < TableCell > ราคา </TableCell>
-                                        < TableCell > หน่วย </TableCell>
-                                        < TableCell > รูปภาพ </TableCell>
-                                        < TableCell > ประเภท </TableCell>
-                                        < TableCell > ประเภท </TableCell>
                                         < TableCell align="center" > จัดการ </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {
-                                        suppliers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((supplier) => (
-                                            <TableRow key={supplier.supplier_id} hover >
-                                                <TableCell>{supplier.supplier_id} </TableCell>
-                                                < TableCell > {supplier.supplier_name} </TableCell>
-                                                < TableCell > {supplier.supplier_name} </TableCell>
+                                        stockIn.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((stock, index) => (
+                                            <TableRow key={stock.stock_in_id} hover >
+                                                <TableCell>{index + 1} </TableCell>
+                                                < TableCell >
+                                                    {JSON.parse(stock.product).map((product: { product_name: string; product_quantity: string, product_price: string }) => (
+                                                        <div key={product.product_name}>• {product.product_name} : {product.product_quantity} ชิ้น : {product.product_price} บาท</div>
+                                                    ))}
+                                                </TableCell>
+                                                < TableCell >
+                                                    {JSON.parse(stock.material).map((material: { material_name: string; material_quantity: string, material_price: string }) => (
+                                                        <div key={material.material_name}>• {material.material_name} : {material.material_quantity}ชิ้น : {material.material_price} บาท</div>
+                                                    ))}
+                                                </TableCell>
                                                 < TableCell >
                                                     <div className="flex justify-center gap-2" >
                                                         <Button
@@ -110,13 +113,13 @@ const StockInPage = () => {
                                                             startIcon={< ModeEdit />}
                                                             onClick={() => {
                                                                 setIsUpdateDialogOpen(true);
-                                                                supplier_id.current = supplier.supplier_id;
+                                                                stock_in_id.current = stock.stock_in_id;
                                                             }
                                                             }
                                                         >
                                                             แก้ไข
                                                         </Button>
-                                                        < Button variant="contained" color="error" startIcon={< Delete />} onClick={() => onDelete(supplier.supplier_id)}>
+                                                        < Button variant="contained" color="error" startIcon={< Delete />} onClick={() => onDelete(stock.stock_in_id)}>
                                                             ลบ
                                                         </Button>
                                                     </div>
@@ -129,7 +132,7 @@ const StockInPage = () => {
                         < TablePagination
                             rowsPerPageOptions={[5, 10, 15]}
                             component="div"
-                            count={suppliers.length}
+                            count={stockIn.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={onChangePage}
@@ -138,7 +141,8 @@ const StockInPage = () => {
                     </Paper>
                 )}
 
-            <AddMaterial open={isAddDialogOpen} onClose={async () => { setIsAddDialogOpen(false); await fetchData(); }} />
+            <AddStockin open={isAddDialogOpen} onClose={async () => { setIsAddDialogOpen(false); await fetchData(); }} />
+            <UpdateStockin open={isUpdateDialogOpen} stock_in_id={stock_in_id.current} onClose={async () => { setIsUpdateDialogOpen(false); await fetchData(); }} />
 
         </>
     );

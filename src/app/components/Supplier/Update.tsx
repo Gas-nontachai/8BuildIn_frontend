@@ -84,13 +84,6 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, open, supplier
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setData((prev) =>
-            prev ? { ...prev, [name]: value } : null
-        );
-    };
-
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>

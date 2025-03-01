@@ -3,6 +3,7 @@ export type Product = {
     product_category_id: string;
     product_name: string;
     product_quantity: string;
+    product_price: string;
     unit_id: string;
     material_id: string;
     product_img: string;
