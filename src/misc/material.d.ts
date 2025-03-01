@@ -6,8 +6,8 @@ export type Material = {
     unit_id: string;
     material_img: string;
     stock_in_id: string;
-    addby: string;
-    adddate: Date | string;
-    updateby: string;
-    lastupdate: Date | string;
+    addby?: string;
+    adddate?: Date | string;
+    updateby?: string;
+    lastupdate?: Date | string;
 }
