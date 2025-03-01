@@ -14,12 +14,11 @@ import {
     MenuItem,
     FormLabel
 } from "@mui/material";
-import Swal from 'sweetalert2';
 
 import useSupplier from "@/hooks/useSupplier";
 import { Supplier } from '@/misc/types';
 
-const { getSupplierByID, updateSupplierBy } = useSupplier();
+const { insertSupplier } = useSupplier();
 
 interface AddSupplierProps {
     onClose: () => void;
@@ -53,16 +52,14 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
         setContacts(updatedContacts);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const supplierData: Supplier = {
             supplier_id: "",
             supplier_name: name,
             supplier_contact: JSON.stringify(contacts),
         };
-
-        console.log("Supplier Data:", supplierData);
-        console.log("Supplier Data Contact parsse:", JSON.parse(supplierData.supplier_contact));
-        // onClose();
+        await insertSupplier(supplierData)
+        await onClose();
     };
 
 

@@ -1,4 +1,4 @@
-//  import { API_URL } from '@/utils/API_URL';
+import { API_URL } from '@/utils/config';
 import axiosInstance from '@/utils/fetch';
 import { Supplier } from '@/misc/types'
 
