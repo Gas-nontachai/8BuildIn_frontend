@@ -88,8 +88,14 @@ const MaterialPage = () => {
               <TableHead>
                 <TableRow className="bg-gray-200">
                   <TableCell>#</TableCell>
-                  <TableCell>ชื่อ</TableCell>
-                  <TableCell>ตำแหน่ง</TableCell>
+                  <TableCell>ชื่อวัสดุ</TableCell>
+                  <TableCell>ประเภท</TableCell>
+                  <TableCell>จำนวน</TableCell>
+                  <TableCell>ราคา</TableCell>
+                  <TableCell>หน่วย</TableCell>
+                  <TableCell>รูปภาพ</TableCell>
+                  <TableCell>ประเภท</TableCell>
+                  <TableCell>ประเภท</TableCell>
                   <TableCell align="center">จัดการ</TableCell>
                 </TableRow>
               </TableHead>
