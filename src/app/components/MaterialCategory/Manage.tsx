@@ -58,6 +58,10 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
             setLoading(true)
             await insertMaterialCategory(materialCategory)
             await fetchData()
+            setMaterialCategory({
+                material_category_id: '',
+                material_category_name: ''
+            })
         } catch (error) {
 
         }

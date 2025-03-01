@@ -13,7 +13,8 @@ import {
     FormControl,
     Select,
     MenuItem,
-    FormLabel
+    FormLabel,
+    CircularProgress
 } from "@mui/material";
 
 import useSupplier from "@/hooks/useSupplier";
@@ -23,11 +24,12 @@ const { getSupplierByID, updateSupplierBy } = useSupplier();
 
 interface UpdateSupplierProps {
     onClose: () => void;
+    onRefresh: () => void;
     open: boolean;
     supplier_id: string;
 }
 
-const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, open, supplier_id }) => {
+const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, open, supplier_id }) => {
     const [data, setData] = useState<Supplier | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>("");
@@ -64,6 +66,7 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, open, supplier
         };
         await updateSupplierBy(supplierData)
         await onClose();
+        await onRefresh();
     };
 
     useEffect(() => {
@@ -74,6 +77,7 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, open, supplier
 
     const fetchData = async () => {
         try {
+            setLoading(true)
             const res = await getSupplierByID({ supplier_id });
             setData(res);
             setContacts(JSON.parse(res.supplier_contact))
@@ -82,6 +86,7 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, open, supplier
             console.error("Error fetching supplier data:", error);
             Swal.fire("Error", "ไม่สามารถดึงข้อมูลผู้จำหน่ายได้", "error");
         }
+        setLoading(false)
     };
 
     return (
@@ -92,59 +97,66 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, open, supplier
                     <Close />
                 </IconButton>
             </DialogTitle>
-            <DialogContent sx={{ p: 3 }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <FormLabel component="legend" className="mb-2">ชื่อผู้จำหน่าย <span className="text-red-500">*</span></FormLabel>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
-                    </Grid>
-                    {contacts.map((contact, index) => (
-                        <Grid item xs={12} key={index}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={5}>
-                                    <FormControl fullWidth>
-                                        <Select
-                                            value={contact.type}
-                                            onChange={(e) => handleTypeChange(index, e.target.value)}
-                                            displayEmpty
-                                        >
-                                            <MenuItem value="" disabled>ประเภทการติดต่อ</MenuItem>
-                                            {option_contact.map((option) => (
-                                                <MenuItem key={option} value={option}>{option}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <TextField
-                                        label="ข้อมูลติดต่อ"
-                                        fullWidth
-                                        value={contact.value}
-                                        onChange={(e) => handleContactChange(index, e.target.value)}
-                                    />
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <IconButton onClick={() => handleRemoveContact(index)} color="error">
-                                        <DeleteForeverRounded />
-                                    </IconButton>
+            {loading ? (
+                <div className="flex justify-center flex-col items-center text-[15px] mb-3" >
+                    <CircularProgress />
+                    <span> กำลังโหลดข้อมูล...</span>
+                </div>
+            ) : (
+                <DialogContent sx={{ p: 3 }}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <FormLabel component="legend" className="mb-2">ชื่อผู้จำหน่าย <span className="text-red-500">*</span></FormLabel>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </Grid>
+                        {contacts.map((contact, index) => (
+                            <Grid item xs={12} key={index}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={5}>
+                                        <FormControl fullWidth>
+                                            <Select
+                                                value={contact.type}
+                                                onChange={(e) => handleTypeChange(index, e.target.value)}
+                                                displayEmpty
+                                            >
+                                                <MenuItem value="" disabled>ประเภทการติดต่อ</MenuItem>
+                                                {option_contact.map((option) => (
+                                                    <MenuItem key={option} value={option}>{option}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            label="ข้อมูลติดต่อ"
+                                            fullWidth
+                                            value={contact.value}
+                                            onChange={(e) => handleContactChange(index, e.target.value)}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1}>
+                                        <IconButton onClick={() => handleRemoveContact(index)} color="error">
+                                            <DeleteForeverRounded />
+                                        </IconButton>
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                    ))}
+                        ))}
 
-                    <Grid item xs={12}>
-                        <Button onClick={handleAddContact} startIcon={<Add />} color="primary">
-                            เพิ่มช่องติดต่อ
-                        </Button>
+                        <Grid item xs={12}>
+                            <Button onClick={handleAddContact} startIcon={<Add />} color="primary">
+                                เพิ่มช่องติดต่อ
+                            </Button>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </DialogContent>
+                </DialogContent>
+            )}
             <DialogActions sx={{ justifyContent: "center" }}>
                 <Button onClick={handleSubmit} color="success" variant="contained">
                     บันทึก

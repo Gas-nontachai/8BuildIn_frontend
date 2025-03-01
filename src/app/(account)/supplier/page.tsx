@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete } from "@mui/icons-material";
+import { ModeEdit, Delete, Add } from "@mui/icons-material";
 import Swal from 'sweetalert2';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
@@ -60,15 +60,12 @@ const SupplierPage = () => {
 
   return (
     <>
-      <div className="flex justify-between" >
-        <span className="text-xl font-[400] mb-4" > จัดการข้อมูลผู้จัดจำหน่าย </span>
+      <div className="flex justify-between mb-4">
+        <span className="text-xl font-[400]" > จัดการข้อมูลผู้จัดจำหน่าย </span>
         < div className="flex gap-2" >
-          <button
-            className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
-            onClick={() => setIsAddDialogOpen(true)}
-          >
+          <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มผู้จัดจำหน่าย
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -137,8 +134,8 @@ const SupplierPage = () => {
           </Paper>
         )}
 
-      <AddSupplier open={isAddDialogOpen} onClose={async () => { setIsAddDialogOpen(false); await fetchData(); }} />
-      <UpdateSupplier open={isUpdateDialogOpen} supplier_id={supplier_id.current} onClose={async () => { setIsUpdateDialogOpen(false); await fetchData(); }} />
+      <AddSupplier open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
+      <UpdateSupplier open={isUpdateDialogOpen} supplier_id={supplier_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
 
     </>
   );

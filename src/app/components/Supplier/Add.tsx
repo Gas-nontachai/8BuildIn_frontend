@@ -22,10 +22,11 @@ const { insertSupplier } = useSupplier();
 
 interface AddSupplierProps {
     onClose: () => void;
+    onRefresh: () => void;
     open: boolean;
 }
 
-const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
+const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) => {
     const [name, setName] = useState<string>("");
     const [contacts, setContacts] = useState<{ type: string, value: string }[]>([]);
 
@@ -60,6 +61,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
         };
         await insertSupplier(supplierData)
         await onClose();
+        await onRefresh();
     };
 
 
@@ -77,6 +79,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
                         <FormLabel component="legend" className="mb-2">ชื่อผู้จำหน่าย <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             fullWidth
+                            size="small"
                             variant="outlined"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
@@ -91,6 +94,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
                                         <Select
                                             value={contact.type}
                                             onChange={(e) => handleTypeChange(index, e.target.value)}
+                                            size="small"
                                             displayEmpty
                                         >
                                             <MenuItem value="" disabled>ประเภทการติดต่อ</MenuItem>
@@ -104,6 +108,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, open }) => {
                                     <TextField
                                         label="ข้อมูลติดต่อ"
                                         fullWidth
+                                        size="small"
                                         value={contact.value}
                                         onChange={(e) => handleContactChange(index, e.target.value)}
                                     />
