@@ -70,8 +70,8 @@ const MaterialPage = () => {
           <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทวัสดุ
           </Button>
-          <Button variant="contained" color="primary" onClick={() => setIsUpdateDialog(true)} startIcon={<Edit />}>
-            แก้ไขวัสดุ
+          <Button variant="contained" color="primary" onClick={() => setIsUpdateDialog(true)} startIcon={<Add />}>
+            เพิ่มวัสดุ
           </Button>
         </div>
       </div>

@@ -16,7 +16,8 @@ import {
     Inventory,
     Dashboard,
     Engineering,
-    Inventory2
+    Inventory2,
+    AcUnit
 } from "@mui/icons-material";
 
 
@@ -49,7 +50,8 @@ export default function SidebarMenu() {
 
         { text: "หน้าหลัก", href: "/dashboard-stock", icon: <HomeIcon /> },
         { text: "บันทึกสินค้าเข้า", href: "/stock-in", icon: <Inventory2 /> },
-        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Engineering /> }, 
+        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Engineering /> },
+        { text: "จัดการหน่วยสินค้า", href: "/unit", icon: <AcUnit /> },
     ];
 
     const MenuList = [
