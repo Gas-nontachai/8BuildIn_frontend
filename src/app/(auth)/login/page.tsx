@@ -43,25 +43,38 @@ const Login = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            Swal.fire({
+                icon: 'info',
+                title: 'กำลังเข้าสู่ระบบ...',
+                text: 'โปรดรอสักครู่ขณะกำลังยืนยันตัวตน',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
             const res = await authLogin({
                 employee_username: formdata.employee_username,
                 employee_password: formdata.employee_password,
             });
             setTokens(res.data.access_token, res.data.refresh_token);
-            Swal.fire({
+            await Swal.fire({
                 icon: 'success',
-                title: 'Login Successful',
-                text: 'You are being redirected...',
+                title: 'เข้าสู่ระบบสำเร็จ',
+                text: 'คุณกำลังถูกเปลี่ยนเส้นทาง...',
                 timer: 2000,
                 showConfirmButton: false,
-            }).then(() => {
-                router.push('/');
             });
-        } catch (error) {
-            console.log('Login failed: ', error);
+            await router.push('/');
+        } catch (error: any) {
+            console.error('Login failed:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'เข้าสู่ระบบล้มเหลว',
+                text: error.response?.data?.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+                confirmButtonText: 'ลองอีกครั้ง',
+            });
         }
     };
-
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">

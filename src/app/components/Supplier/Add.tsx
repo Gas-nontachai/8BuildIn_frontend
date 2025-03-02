@@ -14,7 +14,7 @@ import {
     MenuItem,
     FormLabel
 } from "@mui/material";
-
+import Swal from 'sweetalert2';
 import useSupplier from "@/hooks/useSupplier";
 import { Supplier } from '@/misc/types';
 
@@ -53,17 +53,47 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
         setContacts(updatedContacts);
     };
 
-    const handleSubmit = async () => {
-        const supplierData: Supplier = {
-            supplier_id: "",
-            supplier_name: name,
-            supplier_contact: JSON.stringify(contacts),
-        };
-        await insertSupplier(supplierData)
-        await onClose();
-        await onRefresh();
-    };
 
+    const handleSubmit = async () => {
+        try {
+            await onClose();
+            Swal.fire({
+                icon: 'info',
+                title: 'กำลังดำเนินการ...',
+                text: 'โปรดรอสักครู่',
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+            const supplierData: Supplier = {
+                supplier_id: "",
+                supplier_name: name,
+                supplier_contact: JSON.stringify(contacts),
+            };
+            await insertSupplier(supplierData); 
+            await onRefresh();
+            Swal.fire({
+                icon: 'success',
+                title: 'สำเร็จ!',
+                text: 'ข้อมูลผู้จำหน่ายถูกเพิ่มแล้ว',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถเพิ่มข้อมูลผู้จำหน่ายได้',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+            });
+        }
+    };
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">

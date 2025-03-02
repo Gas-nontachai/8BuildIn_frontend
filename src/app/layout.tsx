@@ -26,6 +26,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" href="/favicon.ico" />
         <title>8BUILT - IN</title>
+        <style>
+          {`
+            .swal2-container {
+              z-index: 9999999 !important;
+            }
+          `}
+        </style>
       </head>
       <body>
         <ThemeProvider theme={theme}>
@@ -46,6 +53,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Box>
         </ThemeProvider>
       </body>
-    </html >
+    </html>
   );
 }

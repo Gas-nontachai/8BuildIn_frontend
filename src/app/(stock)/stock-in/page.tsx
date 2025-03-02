@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete, Add, ReceiptLongRounded } from "@mui/icons-material";
+import { ModeEdit, Delete, Add } from "@mui/icons-material";
 import Swal from 'sweetalert2';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
@@ -98,11 +98,19 @@ const StockInPage = () => {
                                         <TableRow key={stock.stock_in_id} hover >
                                             <TableCell>{index + 1} </TableCell>
                                             <TableCell>
-                                                <span><strong>สินค้า</strong></span>
+                                                {
+                                                    JSON.parse(stock.product).length > 0 && (
+                                                        <span><strong>สินค้า {JSON.parse(stock.product).length} ชิ้น</strong></span>
+                                                    )
+                                                }
                                                 {JSON.parse(stock.product).map((product: { product_name: string; product_quantity: string, product_price: string }) => (
                                                     <div key={product.product_name}>• {product.product_name} : {product.product_quantity} ชิ้น : {product.product_price} บาท</div>
                                                 ))}
-                                                <span> <strong>วัสดุ</strong></span>
+                                                {
+                                                    JSON.parse(stock.material).length > 0 && (
+                                                        <span><strong>วัสดุ {JSON.parse(stock.material).length} ชิ้น</strong></span>
+                                                    )
+                                                }
                                                 {JSON.parse(stock.material).map((material: { material_name: string; material_quantity: string, material_price: string }) => (
                                                     <div key={material.material_name}>• {material.material_name} : {material.material_quantity}ชิ้น : {material.material_price} บาท</div>
                                                 ))}

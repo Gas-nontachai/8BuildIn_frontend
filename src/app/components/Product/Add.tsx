@@ -33,10 +33,11 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open }) => {
         product_category_id: '',
         product_name: '',
         product_quantity: '',
+        product_price: '',
         unit_id: '',
         material_id: '',
         product_img: '',
-        stock_in_id: ''
+        stock_in_id: '',
     })
     // =====================
     const [name, setName] = useState<string>("");

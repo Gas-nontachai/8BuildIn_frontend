@@ -41,6 +41,16 @@ const AddUnit: React.FC<AddUnitProps> = ({ onClose, open, onRefresh }) => {
             ...formData
         };
         try {
+            await onClose();
+            Swal.fire({
+                icon: 'info',
+                title: 'กำลังดำเนินการ...',
+                text: 'กรุณารอสักครู่',
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
             await insertUnit(insertData);
             setFormData({
                 unit_id: "",
@@ -50,22 +60,27 @@ const AddUnit: React.FC<AddUnitProps> = ({ onClose, open, onRefresh }) => {
                 adddate: "",
                 updateby: "",
                 lastupdate: "",
-            })
-            await onClose()
-            await onRefresh()
+            });
+            await onRefresh();
             Swal.fire({
-                title: 'Success!',
-                text: 'Stock has been successfully added.',
                 icon: 'success',
-                confirmButtonText: 'OK'
+                title: 'สำเร็จ!',
+                text: 'ข้อมูลถูกเพิ่มเรียบร้อยแล้ว',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
             });
         } catch (error) {
-            console.error("Error inserting stock:", error);
+            console.error("เกิดข้อผิดพลาดในการเพิ่มข้อมูล:", error);
             Swal.fire({
-                title: 'Error!',
-                text: 'There was an error while inserting stock.',
                 icon: 'error',
-                confirmButtonText: 'Try Again'
+                title: 'เกิดข้อผิดพลาด!',
+                text: 'ไม่สามารถเพิ่มข้อมูลได้',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
             });
         }
     };

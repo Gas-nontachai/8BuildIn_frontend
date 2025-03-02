@@ -63,7 +63,17 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
             product: JSON.stringify(product),
             material: JSON.stringify(material),
         };
+
         try {
+            onClose();
+            Swal.fire({
+                title: 'กำลังเพิ่มข้อมูล...',
+                text: 'กรุณารอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
             await updateStockInBy(insertData);
             setFormData({
                 stock_in_id: "",
@@ -73,25 +83,23 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                 supplier_id: "",
                 addby: "",
                 adddate: ''
-            })
-            setMaterial([])
-            setProduct([])
-            await onClose()
-            await onRefresh()
+            });
+            setMaterial([]);
+            setProduct([]);
+            onRefresh();
             Swal.fire({
-                title: 'Success!',
-                text: 'Stock has been successfully added.',
+                title: 'สำเร็จ!',
+                text: 'เพิ่มสินค้าเข้าสต็อกเรียบร้อยแล้ว',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
-
         } catch (error) {
             console.error("Error inserting stock:", error);
             Swal.fire({
-                title: 'Error!',
-                text: 'There was an error while inserting stock.',
+                title: 'เกิดข้อผิดพลาด!',
+                text: 'ไม่สามารถเพิ่มสินค้าเข้าสต็อกได้ กรุณาลองใหม่อีกครั้ง',
                 icon: 'error',
-                confirmButtonText: 'Try Again'
+                confirmButtonText: 'ลองอีกครั้ง'
             });
         }
     };

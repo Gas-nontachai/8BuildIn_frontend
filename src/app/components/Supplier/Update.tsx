@@ -19,7 +19,6 @@ import {
 
 import useSupplier from "@/hooks/useSupplier";
 import { Supplier } from '@/misc/types';
-
 const { getSupplierByID, updateSupplierBy } = useSupplier();
 
 interface UpdateSupplierProps {
@@ -59,14 +58,46 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
     };
 
     const handleSubmit = async () => {
-        const supplierData: Supplier = {
-            supplier_id: supplier_id,
-            supplier_name: name,
-            supplier_contact: JSON.stringify(contacts),
-        };
-        await updateSupplierBy(supplierData)
-        await onClose();
-        await onRefresh();
+        try {
+            await onClose();
+            Swal.fire({
+                icon: 'info',
+                title: 'กำลังดำเนินการ...',
+                text: 'กรุณารอสักครู่',
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            const supplierData: Supplier = {
+                supplier_id: supplier_id,
+                supplier_name: name,
+                supplier_contact: JSON.stringify(contacts),
+            };
+
+            await updateSupplierBy(supplierData);
+            await onRefresh();
+            Swal.fire({
+                icon: 'success',
+                title: 'สำเร็จ!',
+                text: 'ข้อมูลผู้จำหน่ายได้รับการอัปเดตแล้ว',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถอัปเดตข้อมูลผู้จำหน่ายได้',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+            });
+        }
     };
 
     useEffect(() => {

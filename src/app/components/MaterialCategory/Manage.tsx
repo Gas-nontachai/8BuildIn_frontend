@@ -9,6 +9,7 @@ import {
     IconButton,
     Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormLabel
 } from "@mui/material";
+import Swal from 'sweetalert2';
 
 import { usePagination } from "@/context/PaginationContext";
 
@@ -53,19 +54,47 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
             [event.target.name]: event.target.value
         });
     }
+
     const handleSubmit = async () => {
         try {
-            setLoading(true)
-            await insertMaterialCategory(materialCategory)
-            await fetchData()
+            setLoading(true);
+            Swal.fire({
+                icon: 'info',
+                title: 'กำลังดำเนินการ...',
+                text: 'กรุณารอสักครู่',
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+            await insertMaterialCategory(materialCategory);
+            await fetchData();
             setMaterialCategory({
                 material_category_id: '',
                 material_category_name: ''
-            })
+            });
+            Swal.fire({
+                icon: 'success',
+                title: 'สำเร็จ!',
+                text: 'เพิ่มหมวดหมู่วัสดุสำเร็จแล้ว',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
         } catch (error) {
-
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถเพิ่มหมวดหมู่วัสดุได้',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false)
     };
 
     const onDelete = async (m_id: string) => {
