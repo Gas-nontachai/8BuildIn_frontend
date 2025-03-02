@@ -7,7 +7,7 @@ import {
     Button,
     TextField,
     IconButton,
-    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormLabel
+    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormHelperText
 } from "@mui/material";
 
 import { usePagination } from "@/context/PaginationContext";
@@ -25,64 +25,77 @@ interface ManageProductCategoryProps {
 
 const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, onRefresh, open }) => {
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     const [productCategory, setProductCategory] = useState<ProductCategory>({
         product_category_id: '',
         product_category_name: ''
-    })
-    const [data, setData] = useState<ProductCategory[]>([])
+    });
+    const [data, setData] = useState<ProductCategory[]>([]);
+    const [error, setError] = useState<string>('');
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         try {
-            setLoading(true)
-            const { docs: res } = await getProductCategoryBy()
-            setData(res)
+            setLoading(true);
+            const { docs: res } = await getProductCategoryBy();
+            setData(res);
         } catch (error) {
             console.log(error);
         }
-        setLoading(false)
-    }
+        setLoading(false);
+    };
 
     const handleChange = (event: any) => {
         setProductCategory({
             ...productCategory,
             [event.target.name]: event.target.value
         });
-    }
+    };
+
+    const validateForm = () => {
+        if (!productCategory.product_category_name.trim()) {
+            setError('กรุณากรอกชื่อประเภทสินค้า');
+            return false;
+        }
+        setError('');
+        return true;
+    };
+
     const handleSubmit = async () => {
+        if (!validateForm()) return; // Stop if form validation fails
         try {
-            setLoading(true)
-            await insertProductCategory(productCategory)
-            await fetchData()
+            setLoading(true);
+            await insertProductCategory(productCategory);
+            await fetchData();
             setProductCategory({
                 product_category_id: '',
                 product_category_name: ''
-            })
+            });
         } catch (error) {
-
+            console.log(error);
         }
-        setLoading(false)
+        setLoading(false);
     };
 
     const onDelete = async (m_id: string) => {
         try {
-            setLoading(true)
-            await deleteProductCategoryBy({ product_category_id: m_id })
-            await fetchData()
+            setLoading(true);
+            await deleteProductCategoryBy({ product_category_id: m_id });
+            await fetchData();
         } catch (error) {
-
+            console.log(error);
         }
-        setLoading(false)
-    }
+        setLoading(false);
+    };
+
     return (
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
                 <DialogTitle>
-                    จัดการประเภทวัสดุ
+                    จัดการประเภทสินค้า
                     <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
                         <Close />
                     </IconButton>
@@ -99,7 +112,9 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
                                 value={productCategory.product_category_name}
                                 onChange={handleChange}
                                 required
+                                error={!!error}
                             />
+                            {error && <FormHelperText error>{error}</FormHelperText>}
                         </Grid>
                         <Grid item xs={1}>
                             <Button onClick={handleSubmit} color="success" fullWidth variant="contained">
@@ -161,7 +176,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
                         onRowsPerPageChange={onChangeRowsPerPage}
                     />
                 </Paper>
-            </Dialog >
+            </Dialog>
         </>
     );
 };

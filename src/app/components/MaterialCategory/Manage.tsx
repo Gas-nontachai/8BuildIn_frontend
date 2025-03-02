@@ -7,7 +7,7 @@ import {
     Button,
     TextField,
     IconButton,
-    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormLabel
+    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormHelperText
 } from "@mui/material";
 import Swal from 'sweetalert2';
 
@@ -30,32 +30,45 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
     const [materialCategory, setMaterialCategory] = useState<MaterialCategory>({
         material_category_id: '',
         material_category_name: ''
-    })
-    const [data, setData] = useState<MaterialCategory[]>([])
+    });
+    const [data, setData] = useState<MaterialCategory[]>([]);
+    const [error, setError] = useState<string>("");
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         try {
-            setLoading(true)
-            const { docs: res } = await getMaterialCategoryBy()
-            setData(res)
+            setLoading(true);
+            const { docs: res } = await getMaterialCategoryBy();
+            setData(res);
         } catch (error) {
             console.log(error);
         }
-        setLoading(false)
-    }
+        setLoading(false);
+    };
 
-    const handleChange = (event: any) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMaterialCategory({
             ...materialCategory,
             [event.target.name]: event.target.value
         });
-    }
+    };
+
+    const validate = (): boolean => {
+        if (!materialCategory.material_category_name.trim()) {
+            setError("กรุณากรอกชื่อประเภทวัสดุ");
+            return false;
+        }
+        setError("");
+        return true;
+    };
 
     const handleSubmit = async () => {
+        if (!validate()) {
+            return;
+        }
         try {
             setLoading(true);
             Swal.fire({
@@ -99,99 +112,100 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
 
     const onDelete = async (m_id: string) => {
         try {
-            setLoading(true)
-            await deleteMaterialCategoryBy({ material_category_id: m_id })
-            await fetchData()
+            setLoading(true);
+            await deleteMaterialCategoryBy({ material_category_id: m_id });
+            await fetchData();
         } catch (error) {
-
+            // Handle error
         }
-        setLoading(false)
-    }
+        setLoading(false);
+    };
+
     return (
-        <>
-            <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-                <DialogTitle>
-                    จัดการประเภทวัสดุ
-                    <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
-                        <Close />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent sx={{ p: 3 }}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={11}>
-                            <TextField
-                                fullWidth
-                                size="small"
-                                variant="outlined"
-                                name="material_category_name"
-                                placeholder="ชื่อประเภทวัสดุ *"
-                                value={materialCategory.material_category_name}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid item xs={1}>
-                            <Button onClick={handleSubmit} color="success" fullWidth variant="contained">
-                                บันทึก
-                            </Button>
-                        </Grid>
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+            <DialogTitle>
+                จัดการประเภทวัสดุ
+                <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
+                    <Close />
+                </IconButton>
+            </DialogTitle>
+            <DialogContent sx={{ p: 3 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={11}>
+                        <TextField
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            name="material_category_name"
+                            placeholder="ชื่อประเภทวัสดุ *"
+                            value={materialCategory.material_category_name}
+                            onChange={handleChange}
+                            required
+                            error={!!error} // Show error if any
+                        />
+                        {error && <FormHelperText error>{error}</FormHelperText>}
                     </Grid>
-                </DialogContent>
-                <Paper className="shadow-md p-6">
-                    <TableContainer style={{ minHeight: "24rem" }}>
-                        <Table>
-                            <TableHead>
-                                <TableRow className="bg-gray-200">
-                                    <TableCell>#</TableCell>
-                                    <TableCell>ชื่อประเภทวัสดุ</TableCell>
-                                    <TableCell align="center">จัดการ</TableCell>
+                    <Grid item xs={1}>
+                        <Button onClick={handleSubmit} color="success" fullWidth variant="contained">
+                            บันทึก
+                        </Button>
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <Paper className="shadow-md p-6">
+                <TableContainer style={{ minHeight: "24rem" }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow className="bg-gray-200">
+                                <TableCell>#</TableCell>
+                                <TableCell>ชื่อประเภทวัสดุ</TableCell>
+                                <TableCell align="center">จัดการ</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {loading ? (
+                                <TableRow>
+                                    <TableCell colSpan={3} align="center">
+                                        <div className="flex flex-col items-center text-[15px]">
+                                            <CircularProgress />
+                                            <span className="mt-2">กำลังโหลดข้อมูล...</span>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {loading ? (
-                                    <TableRow>
-                                        <TableCell colSpan={3} align="center">
-                                            <div className="flex flex-col items-center text-[15px]">
-                                                <CircularProgress />
-                                                <span className="mt-2">กำลังโหลดข้อมูล...</span>
+                            ) : (
+                                data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data, index) => (
+                                    <TableRow key={data.material_category_id} hover>
+                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell>{data.material_category_name}</TableCell>
+                                        <TableCell>
+                                            <div className="flex justify-center gap-2">
+                                                <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    startIcon={<Delete />}
+                                                    onClick={() => onDelete(data.material_category_id)}
+                                                >
+                                                    ลบ
+                                                </Button>
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ) : (
-                                    data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data, index) => (
-                                        <TableRow key={data.material_category_id} hover>
-                                            <TableCell>{index + 1}</TableCell>
-                                            <TableCell>{data.material_category_name}</TableCell>
-                                            <TableCell>
-                                                <div className="flex justify-center gap-2">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="error"
-                                                        startIcon={<Delete />}
-                                                        onClick={() => onDelete(data.material_category_id)}
-                                                    >
-                                                        ลบ
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 15]}
-                        component="div"
-                        count={data.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={onChangePage}
-                        onRowsPerPageChange={onChangeRowsPerPage}
-                    />
-                </Paper>
-            </Dialog >
-        </>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 15]}
+                    component="div"
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={onChangePage}
+                    onRowsPerPageChange={onChangeRowsPerPage}
+                />
+            </Paper>
+        </Dialog>
     );
 };
 
