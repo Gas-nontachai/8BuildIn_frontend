@@ -98,9 +98,11 @@ const StockInPage = () => {
                                         <TableRow key={stock.stock_in_id} hover >
                                             <TableCell>{index + 1} </TableCell>
                                             <TableCell>
+                                                <span><strong>สินค้า</strong></span>
                                                 {JSON.parse(stock.product).map((product: { product_name: string; product_quantity: string, product_price: string }) => (
                                                     <div key={product.product_name}>• {product.product_name} : {product.product_quantity} ชิ้น : {product.product_price} บาท</div>
                                                 ))}
+                                                <span> <strong>วัสดุ</strong></span>
                                                 {JSON.parse(stock.material).map((material: { material_name: string; material_quantity: string, material_price: string }) => (
                                                     <div key={material.material_name}>• {material.material_name} : {material.material_quantity}ชิ้น : {material.material_price} บาท</div>
                                                 ))}

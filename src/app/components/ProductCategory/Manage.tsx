@@ -1,41 +1,50 @@
-import React, { useState } from "react";
-import { Close } from "@mui/icons-material";
+import React, { useEffect, useState } from "react";
+import { Close, Delete } from "@mui/icons-material";
 import {
     Dialog,
-    DialogActions,
     DialogContent,
     DialogTitle,
     Button,
     TextField,
     IconButton,
-    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination
+    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormLabel
 } from "@mui/material";
 
 import { usePagination } from "@/context/PaginationContext";
-import Swal from 'sweetalert2';
 
-import useProduct from "@/hooks/useProduct";
 import { ProductCategory } from '@/misc/types';
 import useProductCategory from "@/hooks/useProductCategory";
 
-const { insertProductCategory, getProductCategoryBy } = useProductCategory();
+const { insertProductCategory, getProductCategoryBy, deleteProductCategoryBy } = useProductCategory();
 
-interface AddProductCategoryProps {
+interface ManageProductCategoryProps {
     onClose: () => void;
+    onRefresh: () => void;
     open: boolean;
 }
 
-const AddProductCategory: React.FC<AddProductCategoryProps> = ({ onClose, open }) => {
+const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, onRefresh, open }) => {
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+    const [loading, setLoading] = useState(false)
     const [productCategory, setProductCategory] = useState<ProductCategory>({
         product_category_id: '',
         product_category_name: ''
     })
     const [data, setData] = useState<ProductCategory[]>([])
 
+    useEffect(() => {
+        fetchData()
+    }, [])
+
     const fetchData = async () => {
-        const { docs: res } = await getProductCategoryBy()
-        setData(res)
+        try {
+            setLoading(true)
+            const { docs: res } = await getProductCategoryBy()
+            setData(res)
+        } catch (error) {
+            console.log(error);
+        }
+        setLoading(false)
     }
 
     const handleChange = (event: any) => {
@@ -45,18 +54,35 @@ const AddProductCategory: React.FC<AddProductCategoryProps> = ({ onClose, open }
         });
     }
     const handleSubmit = async () => {
-        await insertProductCategory(productCategory)
-        Swal.fire({
-            title: "สำเร็จ",
-            text: "เพิ่มประเภทสินค้า",
-            timer: 1500
-        })
+        try {
+            setLoading(true)
+            await insertProductCategory(productCategory)
+            await fetchData()
+            setProductCategory({
+                product_category_id: '',
+                product_category_name: ''
+            })
+        } catch (error) {
+
+        }
+        setLoading(false)
     };
+
+    const onDelete = async (m_id: string) => {
+        try {
+            setLoading(true)
+            await deleteProductCategoryBy({ product_category_id: m_id })
+            await fetchData()
+        } catch (error) {
+
+        }
+        setLoading(false)
+    }
     return (
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
                 <DialogTitle>
-                    จัดการประเภทสินค้า
+                    จัดการประเภทวัสดุ
                     <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
                         <Close />
                     </IconButton>
@@ -69,7 +95,7 @@ const AddProductCategory: React.FC<AddProductCategoryProps> = ({ onClose, open }
                                 size="small"
                                 variant="outlined"
                                 name="product_category_name"
-                                placeholder="ชื่อประเภทสินค้า"
+                                placeholder="ชื่อประเภทสินค้า *"
                                 value={productCategory.product_category_name}
                                 onChange={handleChange}
                                 required
@@ -93,30 +119,35 @@ const AddProductCategory: React.FC<AddProductCategoryProps> = ({ onClose, open }
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data) => (
-                                    <TableRow hover>
-                                        <TableCell>asd</TableCell>
-                                        <TableCell>asd </TableCell>
-                                        <TableCell>
-                                            <div className="flex justify-center gap-2">
-                                                {/* <Button
-                                            variant="contained"
-                                            color="primary"
-                                            startIcon={<ModeEdit />}
-                                            onClick={() => {
-                                                setIsUpdateDialogOpen(true);
-                                                supplier_id.current = supplier.supplier_id;
-                                            }}
-                                        >
-                                            แก้ไข
-                                        </Button> */}
-                                                {/* <Button variant="contained" color="error" startIcon={<Delete />} onClick={() => onDelete(supplier.supplier_id)}>
-                                            ลบ
-                                        </Button> */}
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={3} align="center">
+                                            <div className="flex flex-col items-center text-[15px]">
+                                                <CircularProgress />
+                                                <span className="mt-2">กำลังโหลดข้อมูล...</span>
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                ) : (
+                                    data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data, index) => (
+                                        <TableRow key={data.product_category_id} hover>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{data.product_category_name}</TableCell>
+                                            <TableCell>
+                                                <div className="flex justify-center gap-2">
+                                                    <Button
+                                                        variant="contained"
+                                                        color="error"
+                                                        startIcon={<Delete />}
+                                                        onClick={() => onDelete(data.product_category_id)}
+                                                    >
+                                                        ลบ
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -130,9 +161,9 @@ const AddProductCategory: React.FC<AddProductCategoryProps> = ({ onClose, open }
                         onRowsPerPageChange={onChangeRowsPerPage}
                     />
                 </Paper>
-            </Dialog>
+            </Dialog >
         </>
     );
 };
 
-export default AddProductCategory;
+export default ManageProductCategory;

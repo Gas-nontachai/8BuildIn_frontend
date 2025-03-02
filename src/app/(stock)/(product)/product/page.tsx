@@ -1,24 +1,22 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { Delete, Add } from "@mui/icons-material";
 import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Checkbox } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
+import { decimalFix } from "@/utils/number-helper"
+import ManageProductCategory from "@/app/components/ProductCategory/Manage";
 
-import AddProduct from "@/app/components/Product/Add";
-
-import useSupplier from "@/hooks/useSupplier";
-import { Supplier } from '@/misc/types';
-
-const { getSupplierBy, deleteSupplierBy } = useSupplier();
+import useProduct from "@/hooks/useProduct";
+import { Product } from '@/misc/types';
 
 const ProductPage = () => {
+  const { getProductBy } = useProduct()
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const supplier_id = useRef('')
+  const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
+  const [addProductDialog, setAddProductDialog] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -27,15 +25,17 @@ const ProductPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // const { docs: res } = await getSupplierBy();
-      // setSuppliers(res);
+      const { docs: res } = await getProductBy();
+      console.log(res);
+
+      setProducts(res);
     } catch (error) {
-      console.error("Error fetching suppliers:", error);
+      console.error("Error fetching products:", error);
     }
     setLoading(false);
   };
 
-  const onDelete = async (supplierId: string) => {
+  const onDelete = async (productId: string) => {
     const result = await Swal.fire({
       title: "คุณแน่ใจหรือไม่?",
       text: "คุณจะไม่สามารถย้อนกลับการกระทำนี้ได้!",
@@ -48,31 +48,25 @@ const ProductPage = () => {
 
     if (result.isConfirmed) {
       try {
-        await deleteSupplierBy({ supplier_id: supplierId });
         Swal.fire("ลบแล้ว!", "ข้อมูลผู้จัดจำหน่ายถูกลบเรียบร้อยแล้ว", "success");
         await fetchData();
       } catch (error) {
-        console.error("Error deleting supplier:", error);
+        console.error("Error deleting product:", error);
       }
     }
   };
 
   return (
     <>
-      <div className="flex justify-between">
-        <span className="text-xl font-[400] mb-4">จัดการข้อมูลสินค้า</span>
+      <div className="flex justify-between  mb-4">
+        <span className="text-xl font-[400]">จัดการข้อมูลสินค้า</span>
         <div className="flex gap-2">
-          <button
-            className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
-          >
+          <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทสินค้า
-          </button>
-          <button
-            className="mb-4 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded"
-            onClick={() => setIsAddDialogOpen(true)}
-          >
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => setAddProductDialog(true)} startIcon={<Add />}>
             เพิ่มสินค้า
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -87,34 +81,27 @@ const ProductPage = () => {
             <Table>
               <TableHead>
                 <TableRow className="bg-gray-200">
-                  <TableCell>#</TableCell>
-                  <TableCell>ชื่อ</TableCell>
-                  <TableCell>ตำแหน่ง</TableCell>
+                  <TableCell padding="checkbox" align="center"><Checkbox /></TableCell>
+                  <TableCell align="center">ประเภท</TableCell>
+                  <TableCell align="center">ชื่อสินค้า</TableCell>
+                  <TableCell align="center">รูปภาพ</TableCell>
+                  <TableCell align="center">ราคา</TableCell>
+                  <TableCell align="center">จำนวน</TableCell>
                   <TableCell align="center">จัดการ</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {suppliers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((supplier) => (
-                  <TableRow key={supplier.supplier_id} hover>
-                    <TableCell>{supplier.supplier_id}</TableCell>
-                    <TableCell>{supplier.supplier_name}</TableCell>
-                    <TableCell>{supplier.supplier_name}</TableCell>
-                    <TableCell>
+                {products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((product, index) => (
+                  <TableRow key={product.product_id} hover>
+                    <TableCell align="center">{index + 1}</TableCell>
+                    <TableCell align="center">{product.product_category_id}</TableCell>
+                    <TableCell align="center">{product.product_name}</TableCell>
+                    <TableCell align="center">{product.product_img}</TableCell>
+                    <TableCell align="center">{decimalFix(product.product_price)} ฿ / {product.unit_id || 'ชิ้น'}</TableCell>
+                    <TableCell align="center">{product.product_quantity} {product.unit_id || 'ชิ้น'} </TableCell>
+                    <TableCell align="center">
                       <div className="flex justify-center gap-2">
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          startIcon={<ModeEdit />}
-                          onClick={() => {
-                            setIsUpdateDialogOpen(true);
-                            supplier_id.current = supplier.supplier_id;
-                          }}
-                        >
-                          แก้ไข
-                        </Button>
-                        <Button variant="contained" color="error" startIcon={<Delete />} onClick={() => onDelete(supplier.supplier_id)}>
-                          ลบ
-                        </Button>
+                        <Button variant="text" color="error" startIcon={<Delete />} onClick={() => onDelete(product.product_id)} />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -125,7 +112,7 @@ const ProductPage = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 15]}
             component="div"
-            count={suppliers.length}
+            count={products.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={onChangePage}
@@ -134,8 +121,7 @@ const ProductPage = () => {
         </Paper>
       )}
 
-      <AddProduct open={isAddDialogOpen} onClose={async () => { setIsAddDialogOpen(false); await fetchData(); }} />
-
+      <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
     </>
   );
 };

@@ -2,7 +2,7 @@ import { API_URL } from '@/utils/config';
 import axiosInstance from '@/utils/fetch';
 import { Product } from '@/misc/types'
 
-const prefix = 'product-category';
+const prefix = 'product';
 
 const getProductBy = (data: any = {}): Promise<{ docs: Product[], totalDocs: number }> => {
     return axiosInstance.post(`${API_URL}${prefix}/getProductBy`, data);

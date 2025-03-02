@@ -95,7 +95,7 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
                                 size="small"
                                 variant="outlined"
                                 name="material_category_name"
-                                placeholder="ชื่อประเภทสินค้า *"
+                                placeholder="ชื่อประเภทวัสดุ *"
                                 value={materialCategory.material_category_name}
                                 onChange={handleChange}
                                 required
@@ -114,7 +114,7 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
                             <TableHead>
                                 <TableRow className="bg-gray-200">
                                     <TableCell>#</TableCell>
-                                    <TableCell>ชื่อประเภทสินค้า</TableCell>
+                                    <TableCell>ชื่อประเภทวัสดุ</TableCell>
                                     <TableCell align="center">จัดการ</TableCell>
                                 </TableRow>
                             </TableHead>

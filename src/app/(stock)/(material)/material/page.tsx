@@ -1,29 +1,22 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete, Add, Edit, ManageAccounts } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { Delete, Add } from "@mui/icons-material";
 import Swal from 'sweetalert2';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Checkbox } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
+import { decimalFix } from "@/utils/number-helper"
 
-import UpdateMaterial from "@/app/components/Material/Update";
 import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
 
-import useSupplier from "@/hooks/useSupplier";
-import { Supplier } from '@/misc/types';
-
-const { getSupplierBy, deleteSupplierBy } = useSupplier();
+import useMaterial from "@/hooks/useMaterial";
+import { Material } from '@/misc/types';
 
 const MaterialPage = () => {
+  const { getMaterialBy } = useMaterial()
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
-  const [isUpdateDialog, setIsUpdateDialog] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
-
-
-
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const supplier_id = useRef('')
+  const [materials, setMaterials] = useState<Material[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -32,15 +25,17 @@ const MaterialPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // const { docs: res } = await getSupplierBy();
-      // setSuppliers(res);
+      const { docs: res } = await getMaterialBy();
+      console.log(res);
+
+      setMaterials(res);
     } catch (error) {
-      console.error("Error fetching suppliers:", error);
+      console.error("Error fetching materials:", error);
     }
     setLoading(false);
   };
 
-  const onDelete = async (supplierId: string) => {
+  const onDelete = async (materialId: string) => {
     const result = await Swal.fire({
       title: "คุณแน่ใจหรือไม่?",
       text: "คุณจะไม่สามารถย้อนกลับการกระทำนี้ได้!",
@@ -53,11 +48,10 @@ const MaterialPage = () => {
 
     if (result.isConfirmed) {
       try {
-        await deleteSupplierBy({ supplier_id: supplierId });
         Swal.fire("ลบแล้ว!", "ข้อมูลผู้จัดจำหน่ายถูกลบเรียบร้อยแล้ว", "success");
         await fetchData();
       } catch (error) {
-        console.error("Error deleting supplier:", error);
+        console.error("Error deleting material:", error);
       }
     }
   };
@@ -69,9 +63,6 @@ const MaterialPage = () => {
         <div className="flex gap-2">
           <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทวัสดุ
-          </Button>
-          <Button variant="contained" color="primary" onClick={() => setIsUpdateDialog(true)} startIcon={<Add />}>
-            เพิ่มวัสดุ
           </Button>
         </div>
       </div>
@@ -93,31 +84,21 @@ const MaterialPage = () => {
                   <TableCell align="center">รูปภาพ</TableCell>
                   <TableCell align="center">ราคา</TableCell>
                   <TableCell align="center">จำนวน</TableCell>
-                  <TableCell align="center">หน่วย</TableCell>
+                  <TableCell align="center">จัดการ</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {suppliers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((supplier) => (
-                  <TableRow key={supplier.supplier_id} hover>
-                    <TableCell>{supplier.supplier_id}</TableCell>
-                    <TableCell>{supplier.supplier_name}</TableCell>
-                    <TableCell>{supplier.supplier_name}</TableCell>
-                    <TableCell>
+                {materials.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((material, index) => (
+                  <TableRow key={material.material_id} hover>
+                    <TableCell align="center">{index + 1}</TableCell>
+                    <TableCell align="center">{material.material_category_id}</TableCell>
+                    <TableCell align="center">{material.material_name}</TableCell>
+                    <TableCell align="center">{material.material_img}</TableCell>
+                    <TableCell align="center">{decimalFix(material.material_price)} ฿ / {material.unit_id || 'ชิ้น'}</TableCell>
+                    <TableCell align="center">{material.material_quantity} {material.unit_id || 'ชิ้น'} </TableCell>
+                    <TableCell align="center">
                       <div className="flex justify-center gap-2">
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          startIcon={<ModeEdit />}
-                          onClick={() => {
-                            setIsUpdateDialogOpen(true);
-                            supplier_id.current = supplier.supplier_id;
-                          }}
-                        >
-                          แก้ไข
-                        </Button>
-                        <Button variant="contained" color="error" startIcon={<Delete />} onClick={() => onDelete(supplier.supplier_id)}>
-                          ลบ
-                        </Button>
+                        <Button variant="text" color="error" startIcon={<Delete />} onClick={() => onDelete(material.material_id)} />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -128,7 +109,7 @@ const MaterialPage = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 15]}
             component="div"
-            count={suppliers.length}
+            count={materials.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={onChangePage}
@@ -137,9 +118,7 @@ const MaterialPage = () => {
         </Paper>
       )}
 
-      <UpdateMaterial open={isUpdateDialog} onClose={async () => { setIsUpdateDialog(false); await fetchData(); }} />
       <ManageMaterialCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
-
     </>
   );
 };

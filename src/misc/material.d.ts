@@ -1,5 +1,6 @@
 export type Material = {
     material_id: string;
+    material_category_id: string;
     material_name: string;
     material_quantity: string;
     material_price: string;

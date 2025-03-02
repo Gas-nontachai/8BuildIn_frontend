@@ -8,7 +8,7 @@ const getProductCategoryBy = (data: any = {}): Promise<{ docs: ProductCategory[]
     return axiosInstance.post(`${API_URL}${prefix}/getProductCategoryBy`, data);
 };
 
-const getProductCategoryByID = (data: { productcategory_id: string }): Promise<ProductCategory> => {
+const getProductCategoryByID = (data: { product_category_id: string }): Promise<ProductCategory> => {
     return axiosInstance.post(`${API_URL}${prefix}/getProductCategoryByID`, data);
 };
 
@@ -20,7 +20,7 @@ const updateProductCategoryBy = async (data: ProductCategory): Promise<ProductCa
     return await axiosInstance.post(`${API_URL}${prefix}/updateProductCategoryBy`, data);
 };
 
-const deleteProductCategoryBy = (data: { productcategory_id: string }): Promise<ProductCategory> => {
+const deleteProductCategoryBy = (data: { product_category_id: string }): Promise<ProductCategory> => {
     return axiosInstance.post(`${API_URL}${prefix}/deleteProductCategoryBy`, data);
 };
 
