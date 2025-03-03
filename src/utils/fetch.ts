@@ -14,6 +14,19 @@ preSecureFetch.interceptors.response.use(
     }
 );
 
+const formData = axios.create({
+    headers: {
+        'Content-Type': 'multipart/form-data',
+    }
+});
+
+formData.interceptors.response.use(
+    (response) => response.data,
+    (error) => {
+        return errorInterceptor(error);
+    }
+);
+
 export const errorInterceptor = async (error: any): Promise<any> => {
     if (error?.response) {
         const { status, statusText, data } = error.response;
@@ -34,4 +47,4 @@ export const errorInterceptor = async (error: any): Promise<any> => {
     return Promise.reject(error);
 };
 
-export default preSecureFetch;
+export { preSecureFetch, formData };

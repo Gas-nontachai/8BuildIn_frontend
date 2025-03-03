@@ -26,8 +26,6 @@ const MaterialPage = () => {
     setLoading(true);
     try {
       const { docs: res } = await getMaterialBy();
-      console.log(res);
-
       setMaterials(res);
     } catch (error) {
       console.error("Error fetching materials:", error);

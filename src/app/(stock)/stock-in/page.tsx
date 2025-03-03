@@ -88,6 +88,7 @@ const StockInPage = () => {
                                 <TableHead>
                                     <TableRow className="bg-gray-200" >
                                         <TableCell># </TableCell>
+                                        <TableCell>รหัสสต็อก </TableCell>
                                         < TableCell > ชื่อสต็อกเข้า </TableCell>
                                         < TableCell > ผู้จัดจำหน่าย </TableCell>
                                         < TableCell align="center" > จัดการ </TableCell>
@@ -97,6 +98,7 @@ const StockInPage = () => {
                                     {stockIn.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((stock, index) => (
                                         <TableRow key={stock.stock_in_id} hover >
                                             <TableCell>{index + 1} </TableCell>
+                                            <TableCell>{stock.stock_in_id} </TableCell>
                                             <TableCell>
                                                 {
                                                     JSON.parse(stock.product).length > 0 && (

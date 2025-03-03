@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
 import ManageProductCategory from "@/app/components/ProductCategory/Manage";
+import AddProduct from "@/app/components/Product/Add";
 
 import useProduct from "@/hooks/useProduct";
 import { Product } from '@/misc/types';
@@ -26,8 +27,6 @@ const ProductPage = () => {
     setLoading(true);
     try {
       const { docs: res } = await getProductBy();
-      console.log(res);
-
       setProducts(res);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -83,6 +82,7 @@ const ProductPage = () => {
                 <TableRow className="bg-gray-200">
                   <TableCell padding="checkbox" align="center"><Checkbox /></TableCell>
                   <TableCell align="center">ประเภท</TableCell>
+                  <TableCell align="center">รหัสสินค้า</TableCell>
                   <TableCell align="center">ชื่อสินค้า</TableCell>
                   <TableCell align="center">รูปภาพ</TableCell>
                   <TableCell align="center">ราคา</TableCell>
@@ -95,6 +95,7 @@ const ProductPage = () => {
                   <TableRow key={product.product_id} hover>
                     <TableCell align="center">{index + 1}</TableCell>
                     <TableCell align="center">{product.product_category_id}</TableCell>
+                    <TableCell align="center">{product.product_id}</TableCell>
                     <TableCell align="center">{product.product_name}</TableCell>
                     <TableCell align="center">{product.product_img}</TableCell>
                     <TableCell align="center">{decimalFix(product.product_price)} ฿ / {product.unit_id || 'ชิ้น'}</TableCell>
@@ -122,6 +123,7 @@ const ProductPage = () => {
       )}
 
       <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
+      <AddProduct open={addProductDialog} onRefresh={() => fetchData()} onClose={() => setAddProductDialog(false)} />
     </>
   );
 };

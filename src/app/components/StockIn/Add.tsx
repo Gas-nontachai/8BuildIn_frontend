@@ -39,7 +39,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
         stock_in_id: "",
         product: "",
         material: "",
-        stock_in_price: "",
+        stock_in_price: 0,
         supplier_id: "",
         addby: "",
         adddate: ''
@@ -63,19 +63,19 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
             material: JSON.stringify(material),
         };
         try {
+            await onClose()
             await insertStockIn(insertData);
             setFormData({
                 stock_in_id: "",
                 product: "",
                 material: "",
-                stock_in_price: "",
+                stock_in_price: 0,
                 supplier_id: "",
                 addby: "",
                 adddate: ''
             })
             setMaterial([])
             setProduct([])
-            await onClose()
             await onRefresh()
             Swal.fire({
                 title: 'Success!',
@@ -139,6 +139,18 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
         }
     };
 
+    useEffect(() => {
+        const calculate_price = () => {
+            const totalProductPrice = product.reduce((sum, item) => sum + (Number(item.product_price) || 0), 0);
+            const totalMaterialPrice = material.reduce((sum, item) => sum + (Number(item.material_price) || 0), 0);
+            const totalPrice = totalProductPrice + totalMaterialPrice;
+
+            setFormData(prev => ({ ...prev, stock_in_price: totalPrice }));
+        };
+
+        calculate_price();
+    }, [product, material]);
+
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>
@@ -173,7 +185,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                             type="number"
                             size="small"
                             value={formData.stock_in_price}
-                            onChange={(e) => setFormData({ ...formData, stock_in_price: e.target.value })}
+                            onChange={(e) => setFormData({ ...formData, stock_in_price: Number(e.target.value) })}
                         />
                     </Grid>
                     <Grid size={12}>
@@ -234,7 +246,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                     </Grid>
                     {material.length > 0 && (
                         <>
-                           <FormLabel component="legend">วัสดุ <span className="text-red-500">*</span></FormLabel>
+                            <FormLabel component="legend">วัสดุ <span className="text-red-500">*</span></FormLabel>
                         </>
                     )}
                     <Grid size={12}>

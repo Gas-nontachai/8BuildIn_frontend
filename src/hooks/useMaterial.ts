@@ -1,5 +1,5 @@
 import { API_URL } from '@/utils/config';
-import preSecureFetch from '@/utils/fetch';
+import { preSecureFetch } from '@/utils/fetch';
 import { Material } from '@/misc/types'
 
 const prefix = 'material';
