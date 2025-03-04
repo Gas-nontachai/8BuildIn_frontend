@@ -10,6 +10,7 @@ export type Employee = {
     employee_birthday: string;
     employee_gender: string;
     employee_address: string;
+    employee_img: string;
     license_id: string;
     addby?: string;
     adddate?: Date | string;

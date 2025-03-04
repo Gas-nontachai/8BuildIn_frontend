@@ -32,14 +32,14 @@ export default function SidebarMenu() {
     const [openProduct, setOpenProduct] = useState(false);
 
     const Employee = [
-        { text: "หน้าหลัก", href: "/dash-em", icon: <HomeIcon /> },
+        { text: "หน้าหลัก", href: "/dashboard-employee", icon: <HomeIcon /> },
         { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
-        { text: "ข้อมูลพนักงาน", href: "/employee", icon: <PeopleIcon /> }
+        { text: "พนักงาน", href: "/employee", icon: <PeopleIcon /> }
     ];
 
     const Customer = [
         { text: "หน้าหลัก", href: "/dash-cus", icon: <HomeIcon /> },
-        { text: "ข้อมูลลูกค้า", href: "/customer", icon: <PersonIcon /> }
+        { text: "ลูกค้า", href: "/customer", icon: <PersonIcon /> }
     ];
 
     const Account = [
@@ -94,7 +94,7 @@ export default function SidebarMenu() {
                 </ListItemButton>
             </ListItem>
             <Collapse in={openEmp} timeout="auto" unmountOnExit>
-                {Sale.map((item) => (
+                {Employee.map((item) => (
                     <ListItem key={item.text} disablePadding>
                         <Link href={item.href} passHref legacyBehavior>
                             <ListItemButton component="a">
