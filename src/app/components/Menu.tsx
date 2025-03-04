@@ -19,7 +19,8 @@ import {
     Inventory2,
     AcUnit,
     SupportAgent,
-    Badge
+    Badge,
+    Security
 } from "@mui/icons-material";
 
 
@@ -36,6 +37,7 @@ export default function SidebarMenu() {
     const Employee = [
         { text: "หน้าหลัก", href: "/dashboard-employee", icon: <Dashboard /> },
         { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
+        { text: "บทบาท", href: "/license", icon: <Security /> },
         { text: "พนักงาน", href: "/employee", icon: <Badge /> }
     ];
 

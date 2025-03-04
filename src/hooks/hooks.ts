@@ -8,3 +8,4 @@ export { default as useSupplier } from './useSupplier';
 export { default as useUnit } from './useUnit';  
 export { default as useEmployee } from './useEmployee';  
 export { default as useCustomer } from './useCustomer';  
+export { default as useLicense } from './useLIcense';  
