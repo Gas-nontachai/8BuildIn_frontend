@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Delete, Add } from "@mui/icons-material";
+import React, { useEffect, useState } from "react";
+import { Delete, Add, Edit, Visibility, MoreVert } from "@mui/icons-material";
 import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Checkbox } from "@mui/material";
+import { Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Checkbox } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
 import ManageProductCategory from "@/app/components/ProductCategory/Manage";
@@ -11,7 +11,10 @@ import AddProduct from "@/app/components/Product/Add";
 import { useProduct, useUnit, useProductCategory } from "@/hooks/hooks";
 import { Product, Unit, ProductCategory } from '@/misc/types';
 import { API_URL } from "@/utils/config"
+
 const ProductPage = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
   const { getProductBy, deleteProductBy } = useProduct()
   const { getUnitBy } = useUnit()
   const { getProductCategoryBy } = useProductCategory()
@@ -40,6 +43,13 @@ const ProductPage = () => {
       console.error("Error fetching products:", error);
     }
     setLoading(false);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const onDelete = async (productId: string) => {
@@ -136,7 +146,50 @@ const ProductPage = () => {
                     <TableCell align="center">{product.product_quantity} {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'} </TableCell>
                     <TableCell align="center">
                       <div className="flex justify-center gap-2">
-                        <Button variant="text" color="error" startIcon={<Delete />} onClick={() => onDelete(product.product_id)} />
+
+                        {
+                          !product.stock_in_id ? (
+                            <>
+                              <Button variant="text" color="inherit" startIcon={<MoreVert />}
+                                id="demo-positioned-button"
+                                aria-controls={open ? 'demo-positioned-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                onClick={handleClick}
+                              />
+                              <Menu
+                                id="demo-positioned-menu"
+                                aria-labelledby="demo-positioned-button"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                  vertical: 'top',
+                                  horizontal: 'left',
+                                }}
+                              >
+                                <MenuItem >
+                                  <Button variant="text" color="primary" startIcon={<Visibility />} onClick={() => { }} />
+                                  <span>View</span>
+                                </MenuItem>
+                                <MenuItem >
+                                  <Button variant="text" color="warning" startIcon={<Edit />} onClick={() => { }} />
+                                  <span>Edit</span>
+                                </MenuItem>
+                                <MenuItem  >
+                                  <Button variant="text" color="error" startIcon={<Delete />} onClick={() => onDelete(product.product_id)} />
+                                  <span>Delete</span>
+                                </MenuItem>
+                              </Menu>
+                            </>
+                          ) : (
+                            <Button variant="text" color="primary" startIcon={<Visibility />} onClick={() => { }} />
+                          )
+                        }
                       </div>
                     </TableCell>
                   </TableRow>
@@ -153,7 +206,7 @@ const ProductPage = () => {
             onPageChange={onChangePage}
             onRowsPerPageChange={onChangeRowsPerPage}
           />
-        </Paper>
+        </Paper >
       )}
 
       <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
