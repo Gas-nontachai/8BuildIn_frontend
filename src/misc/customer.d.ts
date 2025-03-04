@@ -8,8 +8,8 @@ export type Customer = {
     customer_birthday: string;
     customer_gender: string;
     customer_address: string;
-    addby: string;
-    adddate: Date | string;
-    updateby: string;
-    lastupdate: Date | string;
+    addby?: string;
+    adddate?: Date | string;
+    updateby?: string;
+    lastupdate?: Date | string;
 };
