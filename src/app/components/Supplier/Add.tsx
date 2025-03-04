@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Close, DeleteForeverRounded, Add } from "@mui/icons-material";
+import { Close, DeleteForeverRounded, Add, UploadFile } from "@mui/icons-material";
 import {
     Dialog,
     DialogActions,
@@ -29,14 +29,26 @@ interface AddSupplierProps {
 const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) => {
     const [name, setName] = useState<string>("");
     const [contacts, setContacts] = useState<{ type: string, value: string }[]>([]);
+    const [files, setFiles] = useState<File[]>([]);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const file = event.target.files[0]
+            setSelectedImage(URL.createObjectURL(file));
+            setFiles([file]);
+        }
+    };
 
     const option_contact = ['โทรศัพท์', 'อีเมล', 'ที่อยู่'];
 
     const handleContactChange = (index: number, value: string) => {
+        if (!contacts) return; 
         const updatedContacts = [...contacts];
         updatedContacts[index].value = value;
         setContacts(updatedContacts);
     };
+
 
     const handleTypeChange = (index: number, type: string) => {
         const updatedContacts = [...contacts];
@@ -70,8 +82,9 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
                 supplier_id: "",
                 supplier_name: name,
                 supplier_contact: JSON.stringify(contacts),
+                supplier_img: ""
             };
-            await insertSupplier(supplierData); 
+            await insertSupplier({ supplier: supplierData, supplier_img: files })
             await onRefresh();
             Swal.fire({
                 icon: 'success',
@@ -105,7 +118,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={9}>
                         <FormLabel component="legend" className="mb-2">ชื่อผู้จำหน่าย <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             fullWidth
@@ -115,6 +128,44 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
                             onChange={(e) => setName(e.target.value)}
                             required
                         />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <div className='flex justify-center flex-col items-center'>
+                            {selectedImage ? (
+                                <div>
+                                    <img
+                                        src={selectedImage}
+                                        alt="Selected"
+                                        className="w-16 h-16 rounded-md object-cover"
+                                    />
+                                </div>
+                            ) : (
+                                <img
+                                    src={"/default-emp.jpg"}
+                                    alt="Selected"
+                                    className='w-32 h-32 rounded-md object-cover'
+                                />
+                            )}
+                            <div className="mt-2">
+                                <label htmlFor="upload-image">
+                                    <Button
+                                        variant="contained"
+                                        component="span"
+                                        color="primary"
+                                        startIcon={<UploadFile />}
+                                    >
+                                        เลือกไฟล์
+                                    </Button>
+                                </label>
+                                <input
+                                    id="upload-image"
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleFileChange}
+                                />
+                            </div>
+                        </div>
                     </Grid>
                     {contacts.map((contact, index) => (
                         <Grid item xs={12} key={index}>

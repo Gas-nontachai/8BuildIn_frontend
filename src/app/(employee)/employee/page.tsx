@@ -23,15 +23,15 @@ const EmployeePage = () => {
   const [search, setSearch] = useState("")
   const employee_id = useRef('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selected, setSelected] = useState<Employee | null>(null);
 
   const handleClickMenu = (event: React.MouseEvent<HTMLElement>, employee: Employee) => {
     setAnchorEl(event.currentTarget);
-    setSelectedEmployee(employee);
+    setSelected(employee);
   }; 
   const handleCloseMenu = () => {
     setAnchorEl(null);
-    setSelectedEmployee(null);
+    setSelected(null);
   };
 
   useEffect(() => {
@@ -157,13 +157,13 @@ const EmployeePage = () => {
                             >
                               <MenuItem onClick={() => {
                                 setIsUpdateDialogOpen(true);
-                                employee_id.current = selectedEmployee?.employee_id!;
+                                employee_id.current = selected?.employee_id!;
                                 handleCloseMenu();
                               }}>
                                 <ModeEdit className="mr-2" /> แก้ไข
                               </MenuItem>
                               <MenuItem onClick={() => {
-                                onDelete(selectedEmployee?.employee_id!);
+                                onDelete(selected?.employee_id!);
                                 handleCloseMenu();
                               }}>
                                 <Delete className="mr-2" /> ลบ
