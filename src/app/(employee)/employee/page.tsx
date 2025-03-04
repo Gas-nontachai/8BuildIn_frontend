@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { API_URL } from '@/utils/config';
-import { ModeEdit, Delete, Add } from "@mui/icons-material";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { MoreVert, ModeEdit, Delete, Add, Search } from "@mui/icons-material";
+import { MenuItem, Menu, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, TextField, InputAdornment } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddEmployee from "@/app/components/Employee/Add";
@@ -20,7 +20,19 @@ const EmployeePage = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [search, setSearch] = useState("")
   const employee_id = useRef('')
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+
+  const handleClickMenu = (event: React.MouseEvent<HTMLElement>, employee: Employee) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedEmployee(employee);
+  }; 
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setSelectedEmployee(null);
+  };
 
   useEffect(() => {
     fetchData();
@@ -54,18 +66,47 @@ const EmployeePage = () => {
       }
     }
   };
+  const handleSearch = async () => {
+    setLoading(true);
+    const { docs: res } = await getEmployeeBy();
+    const filterData = res.filter((item: any) =>
+      item.employee_firstname.toLowerCase().includes(search.toLowerCase()) ||
+      item.employee_lastname.toLowerCase().includes(search.toLowerCase())
+    );
+    setEmployees(filterData);
+    setLoading(false);
+  };
 
   return (
     <>
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-start mb-2">
         <span className="text-xl font-[400]" >พนักงานทั้งหมด</span>
-        < div className="flex gap-2" >
-          <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
-            เพิ่มพนักงาน
-          </Button>
-        </div>
       </div>
-
+      <div className="flex justify-between mb-2">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="ค้นหาชื่อพนักงงาน..."
+          className="w-64"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch();
+            }
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
+          เพิ่มพนักงาน
+        </Button>
+      </div>
       {
         loading ? (
           <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
@@ -102,25 +143,32 @@ const EmployeePage = () => {
                         <TableCell>{item.employee_phone}</TableCell>
                         <TableCell>{item.employee_address}</TableCell>
                         <TableCell>
-                          <div className="flex justify-center gap-2" >
-                            <Button
-                              variant="outlined"
+                          <div className="flex justify-center gap-2">
+                            <IconButton
                               size="small"
-                              color="primary"
-                              startIcon={< ModeEdit />}
-                              onClick={() => {
-                                setIsUpdateDialogOpen(true);
-                                employee_id.current = item.employee_id;
-                              }
-                              }
+                              onClick={(e) => handleClickMenu(e, item)}
                             >
-                              แก้ไข
-                            </Button>
-                            < Button variant="outlined"
-                              size="small" color="error" startIcon={< Delete />}
-                              onClick={() => onDelete(item.employee_id)}>
-                              ลบ
-                            </Button>
+                              <MoreVert />
+                            </IconButton>
+                            <Menu
+                              anchorEl={anchorEl}
+                              open={Boolean(anchorEl)}
+                              onClose={handleCloseMenu}
+                            >
+                              <MenuItem onClick={() => {
+                                setIsUpdateDialogOpen(true);
+                                employee_id.current = selectedEmployee?.employee_id!;
+                                handleCloseMenu();
+                              }}>
+                                <ModeEdit className="mr-2" /> แก้ไข
+                              </MenuItem>
+                              <MenuItem onClick={() => {
+                                onDelete(selectedEmployee?.employee_id!);
+                                handleCloseMenu();
+                              }}>
+                                <Delete className="mr-2" /> ลบ
+                              </MenuItem>
+                            </Menu>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -142,6 +190,7 @@ const EmployeePage = () => {
 
       <AddEmployee open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
       <UpdateEmployee open={isUpdateDialogOpen} employee_id={employee_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
+
     </>
   );
 };

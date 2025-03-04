@@ -39,7 +39,6 @@ export default function SidebarMenu() {
         { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
         { text: "บทบาท", href: "/license", icon: <Security /> },
         { text: "พนักงาน", href: "/employee", icon: <Badge /> },
-        { text: "ฝายขาย", href: "/sales", icon: <PeopleIcon /> },
     ];
 
     const Customer = [
@@ -76,7 +75,7 @@ export default function SidebarMenu() {
 
     const Sale = [
         { text: "หน้าหลัก", href: "/", icon: <Dashboard /> },
-        { text: "ฝ่ายขาย", href: "/", icon: <SupportAgent /> },
+        { text: "ฝ่ายขาย", href: "/sales", icon: <SupportAgent /> },
     ];
 
     return (
@@ -135,29 +134,6 @@ export default function SidebarMenu() {
                 <Divider />
             </Collapse>
 
-            {/* Manage Acc */}
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => setOpenAcc(!openAcc)}>
-                    <ListItemText primary="เมนูบัญชี" />
-                    <IconButton edge="end">
-                        {openAcc ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                </ListItemButton>
-            </ListItem>
-            <Collapse in={openAcc} timeout="auto" unmountOnExit>
-                {Account.map((item) => (
-                    <ListItem key={item.text} disablePadding>
-                        <Link href={item.href} passHref legacyBehavior>
-                            <ListItemButton component="a">
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} />
-                            </ListItemButton>
-                        </Link>
-                    </ListItem>
-                ))}
-                <Divider />
-            </Collapse>
-
             {/* Manage Stock */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenStock(!openStock)}>
@@ -181,7 +157,7 @@ export default function SidebarMenu() {
                 <Divider />
                 {/* สินค้า */}
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => setOpenProduct(!openProduct)} >
+                    <ListItemButton onClick={() => setOpenProduct(!openProduct)} sx={{ pt: 0, pb: 0 }}>
                         <ListItemText primary="เมนูสินค้า" />
                         <IconButton edge="end">
                             {openProduct ? <ExpandLess /> : <ExpandMore />}
@@ -192,7 +168,7 @@ export default function SidebarMenu() {
                     {Product.map((item) => (
                         <ListItem key={item.text} disablePadding>
                             <Link href={item.href} passHref legacyBehavior>
-                                <ListItemButton component="a" sx={{ pl: 4 }}>
+                                <ListItemButton component="a" sx={{ pt: 1, pb: 1 }}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItemButton>
@@ -201,9 +177,10 @@ export default function SidebarMenu() {
                     ))}
                 </Collapse>
                 <Divider />
+
                 {/* วัสดุ */}
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => setOpenMaterial(!openMaterial)} >
+                    <ListItemButton onClick={() => setOpenMaterial(!openMaterial)} sx={{ pt: 0, pb: 0 }}>
                         <ListItemText primary="เมนูวัสดุ" />
                         <IconButton edge="end">
                             {openMaterial ? <ExpandLess /> : <ExpandMore />}
@@ -214,7 +191,7 @@ export default function SidebarMenu() {
                     {Material.map((item) => (
                         <ListItem key={item.text} disablePadding>
                             <Link href={item.href} passHref legacyBehavior>
-                                <ListItemButton component="a" sx={{ pl: 4 }}>
+                                <ListItemButton component="a" sx={{ pt: 1, pb: 1 }}>
                                     <ListItemIcon>{item.icon}</ListItemIcon>
                                     <ListItemText primary={item.text} />
                                 </ListItemButton>
@@ -224,7 +201,6 @@ export default function SidebarMenu() {
                 </Collapse>
                 <Divider />
             </Collapse>
-
 
             {/* Manage Customer */}
             <ListItem disablePadding>
@@ -237,6 +213,29 @@ export default function SidebarMenu() {
             </ListItem>
             <Collapse in={openCus} timeout="auto" unmountOnExit>
                 {Customer.map((item) => (
+                    <ListItem key={item.text} disablePadding>
+                        <Link href={item.href} passHref legacyBehavior>
+                            <ListItemButton component="a">
+                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItemButton>
+                        </Link>
+                    </ListItem>
+                ))}
+                <Divider />
+            </Collapse>
+
+            {/* Manage Acc */}
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => setOpenAcc(!openAcc)}>
+                    <ListItemText primary="เมนูบัญชี" />
+                    <IconButton edge="end">
+                        {openAcc ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                </ListItemButton>
+            </ListItem>
+            <Collapse in={openAcc} timeout="auto" unmountOnExit>
+                {Account.map((item) => (
                     <ListItem key={item.text} disablePadding>
                         <Link href={item.href} passHref legacyBehavior>
                             <ListItemButton component="a">

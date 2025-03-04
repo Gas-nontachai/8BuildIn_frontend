@@ -91,7 +91,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try { 
+    try {
       await updateEmployeeBy({
         employee: employeeData,
         employee_img: files
@@ -132,7 +132,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
         {loading ? (
           <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
             <CircularProgress />
-            < span className="mt-3" > กำลังโหลดข้อมูล...</span>
+            <span className="mt-3" > กำลังโหลดข้อมูล...</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -281,13 +281,17 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
               </Grid>
               <Grid item xs={12} sm={4} container justifyContent="center" alignItems="center">
                 <div className='flex justify-center flex-col items-center'>
-                  {selectedImage ? (
+                  {selectedImage || loading ? (
                     <div>
-                      <img
-                        src={selectedImage}
-                        alt="Selected"
-                        className="w-64 h-64 rounded-full object-cover"
-                      />
+                      {loading ? (
+                        <CircularProgress />
+                      ) : (
+                        <img
+                          src={selectedImage || `${API_URL}${employeeData.employee_img}` || "/default-emp.jpg"}
+                          alt="Selected"
+                          className="w-64 h-64 rounded-full object-cover"
+                        />
+                      )}
                     </div>
                   ) : (
                     <img

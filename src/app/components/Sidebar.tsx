@@ -8,6 +8,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { MenuOpen } from "@mui/icons-material/";
 import Menu from "./Menu";
 import Navbar from "./Navbar";
 
@@ -52,11 +53,12 @@ export default function Sidebar({ open, setOpen }: { open: boolean; setOpen: (va
                         <img
                             src="/logo.jpg"
                             alt="Logo"
+                            className="rounded-md"
                             style={{ width: "auto", height: "40px" }}
                         />
                     </Box>
                     <IconButton onClick={() => setOpen(!open)}>
-                        {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                        {theme.direction === "ltr" ? <MenuOpen /> : <ChevronRightIcon />}
                     </IconButton>
                 </DrawerHeader>
                 <Divider />

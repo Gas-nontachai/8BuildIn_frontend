@@ -62,7 +62,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
 
         {!open && (
           <Typography variant="h6" noWrap component="div">
-            <img src="/logo.jpg" alt="Logo" style={{ width: "auto", height: "40px" }} />
+            <img src="/logo.jpg" alt="Logo" className="rounded-md" style={{ width: "auto", height: "40px" }} />
           </Typography>
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>

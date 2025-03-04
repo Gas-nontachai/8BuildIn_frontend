@@ -9,16 +9,17 @@ import {
     FormControl,
     InputLabel,
     Select,
-    MenuItem,
+    Autocomplete,
     CircularProgress,
     Box,
     IconButton,
+    TextField
 } from "@mui/material";
 import axios from "axios";
 import { API_URL } from "@/utils/config"
 import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
-import {useProduct} from "@/hooks/hooks";
+import { useProduct } from "@/hooks/hooks";
 import { Product } from "@/misc/types"
 
 const SalesPage = () => {
@@ -31,7 +32,6 @@ const SalesPage = () => {
 
     useEffect(() => {
         fetchProducts();
-        fetData()
     }, [selectedCategory]);
 
     const fetchProducts = async () => {
@@ -49,11 +49,6 @@ const SalesPage = () => {
         }
         setLoading(false);
     };
-
-    const fetData = async () => {
-        const {docs: res} = await getProductBy()
-        console.log(res);
-    }
 
     const renderProductImages = (productImg: string | null) => {
         if (!productImg) {
@@ -133,21 +128,15 @@ const SalesPage = () => {
                 <Typography variant="h5" component="h1">
                     สินค้าทั้งหมด
                 </Typography>
-
                 <FormControl sx={{ minWidth: 200 }}>
-                    <InputLabel>ประเภทสินค้า</InputLabel>
-                    <Select
+                    <Autocomplete
                         value={selectedCategory}
-                        label="ประเภทสินค้า"
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                        <MenuItem value="">ทั้งหมด</MenuItem>
-                        {categories.map((productName) => (
-                            <MenuItem key={productName} value={productName}>
-                                {productName}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                        onChange={(event, newValue) => setSelectedCategory(newValue)}
+                        options={categories}
+                        renderInput={(params) => <TextField {...params} label="ประเภทสินค้า" size="small" />}
+                        isOptionEqualToValue={(option, value) => option === value}
+                        disableClearable
+                    />
                 </FormControl>
             </div>
 
