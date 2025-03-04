@@ -39,7 +39,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
         stock_in_id: "",
         product: "",
         material: "",
-        stock_in_price: "",
+        stock_in_price: 0,
         supplier_id: "",
         addby: "",
         adddate: ''
@@ -79,7 +79,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                 stock_in_id: "",
                 product: "",
                 material: "",
-                stock_in_price: "",
+                stock_in_price: 0,
                 supplier_id: "",
                 addby: "",
                 adddate: ''
@@ -202,7 +202,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                     fullWidth
                                     type="number"
                                     value={formData.stock_in_price}
-                                    onChange={(e) => setFormData({ ...formData, stock_in_price: e.target.value })}
+                                    onChange={(e) => setFormData({ ...formData, stock_in_price: Number(e.target.value) })}
                                 />
                             </Grid>
                             <Grid size={12}>

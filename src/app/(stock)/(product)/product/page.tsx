@@ -8,16 +8,20 @@ import { decimalFix } from "@/utils/number-helper"
 import ManageProductCategory from "@/app/components/ProductCategory/Manage";
 import AddProduct from "@/app/components/Product/Add";
 
-import useProduct from "@/hooks/useProduct";
-import { Product } from '@/misc/types';
-
+import { useProduct, useUnit, useProductCategory } from "@/hooks/hooks";
+import { Product, Unit, ProductCategory } from '@/misc/types';
+import { API_URL } from "@/utils/config"
 const ProductPage = () => {
-  const { getProductBy } = useProduct()
+  const { getProductBy, deleteProductBy } = useProduct()
+  const { getUnitBy } = useUnit()
+  const { getProductCategoryBy } = useProductCategory()
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [addProductDialog, setAddProductDialog] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [unit, setUnit] = useState<Unit[]>([]);
+  const [productCategory, setProductCategory] = useState<ProductCategory[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -26,8 +30,12 @@ const ProductPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { docs: res } = await getProductBy();
-      setProducts(res);
+      const { docs: res_prod } = await getProductBy();
+      setProducts(res_prod);
+      const { docs: res_unit } = await getUnitBy();
+      setUnit(res_unit);
+      const { docs: res_prod_cat } = await getProductCategoryBy();
+      setProductCategory(res_prod_cat);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -47,8 +55,24 @@ const ProductPage = () => {
 
     if (result.isConfirmed) {
       try {
-        Swal.fire("ลบแล้ว!", "ข้อมูลผู้จัดจำหน่ายถูกลบเรียบร้อยแล้ว", "success");
-        await fetchData();
+        Swal.fire({
+          title: 'กำลังลบข้อมูล...',
+          text: 'กรุณารอสักครู่',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        await deleteProductBy({ product_id: productId })
+        Swal.fire({
+          icon: 'success',
+          title: 'สำเร็จ!',
+          text: 'ข้อมูลถูกลบเรียบร้อยแล้ว',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000,
+        }); await fetchData();
       } catch (error) {
         console.error("Error deleting product:", error);
       }
@@ -94,12 +118,22 @@ const ProductPage = () => {
                 {products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((product, index) => (
                   <TableRow key={product.product_id} hover>
                     <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell align="center">{product.product_category_id}</TableCell>
+                    <TableCell align="center">{productCategory.find((s) => s.product_category_id === product.product_category_id)?.product_category_name || 'ไม่ทราบประเภท'}</TableCell>
                     <TableCell align="center">{product.product_id}</TableCell>
                     <TableCell align="center">{product.product_name}</TableCell>
-                    <TableCell align="center">{product.product_img}</TableCell>
-                    <TableCell align="center">{decimalFix(product.product_price)} ฿ / {product.unit_id || 'ชิ้น'}</TableCell>
-                    <TableCell align="center">{product.product_quantity} {product.unit_id || 'ชิ้น'} </TableCell>
+                    <TableCell align="center">
+                      {product.product_img &&
+                        product.product_img.split(",").map((img, index) => (
+                          <img
+                            key={index}
+                            src={`${API_URL}${img}`}
+                            alt={`Product ${index}`}
+                            style={{ width: "50px", height: "50px", margin: "5px" }}
+                          />
+                        ))}
+                    </TableCell>
+                    <TableCell align="center">{decimalFix(product.product_price)} ฿ / {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
+                    <TableCell align="center">{product.product_quantity} {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'} </TableCell>
                     <TableCell align="center">
                       <div className="flex justify-center gap-2">
                         <Button variant="text" color="error" startIcon={<Delete />} onClick={() => onDelete(product.product_id)} />
