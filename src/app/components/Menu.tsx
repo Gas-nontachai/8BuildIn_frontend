@@ -39,6 +39,7 @@ export default function SidebarMenu() {
         { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
         { text: "บทบาท", href: "/license", icon: <Security /> },
         { text: "พนักงาน", href: "/employee", icon: <Badge /> }
+        { text: "ฝายขาย", href: "/sales", icon: <PeopleIcon /> },
     ];
 
     const Customer = [

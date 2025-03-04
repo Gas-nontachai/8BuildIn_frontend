@@ -33,6 +33,7 @@ const deleteProductBy = (data: { product_id: string }): Promise<Product> => {
     return preSecureFetch.post(`${API_URL}${prefix}/deleteProductBy`, data);
 };
 
+
 export default function useProduct() {
     return {
         getProductBy,
@@ -40,5 +41,6 @@ export default function useProduct() {
         insertProduct,
         updateProductBy,
         deleteProductBy,
+
     };
 }
