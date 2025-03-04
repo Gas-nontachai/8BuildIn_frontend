@@ -17,7 +17,9 @@ import {
     Dashboard,
     Engineering,
     Inventory2,
-    AcUnit
+    AcUnit,
+    SupportAgent,
+    Badge
 } from "@mui/icons-material";
 
 
@@ -32,24 +34,24 @@ export default function SidebarMenu() {
     const [openProduct, setOpenProduct] = useState(false);
 
     const Employee = [
-        { text: "หน้าหลัก", href: "/dashboard-employee", icon: <HomeIcon /> },
+        { text: "หน้าหลัก", href: "/dashboard-employee", icon: <Dashboard /> },
         { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
-        { text: "พนักงาน", href: "/employee", icon: <PeopleIcon /> }
+        { text: "พนักงาน", href: "/employee", icon: <Badge /> }
     ];
 
     const Customer = [
-        { text: "หน้าหลัก", href: "/dash-cus", icon: <HomeIcon /> },
-        { text: "ลูกค้า", href: "/customer", icon: <PersonIcon /> }
+        { text: "หน้าหลัก", href: "/dash-cus", icon: <Dashboard /> },
+        { text: "ลูกค้า", href: "/customer", icon: <SupportAgent /> }
     ];
 
     const Account = [
-        { text: "หน้าหลัก", href: "/dash-acc", icon: <HomeIcon /> },
+        { text: "หน้าหลัก", href: "/dash-acc", icon: <Dashboard /> },
         { text: "ผู้จัดจำหน่าย", href: "/supplier", icon: <StoreIcon /> }
     ];
 
     const StockStore = [
 
-        { text: "หน้าหลัก", href: "/dashboard-stock", icon: <HomeIcon /> },
+        { text: "หน้าหลัก", href: "/dashboard-stock", icon: <Dashboard /> },
         { text: "บันทึกสินค้าเข้า", href: "/stock-in", icon: <Inventory2 /> },
         { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Engineering /> },
         { text: "จัดการหน่วยสินค้า", href: "/unit", icon: <AcUnit /> },
@@ -71,7 +73,7 @@ export default function SidebarMenu() {
 
     const Sale = [
         { text: "หน้าหลัก", href: "/", icon: <Dashboard /> },
-        { text: "จัดการฝ่ายขาย", href: "/", icon: <Inventory /> },
+        { text: "ฝ่ายขาย", href: "/", icon: <SupportAgent /> },
     ];
 
     return (
@@ -87,7 +89,7 @@ export default function SidebarMenu() {
             {/* Manage Emp */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenEmp(!openEmp)}>
-                    <ListItemText primary="พนักงาน" />
+                    <ListItemText primary="เมนูพนักงาน" />
                     <IconButton edge="end">
                         {openEmp ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
@@ -110,7 +112,7 @@ export default function SidebarMenu() {
             {/* Manage sale */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenSale(!openSale)}>
-                    <ListItemText primary="ฝ่ายขาย" />
+                    <ListItemText primary="เมนูฝ่ายขาย" />
                     <IconButton edge="end">
                         {openSale ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
@@ -133,7 +135,7 @@ export default function SidebarMenu() {
             {/* Manage Acc */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenAcc(!openAcc)}>
-                    <ListItemText primary="บัญชี" />
+                    <ListItemText primary="เมนูบัญชี" />
                     <IconButton edge="end">
                         {openAcc ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
@@ -156,7 +158,7 @@ export default function SidebarMenu() {
             {/* Manage Stock */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenStock(!openStock)}>
-                    <ListItemText primary="สต็อกสินค้า" />
+                    <ListItemText primary="เมนูสต็อกสินค้า" />
                     <IconButton edge="end">
                         {openStock ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
@@ -177,7 +179,7 @@ export default function SidebarMenu() {
                 {/* สินค้า */}
                 <ListItem disablePadding>
                     <ListItemButton onClick={() => setOpenProduct(!openProduct)} >
-                        <ListItemText primary="สินค้า" />
+                        <ListItemText primary="เมนูสินค้า" />
                         <IconButton edge="end">
                             {openProduct ? <ExpandLess /> : <ExpandMore />}
                         </IconButton>
@@ -199,7 +201,7 @@ export default function SidebarMenu() {
                 {/* วัสดุ */}
                 <ListItem disablePadding>
                     <ListItemButton onClick={() => setOpenMaterial(!openMaterial)} >
-                        <ListItemText primary="วัสดุ" />
+                        <ListItemText primary="เมนูวัสดุ" />
                         <IconButton edge="end">
                             {openMaterial ? <ExpandLess /> : <ExpandMore />}
                         </IconButton>
@@ -224,7 +226,7 @@ export default function SidebarMenu() {
             {/* Manage Customer */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenCus(!openCus)}>
-                    <ListItemText primary="ข้อมูลลูกค้า" />
+                    <ListItemText primary="เมนูลูกค้า" />
                     <IconButton edge="end">
                         {openCus ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
