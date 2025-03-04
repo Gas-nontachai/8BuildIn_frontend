@@ -7,12 +7,14 @@ import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
 import ManageProductCategory from "@/app/components/ProductCategory/Manage";
 import AddProduct from "@/app/components/Product/Add";
+import UpdateProduct from "@/app/components/Product/Update";
 
 import { useProduct, useUnit, useProductCategory } from "@/hooks/hooks";
 import { Product, Unit, ProductCategory } from '@/misc/types';
 import { API_URL } from "@/utils/config"
 
 const ProductPage = () => {
+  const [selectedProductId, setSelectedProductId] = useState('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { getProductBy, deleteProductBy } = useProduct()
@@ -22,6 +24,7 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [addProductDialog, setAddProductDialog] = useState(false);
+  const [updateProductDialog, setUpdateProductDialog] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [unit, setUnit] = useState<Unit[]>([]);
   const [productCategory, setProductCategory] = useState<ProductCategory[]>([]);
@@ -45,13 +48,15 @@ const ProductPage = () => {
     setLoading(false);
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: any, productId: string) => {
     setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
+    setSelectedProductId(productId);
   };
 
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedProductId('');
+  };
   const onDelete = async (productId: string) => {
     const result = await Swal.fire({
       title: "คุณแน่ใจหรือไม่?",
@@ -155,7 +160,7 @@ const ProductPage = () => {
                                 aria-controls={open ? 'demo-positioned-menu' : undefined}
                                 aria-haspopup="true"
                                 aria-expanded={open ? 'true' : undefined}
-                                onClick={handleClick}
+                                onClick={(event) => handleClick(event, product.product_id)}
                               />
                               <Menu
                                 id="demo-positioned-menu"
@@ -177,11 +182,14 @@ const ProductPage = () => {
                                   <span>View</span>
                                 </MenuItem>
                                 <MenuItem >
-                                  <Button variant="text" color="warning" startIcon={<Edit />} onClick={() => { }} />
+                                  <Button variant="text" color="warning" startIcon={<Edit />} onClick={() => setUpdateProductDialog(true)} />
                                   <span>Edit</span>
                                 </MenuItem>
                                 <MenuItem  >
-                                  <Button variant="text" color="error" startIcon={<Delete />} onClick={() => onDelete(product.product_id)} />
+                                  <Button variant="text" color="error" startIcon={<Delete />} onClick={() => {
+                                    onDelete(selectedProductId);
+                                  }}
+                                  />
                                   <span>Delete</span>
                                 </MenuItem>
                               </Menu>
@@ -211,6 +219,7 @@ const ProductPage = () => {
 
       <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
       <AddProduct open={addProductDialog} onRefresh={() => fetchData()} onClose={() => setAddProductDialog(false)} />
+      <UpdateProduct open={updateProductDialog} product_id={selectedProductId} onRefresh={() => fetchData()} onClose={() => setUpdateProductDialog(false)} />
     </>
   );
 };

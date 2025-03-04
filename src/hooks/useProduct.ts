@@ -25,8 +25,17 @@ const insertProduct = async (data: { product: Product, product_img?: File[] }): 
     return await formData.post(`${API_URL}${prefix}/insertProduct`, formDataInstance);
 };
 
-const updateProductBy = async (data: Product): Promise<Product> => {
-    return await preSecureFetch.post(`${API_URL}${prefix}/updateProductBy`, data);
+const updateProductBy = async (data: { product: Product, product_img?: File[] }): Promise<Product> => {
+    const formDataInstance = new FormData();
+    formDataInstance.append("product", JSON.stringify(data.product));
+
+    if (data.product_img && data.product_img.length > 0) {
+        data.product_img.forEach((file, index) => {
+            formDataInstance.append(`product_img_${index}`, file);
+        });
+    }
+
+    return await formData.post(`${API_URL}${prefix}/updateProductBy`, formDataInstance);
 };
 
 const deleteProductBy = (data: { product_id: string }): Promise<Product> => {

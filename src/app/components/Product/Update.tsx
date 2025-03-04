@@ -8,15 +8,13 @@ import {
     Button,
     TextField,
     IconButton,
-    FormControl,
-    Select,
-    MenuItem,
     FormLabel
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { Autocomplete } from '@mui/material';
 import Swal from 'sweetalert2';
 import { decimalFix } from "@/utils/number-helper"
+import { API_URL } from "@/utils/config"
 
 import { useProductCategory, useUnit, useMaterial, useProduct } from "@/hooks/hooks";
 
@@ -24,16 +22,16 @@ import { Product, Material } from '@/misc/types';
 const { getProductCategoryBy } = useProductCategory();
 const { getUnitBy } = useUnit();
 const { getMaterialBy } = useMaterial();
-const { insertProduct } = useProduct();
+const { getProductByID, updateProductBy } = useProduct();
 
-interface AddProductProps {
+interface UpdateProductProps {
     onClose: () => void;
     onRefresh: () => void;
     open: boolean;
+    product_id: string;
 }
 
-const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => {
-
+const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh, product_id }) => {
     const [product, setProduct] = useState<Product>({
         product_id: '',
         product_category_id: '',
@@ -51,12 +49,14 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
     const [material, setMaterial] = useState<{ material_id: string, material_quantity: number, material_price: number }[]>([]);
     const [selectedUnit, setSelectedUnit] = useState<{ title: string, value: string } | null>(null);
     const [files, setFiles] = useState<File[]>([]);
+    const [img, setImg] = useState<string[]>([]);
 
     useEffect(() => {
         if (open) {
             fetchCategory()
             fetchUnit()
             fetchMaterial()
+            fetchProduct()
         }
     }, [open])
 
@@ -69,6 +69,18 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
         };
         calculate_price();
     }, [material]);
+
+    const fetchProduct = async () => {
+        const res = await getProductByID({ product_id: product_id });
+        if (res.material) {
+            setMaterial(JSON.parse(res.material));
+        }
+        if (res.product_img) {
+            const newFiles = res.product_img.split(',');
+            setImg(newFiles);
+        }
+        setProduct(res);
+    };
 
     const fetchCategory = async () => {
         const { docs: res } = await getProductCategoryBy()
@@ -160,7 +172,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                     Swal.showLoading();
                 },
             });
-            await insertProduct({
+            await updateProductBy({
                 product: data,
                 product_img: files,
             });
@@ -312,6 +324,19 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                                 </Grid>
                             </Grid>
                         ))}
+                        <Grid container spacing={2}>
+                            {img.map((img, index) => (
+                                <Grid size={12} key={index}>
+                                    <div>
+                                        <img
+                                            src={`${API_URL}${img}`}
+                                            alt={`img(${index})`}
+                                            style={{ width: '100%', height: 'auto' }}
+                                        />
+                                    </div>
+                                </Grid>
+                            ))}
+                        </Grid>
                         <Grid size={12}>
                             <div className="grid grid-cols-12">
                                 <div className="flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
@@ -358,4 +383,4 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
     );
 };
 
-export default AddProduct;
+export default UpdateProduct;
