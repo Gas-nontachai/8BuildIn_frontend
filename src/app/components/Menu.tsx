@@ -26,6 +26,7 @@ export default function SidebarMenu() {
     const [openStock, setOpenStock] = useState(false);
     const [openEmp, setOpenEmp] = useState(false);
     const [openAcc, setOpenAcc] = useState(false);
+    const [openSale, setOpenSale] = useState(false);
 
     const [openMaterial, setOpenMaterial] = useState(false);
     const [openProduct, setOpenProduct] = useState(false);
@@ -65,8 +66,14 @@ export default function SidebarMenu() {
 
     const Material = [
         { text: "แดชบอร์ด", href: "/dashboard-material", icon: <Dashboard /> },
-        { text: "วัสดุ", href: "/material", icon: <Store /> },
+        { text: "จัดการวัสดุ", href: "/material", icon: <Store /> },
     ];
+
+    const Sale = [
+        { text: "หน้าหลัก", href: "/", icon: <Dashboard /> },
+        { text: "จัดการฝ่ายขาย", href: "/", icon: <Inventory /> },
+    ];
+
     return (
         <List>
             {MenuList.map((item) => (
@@ -87,7 +94,30 @@ export default function SidebarMenu() {
                 </ListItemButton>
             </ListItem>
             <Collapse in={openEmp} timeout="auto" unmountOnExit>
-                {Employee.map((item) => (
+                {Sale.map((item) => (
+                    <ListItem key={item.text} disablePadding>
+                        <Link href={item.href} passHref legacyBehavior>
+                            <ListItemButton component="a">
+                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItemButton>
+                        </Link>
+                    </ListItem>
+                ))}
+                <Divider />
+            </Collapse>
+
+            {/* Manage sale */}
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => setOpenSale(!openSale)}>
+                    <ListItemText primary="ฝ่ายขาย" />
+                    <IconButton edge="end">
+                        {openSale ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                </ListItemButton>
+            </ListItem>
+            <Collapse in={openSale} timeout="auto" unmountOnExit>
+                {Sale.map((item) => (
                     <ListItem key={item.text} disablePadding>
                         <Link href={item.href} passHref legacyBehavior>
                             <ListItemButton component="a">
