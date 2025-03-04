@@ -94,7 +94,7 @@ export default function SidebarMenu() {
                 </ListItemButton>
             </ListItem>
             <Collapse in={openEmp} timeout="auto" unmountOnExit>
-                {Sale.map((item) => (
+                {Employee.map((item) => (
                     <ListItem key={item.text} disablePadding>
                         <Link href={item.href} passHref legacyBehavior>
                             <ListItemButton component="a">
