@@ -83,7 +83,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]
+      const file = event.target.files[0];
       setSelectedImage(URL.createObjectURL(file));
       setFiles([file]);
     }
@@ -94,7 +94,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
     try {
       await updateEmployeeBy({
         employee: employeeData,
-        employee_img: files
+        employee_img: files.length > 0 ? files : undefined
       })
       setEmployeeData(initialState)
       Swal.fire({
