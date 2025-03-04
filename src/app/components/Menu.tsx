@@ -38,7 +38,7 @@ export default function SidebarMenu() {
         { text: "หน้าหลัก", href: "/dashboard-employee", icon: <Dashboard /> },
         { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
         { text: "บทบาท", href: "/license", icon: <Security /> },
-        { text: "พนักงาน", href: "/employee", icon: <Badge /> }
+        { text: "พนักงาน", href: "/employee", icon: <Badge /> },
         { text: "ฝายขาย", href: "/sales", icon: <PeopleIcon /> },
     ];
 
