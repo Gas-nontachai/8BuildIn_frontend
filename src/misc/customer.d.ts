@@ -12,4 +12,4 @@ export type Customer = {
     adddate: Date | string;
     updateby: string;
     lastupdate: Date | string;
-}
+};
