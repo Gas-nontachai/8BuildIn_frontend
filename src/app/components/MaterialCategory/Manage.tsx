@@ -111,15 +111,29 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
     };
 
     const onDelete = async (m_id: string) => {
-        try {
-            setLoading(true);
-            await deleteMaterialCategoryBy({ material_category_id: m_id });
-            await fetchData();
-        } catch (error) {
-            // Handle error
+        const result = await Swal.fire({
+            title: "ยืนยันการลบ?",
+            text: "คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "ใช่, ลบเลย!",
+            cancelButtonText: "ยกเลิก",
+        });
+        if (result.isConfirmed) {
+            try {
+                setLoading(true);
+                await deleteMaterialCategoryBy({ material_category_id: m_id });
+                await fetchData();
+                Swal.fire("ลบสำเร็จ!", "หมวดหมู่ถูกลบเรียบร้อยแล้ว", "success");
+            } catch (error) {
+                Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถลบหมวดหมู่ได้", "error");
+            }
+            setLoading(false);
         }
-        setLoading(false);
     };
+
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -141,7 +155,7 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
                             value={materialCategory.material_category_name}
                             onChange={handleChange}
                             required
-                            error={!!error} // Show error if any
+                            error={!!error}
                         />
                         {error && <FormHelperText error>{error}</FormHelperText>}
                     </Grid>
@@ -175,12 +189,13 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
                             ) : (
                                 data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data, index) => (
                                     <TableRow key={data.material_category_id} hover>
-                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                         <TableCell>{data.material_category_name}</TableCell>
                                         <TableCell>
                                             <div className="flex justify-center gap-2">
                                                 <Button
                                                     variant="contained"
+                                                    size="small"
                                                     color="error"
                                                     startIcon={<Delete />}
                                                     onClick={() => onDelete(data.material_category_id)}

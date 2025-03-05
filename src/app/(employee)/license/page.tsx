@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Swal from 'sweetalert2'; 
-import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
-import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Menu, MenuItem } from "@mui/material";
+import Swal from 'sweetalert2';
+import { ModeEdit, Delete, Add, MoreVert, Badge, PeopleOutlined } from "@mui/icons-material";
+import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Menu, MenuItem, Typography, Stack, Link } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddLicense from "@/app/components/License/Add";
 import UpdateLicense from "@/app/components/License/Update";
+import Loading from "@/app/components/Loading";
 
 import { useLicense } from "@/hooks/hooks";
 import { License } from '@/misc/types';
@@ -67,19 +68,27 @@ const LicensePage = () => {
 
   return (
     <>
-      <div className="flex justify-between mb-4">
-        <span className="text-xl font-[400]" >บทบาททั้งหมด</span>
-        < div className="flex gap-2" >
+      <div className="flex justify-between items-center mb-4">
+        <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+          <Link underline="hover" href="/employee">
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+              <Badge fontSize="small" />
+              <Typography variant="body1" color="primary">พนักงาน</Typography>
+            </Stack>
+          </Link>
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <PeopleOutlined fontSize="small" sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.secondary">บทบาท</Typography>
+          </Stack>
+        </Breadcrumbs>
+        <div className="flex gap-2" >
           <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มบทบาท
           </Button>
         </div>
       </div>
       {loading ? (
-        <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
-          <CircularProgress />
-          < span className="mt-3" > กำลังโหลดข้อมูล...</span>
-        </div>
+        <Loading />
       ) : (
         <Paper className="shadow-md" >
           <TableContainer style={{ minHeight: "24rem" }}>
@@ -95,7 +104,7 @@ const LicensePage = () => {
                 {
                   licenses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                     <TableRow key={item.license_id} hover >
-                      <TableCell>{index + 1} </TableCell>
+                      <TableCell>{page * rowsPerPage + index + 1} </TableCell>
                       <TableCell>{item.license_name}</TableCell>
                       <TableCell>
                         <IconButton
@@ -139,7 +148,6 @@ const LicensePage = () => {
           />
         </Paper>
       )}
-
       <AddLicense open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
       <UpdateLicense open={isUpdateDialogOpen} license_id={license_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
     </>

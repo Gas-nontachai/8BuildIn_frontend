@@ -1,13 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Delete, Add, Edit, Visibility, MoreVert } from "@mui/icons-material";
 import Swal from 'sweetalert2';
-import { Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Checkbox } from "@mui/material";
+import { MoreVert, Inventory, Delete, Add, Home, Edit, Visibility } from "@mui/icons-material";
+import {
+  MenuItem, Menu, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
+} from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
 import ManageProductCategory from "@/app/components/ProductCategory/Manage";
 import AddProduct from "@/app/components/Product/Add";
 import UpdateProduct from "@/app/components/Product/Update";
+
+import Loading from "@/app/components/Loading";
 
 import { useProduct, useUnit, useProductCategory } from "@/hooks/hooks";
 import { Product, Unit, ProductCategory } from '@/misc/types';
@@ -96,8 +101,19 @@ const ProductPage = () => {
 
   return (
     <>
-      <div className="flex justify-between  mb-4">
-        <span className="text-xl font-[400]">จัดการข้อมูลสินค้า</span>
+      <div className="flex justify-between items-center mb-4">
+        <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+          <Link underline="hover" href="/">
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+              <Home fontSize="small" />
+              <Typography variant="body1" color="primary">หน้าหลัก</Typography>
+            </Stack>
+          </Link>
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <Inventory fontSize="small" />
+            <Typography variant="body1" color="text.secondary">ข้อมูลสินค้า</Typography>
+          </Stack>
+        </Breadcrumbs>
         <div className="flex gap-2">
           <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทสินค้า
@@ -105,14 +121,14 @@ const ProductPage = () => {
           <Button variant="contained" color="primary" onClick={() => setAddProductDialog(true)} startIcon={<Add />}>
             เพิ่มสินค้า
           </Button>
+          <Button href="/unit" variant="contained" color="primary">
+            จัดการหน่วยสินค้า
+          </Button>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex justify-center flex-col items-center py-4 text-[15px]">
-          <CircularProgress />
-          <span className="mt-3">กำลังโหลดข้อมูล...</span>
-        </div>
+        <Loading />
       ) : (
         <Paper className="shadow-md">
           <TableContainer style={{ minHeight: "24rem" }}>
@@ -132,7 +148,7 @@ const ProductPage = () => {
               <TableBody>
                 {products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((product, index) => (
                   <TableRow key={product.product_id} hover>
-                    <TableCell align="center">{index + 1}</TableCell>
+                    <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell align="center">{productCategory.find((s) => s.product_category_id === product.product_category_id)?.product_category_name || 'ไม่ทราบประเภท'}</TableCell>
                     <TableCell align="center">{product.product_id}</TableCell>
                     <TableCell align="center">{product.product_name}</TableCell>

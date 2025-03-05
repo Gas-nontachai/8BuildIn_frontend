@@ -24,6 +24,8 @@ import {
     ManageAccounts,
     Shield
 } from "@mui/icons-material";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 
 
 export default function SidebarMenu() {
@@ -37,27 +39,20 @@ export default function SidebarMenu() {
     const [openProduct, setOpenProduct] = useState(false);
 
     const Employee = [
-        { text: "หน้าหลัก", href: "/dashboard-employee", icon: <Dashboard /> }, 
-        { text: "บทบาท", href: "/license", icon: <Shield /> },
         { text: "พนักงาน", href: "/employee", icon: <Badge /> },
     ];
 
     const Customer = [
-        { text: "หน้าหลัก", href: "/dash-cus", icon: <Dashboard /> },
         { text: "ลูกค้า", href: "/customer", icon: <ManageAccounts /> }
     ];
 
     const Account = [
-        { text: "หน้าหลัก", href: "/dash-acc", icon: <Dashboard /> },
         { text: "ผู้จัดจำหน่าย", href: "/supplier", icon: <StoreIcon /> }
     ];
 
     const StockStore = [
-        { text: "หน้าหลัก", href: "/dashboard-stock", icon: <Dashboard /> },
-        { text: "บันทึกสินค้าเข้า", href: "/stock-in", icon: <Inventory2 /> },
-        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Engineering /> },
-        { text: "จัดการหน่วยสินค้า", href: "/unit", icon: <Storage /> }
-
+        { text: "บันทึกสต็อกเข้า", href: "/stock-in", icon: <Inventory2OutlinedIcon /> },
+        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <ShoppingCartOutlinedIcon /> }
     ];
 
     const MenuList = [
@@ -65,17 +60,14 @@ export default function SidebarMenu() {
     ];
 
     const Product = [
-        { text: "แดชบอร์ด", href: "/dashboard-product", icon: <Dashboard /> },
-        { text: "สินค้า", href: "/product", icon: <Inventory /> },
+        { text: "ข้อมูลสินค้า", href: "/product", icon: <Inventory /> },
     ];
 
     const Material = [
-        { text: "แดชบอร์ด", href: "/dashboard-material", icon: <Dashboard /> },
-        { text: "จัดการวัสดุ", href: "/material", icon: <Store /> },
+        { text: "ข้อมูลวัสดุ", href: "/material", icon: <Store /> },
     ];
 
     const Sale = [
-        { text: "หน้าหลัก", href: "/", icon: <Dashboard /> },
         { text: "ฝ่ายขาย", href: "/sales", icon: <SupportAgent /> },
     ];
 

@@ -1,12 +1,17 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
-import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Menu, MenuItem, IconButton } from "@mui/material";
+import { MoreVert, Inventory, Delete, Add, Home, ModeEdit, Storage } from "@mui/icons-material";
+import {
+    MenuItem, Menu, Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, IconButton
+} from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
+import Swal from 'sweetalert2';
+
 
 import AddUnit from "@/app/components/Unit/Add";
 import UpdateUnit from "@/app/components/Unit/Update";
+import Loading from "@/app/components/Loading";
 
 import useUnit from "@/hooks/useUnit";
 import { Unit } from '@/misc/types';
@@ -71,19 +76,26 @@ const UnitPage = () => {
 
     return (
         <>
-            <div className="flex justify-between mb-4" >
-                <span className="text-xl font-[400]" >ข้อมูลสต็อกเข้า</span>
+            <div className="flex justify-between items-center mb-4" >
+                <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+                    <Link underline="hover" href="/product">
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                            <Inventory fontSize="small" />
+                            <Typography variant="body1" color="primary">ข้อมูลสินค้า</Typography>
+                        </Stack>
+                    </Link>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                        <Storage fontSize="small" />
+                        <Typography variant="body1" color="text.secondary">หน่วยสินค้า</Typography>
+                    </Stack>
+                </Breadcrumbs>
                 <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
                     เพิ่มสต็อกเข้า
                 </Button>
             </div>
-
             {
                 loading ? (
-                    <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
-                        <CircularProgress />
-                        < span className="mt-3" > กำลังโหลดข้อมูล...</span>
-                    </div>
+                    <Loading />
                 ) : (
                     <Paper className="shadow-md" >
                         <TableContainer style={{ minHeight: "24rem" }}>
@@ -93,13 +105,13 @@ const UnitPage = () => {
                                         <TableCell># </TableCell>
                                         < TableCell > หน่วย (th) </TableCell>
                                         < TableCell > หน่วย (en) </TableCell>
-                                        < TableCell align="center" > จัดการ </TableCell>
+                                        < TableCell> จัดการ </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {unit.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((unit, index) => (
                                         <TableRow key={unit.unit_id} hover >
-                                            <TableCell>{index + 1} </TableCell>
+                                            <TableCell>{page * rowsPerPage + index + 1} </TableCell>
                                             < TableCell >{unit.unit_name_th}</TableCell>
                                             < TableCell >{unit.unit_name_en}</TableCell>
                                             < TableCell >
@@ -145,10 +157,8 @@ const UnitPage = () => {
                         />
                     </Paper>
                 )}
-
             <AddUnit open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
             <UpdateUnit open={isUpdateDialogOpen} unit_id={unit_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
-
         </>
     );
 };

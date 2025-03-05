@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete, Add } from "@mui/icons-material";
 import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { ModeEdit, Delete, Add, Inventory2, Home } from "@mui/icons-material";
+import {
+    Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, TextField, InputAdornment, Typography, Stack, Link,
+} from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddStockin from "@/app/components/StockIn/Add";
 import UpdateStockin from "@/app/components/StockIn/Update";
+import Loading from "@/app/components/Loading";
 
 import useStockIn from "@/hooks/useStockIn";
 import useSupplier from "@/hooks/useSupplier";
@@ -54,7 +58,6 @@ const StockInPage = () => {
             cancelButtonText: "ยกเลิก",
             reverseButtons: true,
         });
-
         if (result.isConfirmed) {
             try {
                 await deleteStockInBy({ stock_in_id: stock_in_id })
@@ -65,22 +68,28 @@ const StockInPage = () => {
             }
         }
     };
-
     return (
         <>
-            <div className="flex justify-between mb-4" >
-                <span className="text-xl font-[400]" >ข้อมูลสต็อกเข้า</span>
+            <div className="flex justify-between items-center mb-4" >
+                <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+                    <Link underline="hover" href="/">
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                            <Home fontSize="small" />
+                            <Typography variant="body1" color="primary">หน้าหลัก</Typography>
+                        </Stack>
+                    </Link>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                        <Inventory2 fontSize="small" sx={{ color: 'text.secondary' }} />
+                        <Typography variant="body1" color="text.secondary">ข้อมูลสต็อกเข้า</Typography>
+                    </Stack>
+                </Breadcrumbs>
                 <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
                     เพิ่มสต็อกเข้า
                 </Button>
             </div>
-
             {
                 loading ? (
-                    <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
-                        <CircularProgress />
-                        < span className="mt-3" > กำลังโหลดข้อมูล...</span>
-                    </div>
+                    <Loading />
                 ) : (
                     <Paper className="shadow-md" >
                         <TableContainer style={{ minHeight: "24rem" }}>
@@ -97,7 +106,7 @@ const StockInPage = () => {
                                 <TableBody>
                                     {stockIn.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((stock, index) => (
                                         <TableRow key={stock.stock_in_id} hover >
-                                            <TableCell>{index + 1} </TableCell>
+                                            <TableCell>{page * rowsPerPage + index + 1} </TableCell>
                                             <TableCell>{stock.stock_in_id} </TableCell>
                                             <TableCell>
                                                 {

@@ -146,7 +146,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
                                 ) : (
                                     data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data, index) => (
                                         <TableRow key={data.product_category_id} hover>
-                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                             <TableCell>{data.product_category_name}</TableCell>
                                             <TableCell>
                                                 <div className="flex justify-center gap-2">

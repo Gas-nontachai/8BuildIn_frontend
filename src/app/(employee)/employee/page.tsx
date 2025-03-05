@@ -2,8 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { API_URL } from '@/utils/config';
-import { MoreVert, ModeEdit, Delete, Add, Search } from "@mui/icons-material";
-import { MenuItem, Menu, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, TextField, InputAdornment } from "@mui/material";
+import { MoreVert, ModeEdit, Delete, Add, Search, Home, Badge } from "@mui/icons-material";
+import {
+  MenuItem, Menu, IconButton, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, TextField, InputAdornment, Typography, Stack, Link,
+} from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddEmployee from "@/app/components/Employee/Add";
@@ -87,8 +90,19 @@ const EmployeePage = () => {
 
   return (
     <>
-      <div className="flex justify-start mb-2">
-        <span className="text-xl font-[400]" >พนักงานทั้งหมด</span>
+      <div className="flex justify-start">
+        <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+          <Link underline="hover" href="/">
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+              <Home fontSize="small" />
+              <Typography variant="body1" color="primary">หน้าหลัก</Typography>
+            </Stack>
+          </Link>
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <Badge fontSize="small" sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.secondary">พนักงงาน</Typography>
+          </Stack>
+        </Breadcrumbs>
       </div>
       <div className="flex justify-between mb-3">
         <TextField
@@ -111,10 +125,15 @@ const EmployeePage = () => {
             ),
           }}
         />
-        <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
-          เพิ่มพนักงาน
-        </Button>
-      </div>
+        <div className="flex gap-2">
+          <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
+            เพิ่มพนักงาน
+          </Button>
+          <Button variant="contained" color="primary" href="/license">
+            จัดการบทบาท
+          </Button>
+        </div>
+      </div >
       {
         loading ? (
           <Loading />
@@ -130,14 +149,14 @@ const EmployeePage = () => {
                     < TableCell >บทบาท</TableCell>
                     < TableCell >เบอร์โทรศัพท์</TableCell>
                     < TableCell >ที่อยู่</TableCell>
-                    < TableCell align="center" > จัดการ </TableCell>
+                    < TableCell> จัดการ </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {
                     employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                       <TableRow key={item.employee_id} hover >
-                        <TableCell>{index + 1} </TableCell>
+                        <TableCell>{page * rowsPerPage + index + 1} </TableCell>
                         <TableCell>
                           <img
                             className="w-8 h-8 rounded-full "

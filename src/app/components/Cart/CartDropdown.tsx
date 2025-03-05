@@ -52,8 +52,7 @@ export default function CartDropdown() {
                     </span>
                 )}
                 <ShoppingBag className="text-white text-2xl" />
-            </button>
-
+            </button> 
             <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}

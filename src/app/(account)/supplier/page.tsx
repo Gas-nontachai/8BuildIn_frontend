@@ -1,13 +1,17 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
 import { API_URL } from '@/utils/config';
 import Swal from 'sweetalert2';
-import { Menu, MenuItem, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { MoreVert, ModeEdit, Delete, Add, Home, Store } from "@mui/icons-material";
+import {
+  MenuItem, Menu, IconButton, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link,
+} from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddSupplier from "@/app/components/Supplier/Add";
 import UpdateSupplier from "@/app/components/Supplier/Update";
+import Loading from "@/app/components/Loading";
 
 import useSupplier from "@/hooks/useSupplier";
 import { Supplier } from '@/misc/types';
@@ -71,20 +75,27 @@ const SupplierPage = () => {
   return (
     <>
       <div className="flex justify-between mb-4">
-        <span className="text-xl font-[400]" >ข้อมูลผู้จัดจำหน่าย </span>
+        <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+          <Link underline="hover" href="/">
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+              <Home fontSize="small" />
+              <Typography variant="body1" color="primary">หน้าหลัก</Typography>
+            </Stack>
+          </Link>
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <Store fontSize="small" sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.secondary">ข้อมูลผู้จัดจำหน่าย</Typography>
+          </Stack>
+        </Breadcrumbs>
         < div className="flex gap-2" >
           <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มผู้จัดจำหน่าย
           </Button>
         </div>
       </div>
-
       {
         loading ? (
-          <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
-            <CircularProgress />
-            < span className="mt-3" > กำลังโหลดข้อมูล...</span>
-          </div>
+          <Loading />
         ) : (
           <Paper className="shadow-md" >
             <TableContainer style={{ minHeight: "24rem" }}>
@@ -101,7 +112,7 @@ const SupplierPage = () => {
                 <TableBody>
                   {(suppliers || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((supplier, index) => (
                     <TableRow key={supplier.supplier_id} hover>
-                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell><img src={`${API_URL}${supplier.supplier_img}`} className="w-16 h-16 object-cover" alt="" /></TableCell>
                       <TableCell>{supplier.supplier_name}</TableCell>
                       <TableCell>

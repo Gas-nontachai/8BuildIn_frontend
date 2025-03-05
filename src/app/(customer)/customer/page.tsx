@@ -1,13 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
-import { API_URL } from '@/utils/config';
-import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, MenuItem, Menu, IconButton } from "@mui/material";
+import { MoreVert, ModeEdit, Delete, Add, Home, ManageAccounts } from "@mui/icons-material";
+import {
+  MenuItem, Menu, IconButton, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link,
+} from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddCustomer from "@/app/components/Customer/Add";
 import UpdateCustomer from "@/app/components/Customer/Update";
+import Loading from "@/app/components/Loading";
 
 import { useCustomer } from "@/hooks/hooks";
 import { Customer } from '@/misc/types';
@@ -68,9 +71,20 @@ const CustomerPage = () => {
 
   return (
     <>
-      <div className="flex justify-between mb-4">
-        <span className="text-xl font-[400]" >ลูกค้าทั้งหมด</span>
-        < div className="flex gap-2" >
+      <div className="flex justify-between items-center mb-4">
+        <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+          <Link underline="hover" href="/">
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+              <Home fontSize="small" />
+              <Typography variant="body1" color="primary">หน้าหลัก</Typography>
+            </Stack>
+          </Link>
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <ManageAccounts fontSize="small" sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.secondary">ข้อมูลลูกค้า</Typography>
+          </Stack>
+        </Breadcrumbs>
+        <div className="flex gap-2" >
           <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มลูกค้า
           </Button>
@@ -79,10 +93,7 @@ const CustomerPage = () => {
 
       {
         loading ? (
-          <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
-            <CircularProgress />
-            < span className="mt-3" > กำลังโหลดข้อมูล...</span>
-          </div>
+          <Loading />
         ) : (
           <Paper className="shadow-md" >
             <TableContainer style={{ minHeight: "24rem" }}>

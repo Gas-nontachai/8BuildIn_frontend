@@ -178,7 +178,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={3}>
                         <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             fullWidth
