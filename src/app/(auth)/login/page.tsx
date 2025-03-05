@@ -18,18 +18,19 @@ const Login = () => {
     const router = useRouter();
 
     const [formdata, setFormData] = useState<Employee>({
-        employee_id: '',
-        employee_username: '',
-        employee_password: '',
-        employee_prefix: '',
-        employee_firstname: '',
-        employee_lastname: '',
-        employee_email: '',
-        employee_phone: '',
-        employee_birthday: '',
-        employee_gender: '',
-        employee_address: '',
-        license_id: '',
+        employee_id: "",
+        employee_username: "",
+        employee_password: "",
+        employee_prefix: "",
+        employee_firstname: "",
+        employee_lastname: "",
+        employee_email: "",
+        employee_phone: "",
+        employee_birthday: "",
+        employee_gender: "",
+        employee_address: "",
+        employee_img: "",
+        license_id: "",
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +57,9 @@ const Login = () => {
                 employee_username: formdata.employee_username,
                 employee_password: formdata.employee_password,
             });
-            setTokens(res.data.access_token, res.data.refresh_token);
+            console.log(res);
+
+            setTokens(res.access_token, res.refresh_token);
             await Swal.fire({
                 icon: 'success',
                 title: 'เข้าสู่ระบบสำเร็จ',

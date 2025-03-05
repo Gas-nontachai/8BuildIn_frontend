@@ -1,12 +1,15 @@
-import React, { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext } from 'react';
 
 interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   setTokens: (accessToken: string, refreshToken: string) => void;
+  logout: () => void;
+  getAccessToken: () => string | null;
+  getRefreshToken: () => string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = () => {
   const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('access_token'));
@@ -31,7 +34,22 @@ export const AuthProvider = () => {
     window.location.href = '/login';
   };
 
-  return { accessToken, refreshToken, setTokens, logout };
+  return {
+    accessToken,
+    refreshToken,
+    setTokens,
+    logout,
+    getAccessToken: () => accessToken,
+    getRefreshToken: () => refreshToken
+  };
+};
+
+export const getAccessToken = () => {
+  return localStorage.getItem('access_token');
+};
+
+export const getRefreshToken = () => {
+  return localStorage.getItem('refresh_token');
 };
 
 export const useAuth = (): AuthContextType => {

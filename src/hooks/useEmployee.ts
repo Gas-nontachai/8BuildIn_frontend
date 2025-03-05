@@ -1,15 +1,15 @@
 import { API_URL } from '@/utils/config';
-import { preSecureFetch, formData } from '@/utils/fetch';
+import { SecureFetch, formData } from '@/utils/fetch';
 import { Employee } from '@/misc/types'
 
 const prefix = 'employee';
 
 const getEmployeeBy = (data: any = {}): Promise<{ docs: Employee[], totalDocs: number }> => {
-    return preSecureFetch.post(`${API_URL}${prefix}/getEmployeeBy`, data);
+    return SecureFetch.post(`${API_URL}${prefix}/getEmployeeBy`, data);
 };
 
 const getEmployeeByID = (data: { employee_id: string }): Promise<Employee> => {
-    return preSecureFetch.post(`${API_URL}${prefix}/getEmployeeByID`, data);
+    return SecureFetch.post(`${API_URL}${prefix}/getEmployeeByID`, data);
 };
 
 const insertEmployee = async (data: { employee: Employee, employee_img?: File[] }): Promise<Employee> => {
@@ -36,7 +36,7 @@ const updateEmployeeBy = async (data: { employee: Employee, employee_img?: File[
 };
 
 const deleteEmployeeBy = (data: { employee_id: string }): Promise<Employee> => {
-    return preSecureFetch.post(`${API_URL}${prefix}/deleteEmployeeBy`, data);
+    return SecureFetch.post(`${API_URL}${prefix}/deleteEmployeeBy`, data);
 };
 
 export default function useEmployee() {

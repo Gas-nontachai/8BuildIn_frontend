@@ -1,15 +1,15 @@
 import { API_URL } from '@/utils/config';
-import { preSecureFetch, formData } from '@/utils/fetch';
+import { SecureFetch, formData } from '@/utils/fetch';
 import { Product } from '@/misc/types'
 
 const prefix = 'product';
 
 const getProductBy = (data: any = {}): Promise<{ docs: Product[], totalDocs: number }> => {
-    return preSecureFetch.post(`${API_URL}${prefix}/getProductBy`, data);
+    return SecureFetch.post(`${API_URL}${prefix}/getProductBy`, data);
 };
 
 const getProductByID = (data: { product_id: string }): Promise<Product> => {
-    return preSecureFetch.post(`${API_URL}${prefix}/getProductByID`, data);
+    return SecureFetch.post(`${API_URL}${prefix}/getProductByID`, data);
 };
 
 const insertProduct = async (data: { product: Product, product_img?: File[] }): Promise<Product> => {
@@ -39,7 +39,7 @@ const updateProductBy = async (data: { product: Product, product_img?: File[] })
 };
 
 const deleteProductBy = (data: { product_id: string }): Promise<Product> => {
-    return preSecureFetch.post(`${API_URL}${prefix}/deleteProductBy`, data);
+    return SecureFetch.post(`${API_URL}${prefix}/deleteProductBy`, data);
 };
 
 
