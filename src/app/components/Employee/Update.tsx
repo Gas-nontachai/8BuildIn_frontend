@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { API_URL } from '@/utils/config';
 
-import { Employee } from "@/misc/types";
-import { useEmployee } from "@/hooks/hooks"
+import { Employee, License } from "@/misc/types";
+import { useEmployee, useLicense } from "@/hooks/hooks"
 
 const { getEmployeeByID, updateEmployeeBy } = useEmployee()
+const { getLicenseBy } = useLicense()
 
 import { Close, UploadFile, VisibilityOff, Visibility } from "@mui/icons-material";
 import {
@@ -23,21 +24,6 @@ interface Props {
 }
 
 const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id }) => {
-  const [loading, setLoading] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-
-  const prefix_name = [
-    { prefix: "นาย" },
-    { prefix: "นาง" },
-    { prefix: "นางสาว" }
-  ]
-  const gender = [
-    { prefix: "ชาย" },
-    { prefix: "หญิง" },
-    { prefix: "อื่นๆ" }
-  ]
   const initialState: Employee = {
     employee_id: '',
     employee_username: '',
@@ -58,6 +44,22 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
     lastupdate: '',
   };
 
+  const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [license, setLicense] = useState<License[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const prefix_name = [
+    { prefix: "นาย" },
+    { prefix: "นาง" },
+    { prefix: "นางสาว" }
+  ]
+  const gender = [
+    { prefix: "ชาย" },
+    { prefix: "หญิง" },
+    { prefix: "อื่นๆ" }
+  ]
+
   useEffect(() => {
     if (open) {
       fetchData()
@@ -68,6 +70,8 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
     try {
       setLoading(true)
       const res = await getEmployeeByID({ employee_id: employee_id })
+      const { docs: license_arr } = await getLicenseBy()
+      setLicense(license_arr)
       setEmployeeData(res)
     } catch (error) {
       console.error(error);
@@ -83,7 +87,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]
+      const file = event.target.files[0];
       setSelectedImage(URL.createObjectURL(file));
       setFiles([file]);
     }
@@ -91,12 +95,13 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try { 
+    try {
       await updateEmployeeBy({
         employee: employeeData,
-        employee_img: files
+        employee_img: files.length > 0 ? files : undefined
       })
       setEmployeeData(initialState)
+      setSelectedImage(null)
       Swal.fire({
         title: "สำเร็จ!",
         text: "เพิ่มพนักงานเรียบร้อยแล้ว",
@@ -132,14 +137,14 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
         {loading ? (
           <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
             <CircularProgress />
-            < span className="mt-3" > กำลังโหลดข้อมูล...</span>
+            <span className="mt-3" > กำลังโหลดข้อมูล...</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={8}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={2}>
                     <FormControl fullWidth margin="normal">
                       <Select
                         name="employee_gender"
@@ -157,7 +162,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={2}>
                     <FormControl fullWidth margin="normal">
                       <Select
                         name="employee_prefix"
@@ -175,7 +180,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={4}>
                     <TextField
                       label="ชื่อ"
                       size="small"
@@ -186,7 +191,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
                       margin="normal"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={4}>
                     <TextField
                       label="นามสกุล"
                       size="small"
@@ -241,6 +246,25 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
                       }}
                     />
                   </Grid>
+
+                  <Grid item xs={12} sm={4}>
+                    <FormControl fullWidth margin="normal">
+                      <Select
+                        name="license_id"
+                        size="small"
+                        value={employeeData.license_id}
+                        onChange={handleChange}
+                        displayEmpty
+                      >
+                        <MenuItem value="" disabled>บทบาท</MenuItem>
+                        {license.map((item, index) => (
+                          <MenuItem key={index} value={item.license_id}>
+                            {item.license_name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
                   <Grid item xs={12} sm={4}>
                     <TextField
                       label="เบอร์โทรศัพท์"
@@ -265,7 +289,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
                       InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={12}>
                     <TextField
                       label="ที่อยู่"
                       name="employee_address"
@@ -281,13 +305,17 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
               </Grid>
               <Grid item xs={12} sm={4} container justifyContent="center" alignItems="center">
                 <div className='flex justify-center flex-col items-center'>
-                  {selectedImage ? (
+                  {selectedImage || loading ? (
                     <div>
-                      <img
-                        src={selectedImage}
-                        alt="Selected"
-                        className="w-64 h-64 rounded-full object-cover"
-                      />
+                      {loading ? (
+                        <CircularProgress />
+                      ) : (
+                        <img
+                          src={selectedImage || `${API_URL}${employeeData.employee_img}` || "/default-emp.jpg"}
+                          alt="Selected"
+                          className="w-64 h-64 rounded-full object-cover"
+                        />
+                      )}
                     </div>
                   ) : (
                     <img

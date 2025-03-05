@@ -101,8 +101,8 @@ const AddUnit: React.FC<AddUnitProps> = ({ onClose, open, onRefresh }) => {
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
                     <Grid size={6}>
+                        <div className="mb-1 text-[15px] text-gray-600">หน่วย (th) <span className="text-red-500">*</span></div>
                         <TextField
-                            label="หน่วย (th)"
                             size="small"
                             fullWidth
                             type="text"
@@ -111,6 +111,7 @@ const AddUnit: React.FC<AddUnitProps> = ({ onClose, open, onRefresh }) => {
                         />
                     </Grid>
                     <Grid size={6}>
+                        <div className="mb-1 text-[15px] text-gray-600">หน่วย (en) <span className="text-red-500">*</span></div>
                         <TextField
                             label="หน่วย (en)"
                             size="small"

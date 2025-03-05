@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete, Add } from "@mui/icons-material";
+import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
+import { API_URL } from '@/utils/config';
 import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { Menu, MenuItem, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddSupplier from "@/app/components/Supplier/Add";
@@ -20,7 +21,16 @@ const SupplierPage = () => {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const supplier_id = useRef('')
-
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selected, setSelected] = useState<Supplier | null>(null);
+  const handleClickMenu = (event: React.MouseEvent<HTMLElement>, supplier: Supplier) => {
+    setAnchorEl(event.currentTarget);
+    setSelected(supplier);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setSelected(null);
+  };
   useEffect(() => {
     fetchData();
   }, []);
@@ -61,7 +71,7 @@ const SupplierPage = () => {
   return (
     <>
       <div className="flex justify-between mb-4">
-        <span className="text-xl font-[400]" > จัดการข้อมูลผู้จัดจำหน่าย </span>
+        <span className="text-xl font-[400]" >ข้อมูลผู้จัดจำหน่าย </span>
         < div className="flex gap-2" >
           <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มผู้จัดจำหน่าย
@@ -82,43 +92,51 @@ const SupplierPage = () => {
                 <TableHead>
                   <TableRow className="bg-gray-200" >
                     <TableCell>#</TableCell>
+                    < TableCell > โลโก้ </TableCell>
                     < TableCell > ชื่อผู้จัดจำหน่าย </TableCell>
                     < TableCell > ช่องทางการติดต่อ </TableCell>
                     < TableCell align="center" > จัดการ </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {
-                    suppliers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((supplier, index) => (
-                      <TableRow key={supplier.supplier_id} hover >
-                        <TableCell>{index + 1} </TableCell>
-                        < TableCell > {supplier.supplier_name} </TableCell>
-                        < TableCell >
-                          {JSON.parse(supplier.supplier_contact).map((contact: { type: string; value: string }) => (
+                  {(suppliers || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((supplier, index) => (
+                    <TableRow key={supplier.supplier_id} hover>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell><img src={`${API_URL}${supplier.supplier_img}`} className="w-16 h-16 object-cover" alt="" /></TableCell>
+                      <TableCell>{supplier.supplier_name}</TableCell>
+                      <TableCell>
+                        {supplier.supplier_contact
+                          ? JSON.parse(supplier.supplier_contact).map((contact: { type: string; value: string }) => (
                             <div key={contact.value}>• {contact.type}: {contact.value}</div>
-                          ))}
-                        </TableCell>
-                        < TableCell >
-                          <div className="flex justify-center gap-2" >
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              startIcon={< ModeEdit />}
-                              onClick={() => {
-                                setIsUpdateDialogOpen(true);
-                                supplier_id.current = supplier.supplier_id;
+                          ))
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-center gap-2">
+                          <IconButton size="small" onClick={(e) => handleClickMenu(e, supplier)}>
+                            <MoreVert />
+                          </IconButton>
+                          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
+                            <MenuItem onClick={() => {
+                              setIsUpdateDialogOpen(true);
+                              supplier_id.current = selected?.supplier_id ?? "";
+                              handleCloseMenu();
+                            }}>
+                              <ModeEdit className="mr-2" /> แก้ไข
+                            </MenuItem>
+                            <MenuItem onClick={() => {
+                              if (selected?.supplier_id) {
+                                onDelete(selected.supplier_id);
                               }
-                              }
-                            >
-                              แก้ไข
-                            </Button>
-                            < Button variant="contained" color="error" startIcon={< Delete />} onClick={() => onDelete(supplier.supplier_id)}>
-                              ลบ
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                              handleCloseMenu();
+                            }}>
+                              <Delete className="mr-2" /> ลบ
+                            </MenuItem>
+                          </Menu>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

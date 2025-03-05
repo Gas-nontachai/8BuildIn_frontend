@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
-import { Close, DeleteForeverRounded, Add } from "@mui/icons-material";
+import { API_URL } from '@/utils/config';
+import { Close, DeleteForeverRounded, Add, UploadFile } from "@mui/icons-material";
 import {
     Dialog,
     DialogActions,
@@ -33,6 +34,8 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
     const [loading, setLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>("");
     const [contacts, setContacts] = useState<{ type: string, value: string }[]>([]);
+    const [files, setFiles] = useState<File[]>([]);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const option_contact = ['โทรศัพท์', 'อีเมล', 'ที่อยู่'];
 
@@ -57,6 +60,14 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
         setContacts(updatedContacts);
     };
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const file = event.target.files[0]
+            setSelectedImage(URL.createObjectURL(file));
+            setFiles([file]);
+        }
+    };
+
     const handleSubmit = async () => {
         try {
             await onClose();
@@ -69,14 +80,17 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
                     Swal.showLoading();
                 },
             });
-
             const supplierData: Supplier = {
                 supplier_id: supplier_id,
                 supplier_name: name,
                 supplier_contact: JSON.stringify(contacts),
+                supplier_img: ""
             };
-
-            await updateSupplierBy(supplierData);
+            await updateSupplierBy({
+                supplier: supplierData,
+                supplier_img: files.length > 0 ? files : undefined
+            });
+            setSelectedImage(null)
             await onRefresh();
             Swal.fire({
                 icon: 'success',
@@ -136,15 +150,60 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
             ) : (
                 <DialogContent sx={{ p: 3 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid item xs={9}>
                             <FormLabel component="legend" className="mb-2">ชื่อผู้จำหน่าย <span className="text-red-500">*</span></FormLabel>
                             <TextField
                                 fullWidth
                                 variant="outlined"
+                                size="small"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
                             />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <div className='flex justify-center flex-col items-center'>
+                                <FormLabel component="legend" className="mb-2">โลโก้ผู้จัดจำหน่าย (ถ้ามี)</FormLabel>
+                                {selectedImage ? (
+                                    <div>
+                                        {loading ? (
+                                            <CircularProgress />
+                                        ) : (
+                                            <img
+                                                src={selectedImage || `${API_URL}${data?.supplier_img}`}
+                                                alt="Selected"
+                                                className="w-32 h-32 rounded-md object-cover border-2"
+                                            />
+                                        )}
+                                    </div>
+                                ) : (
+                                    <img
+                                        src={`${API_URL}${data?.supplier_img}` || "default-emp.jpg"}
+                                        alt="Selected"
+                                        className='w-32 h-32 rounded-md object-cover'
+                                    />
+                                )}
+                                <div className="mt-2">
+                                    <label htmlFor="upload-image">
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            component="span"
+                                            color="primary"
+                                            startIcon={<UploadFile />}
+                                        >
+                                            เลือกไฟล์
+                                        </Button>
+                                    </label>
+                                    <input
+                                        id="upload-image"
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                            </div>
                         </Grid>
                         {contacts.map((contact, index) => (
                             <Grid item xs={12} key={index}>
@@ -154,6 +213,7 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
                                             <Select
                                                 value={contact.type}
                                                 onChange={(e) => handleTypeChange(index, e.target.value)}
+                                                size="small"
                                                 displayEmpty
                                             >
                                                 <MenuItem value="" disabled>ประเภทการติดต่อ</MenuItem>
@@ -166,6 +226,7 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
                                     <Grid item xs={6}>
                                         <TextField
                                             label="ข้อมูลติดต่อ"
+                                            size="small"
                                             fullWidth
                                             value={contact.value}
                                             onChange={(e) => handleContactChange(index, e.target.value)}
@@ -179,7 +240,6 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
                                 </Grid>
                             </Grid>
                         ))}
-
                         <Grid item xs={12}>
                             <Button onClick={handleAddContact} startIcon={<Add />} color="primary">
                                 เพิ่มช่องติดต่อ

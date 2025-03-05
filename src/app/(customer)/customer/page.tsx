@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { API_URL } from '@/utils/config';
-import { ModeEdit, Delete, Add } from "@mui/icons-material";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, MenuItem, Menu, IconButton } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddCustomer from "@/app/components/Customer/Add";
@@ -21,6 +21,17 @@ const CustomerPage = () => {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const customer_id = useRef('')
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selected, setSelected] = useState<Customer | null>(null);
+
+  const handleClickMenu = (event: React.MouseEvent<HTMLElement>, customer: Customer) => {
+    setAnchorEl(event.currentTarget);
+    setSelected(customer);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setSelected(null);
+  };
 
   useEffect(() => {
     fetchData();
@@ -79,54 +90,54 @@ const CustomerPage = () => {
                 <TableHead>
                   <TableRow className="bg-gray-200">
                     <TableCell align="center">#</TableCell>
-                    <TableCell align="center">คำนำหน้า</TableCell>
-                    <TableCell align="center">ชื่่อ</TableCell>
-                    <TableCell align="center">นามสกุล</TableCell>
+                    <TableCell align="center">ชื่อ-นามสกุล</TableCell>
                     <TableCell align="center">อีเมล</TableCell>
                     <TableCell align="center">เบอร์โทร</TableCell>
                     <TableCell align="center">วัน/เดือน/ปีเกิด</TableCell>
                     <TableCell align="center">เพศ</TableCell>
                     <TableCell align="center">ที่อยู่</TableCell>
-                    <TableCell align="center">จัดการ</TableCell>
+                    <TableCell>จัดการ</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {
-                    customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-                      <TableRow key={item.customer_id} hover >
-                        <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
-                        <TableCell align="center">{item.customer_prefix}</TableCell>
-                        <TableCell align="center">{item.customer_firstname}</TableCell>
-                        <TableCell align="center">{item.customer_lastname}</TableCell>
-                        <TableCell align="center">{item.customer_email}</TableCell>
-                        <TableCell align="center">{item.customer_phone}</TableCell>
-                        <TableCell align="center">{item.customer_birthday}</TableCell>
-                        <TableCell align="center">{item.customer_gender}</TableCell>
-                        <TableCell align="center">{item.customer_address}</TableCell>
-                        <TableCell>
-                          <div className="flex justify-center gap-2" >
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              color="primary"
-                              startIcon={< ModeEdit />}
-                              onClick={() => {
-                                setIsUpdateDialogOpen(true);
-                                customer_id.current = item.customer_id;
-                              }
-                              }
-                            >
-                              แก้ไข
-                            </Button>
-                            < Button variant="outlined"
-                              size="small" color="error" startIcon={< Delete />}
-                              onClick={() => onDelete(item.customer_id)}>
-                              ลบ
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                  {customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                    <TableRow key={item.customer_id} hover >
+                      <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
+                      <TableCell align="center">{item.customer_prefix} {item.customer_firstname} {item.customer_lastname}</TableCell>
+                      <TableCell align="center">{item.customer_email}</TableCell>
+                      <TableCell align="center">{item.customer_phone}</TableCell>
+                      <TableCell align="center">{item.customer_birthday}</TableCell>
+                      <TableCell align="center">{item.customer_gender}</TableCell>
+                      <TableCell align="center">{item.customer_address}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleClickMenu(e, item)}
+                        >
+                          <MoreVert />
+                        </IconButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleCloseMenu}
+                        >
+                          <MenuItem onClick={() => {
+                            setIsUpdateDialogOpen(true);
+                            customer_id.current = selected?.customer_id!;
+                            handleCloseMenu();
+                          }}>
+                            <ModeEdit className="mr-2" /> แก้ไข
+                          </MenuItem>
+                          <MenuItem onClick={() => {
+                            onDelete(selected?.customer_id!);
+                            handleCloseMenu();
+                          }}>
+                            <Delete className="mr-2" /> ลบ
+                          </MenuItem>
+                        </Menu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Swal from 'sweetalert2';
-import { API_URL } from '@/utils/config';
-import { ModeEdit, Delete, Add } from "@mui/icons-material";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import Swal from 'sweetalert2'; 
+import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
+import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Menu, MenuItem } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddLicense from "@/app/components/License/Add";
+import UpdateLicense from "@/app/components/License/Update";
 
 import { useLicense } from "@/hooks/hooks";
 import { License } from '@/misc/types';
@@ -20,6 +20,17 @@ const LicensePage = () => {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [licenses, setLicenses] = useState<License[]>([]);
   const license_id = useRef('')
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selected, setSelected] = useState<License | null>(null);
+
+  const handleClickMenu = (event: React.MouseEvent<HTMLElement>, license: License) => {
+    setAnchorEl(event.currentTarget);
+    setSelected(license);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setSelected(null);
+  };
 
   useEffect(() => {
     fetchData();
@@ -77,7 +88,7 @@ const LicensePage = () => {
                 <TableRow className="bg-gray-200" >
                   <TableCell>#</TableCell>
                   <TableCell>ชื่อบทบาท</TableCell>
-                  < TableCell align="center" > จัดการ </TableCell>
+                  < TableCell> จัดการ </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -87,26 +98,30 @@ const LicensePage = () => {
                       <TableCell>{index + 1} </TableCell>
                       <TableCell>{item.license_name}</TableCell>
                       <TableCell>
-                        <div className="flex justify-center gap-2" >
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            color="primary"
-                            startIcon={< ModeEdit />}
-                            onClick={() => {
-                              setIsUpdateDialogOpen(true);
-                              license_id.current = item.license_id;
-                            }
-                            }
-                          >
-                            แก้ไข
-                          </Button>
-                          < Button variant="outlined"
-                            size="small" color="error" startIcon={< Delete />}
-                            onClick={() => onDelete(item.license_id)}>
-                            ลบ
-                          </Button>
-                        </div>
+                        <IconButton
+                          onClick={(e) => handleClickMenu(e, item)}
+                        >
+                          <MoreVert />
+                        </IconButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleCloseMenu}
+                        >
+                          <MenuItem onClick={() => {
+                            setIsUpdateDialogOpen(true);
+                            license_id.current = selected?.license_id!;
+                            handleCloseMenu();
+                          }}>
+                            <ModeEdit className="mr-2" /> แก้ไข
+                          </MenuItem>
+                          <MenuItem onClick={() => {
+                            onDelete(selected?.license_id!);
+                            handleCloseMenu();
+                          }}>
+                            <Delete className="mr-2" /> ลบ
+                          </MenuItem>
+                        </Menu>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -126,7 +141,7 @@ const LicensePage = () => {
       )}
 
       <AddLicense open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
-      {/* <UpdateLicense open={isUpdateDialogOpen} license_id={license_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} /> */}
+      <UpdateLicense open={isUpdateDialogOpen} license_id={license_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
     </>
   );
 };
