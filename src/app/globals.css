@@ -8,10 +8,10 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Kanit", serif; 
+  font-family: "Kanit", serif;
   font-weight: 300;
 }
 
 body {
-  background-color: white;
+  background-color: #f4f5fa;
 }

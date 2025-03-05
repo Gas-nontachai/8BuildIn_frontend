@@ -9,16 +9,22 @@ import {
     FormControl,
     Button,
     Autocomplete,
-    CircularProgress,
+    Breadcrumbs,
     Box,
+    Stack,
+    Link,
     IconButton,
-    TextField
+    TextField,
+    InputAdornment
 } from "@mui/material";
+import { Home, Store, Search } from "@mui/icons-material";
 import { API_URL } from "@/utils/config"
 import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
 import { useProduct, useCart } from "@/hooks/hooks";
 import { Product, Cart } from "@/misc/types"
+
+import Loading from "@/app/components/Loading";
 
 const { getProductBy } = useProduct();
 const { insertCart } = useCart();
@@ -126,32 +132,53 @@ const SalesPage = () => {
     };
 
     return (
-
-        <div className="p-4">
-            <div className="flex justify-between items-center mb-6">
-                <Typography variant="h5" component="h1">
-                    สินค้าทั้งหมด
-                </Typography>
+        <>
+            <div className="flex justify-start items-center mb-2">
+                <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+                    <Link underline="hover" href="/">
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                            <Home fontSize="small" />
+                            <Typography variant="body1" color="primary">หน้าหลัก</Typography>
+                        </Stack>
+                    </Link>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                        <Store fontSize="small" />
+                        <Typography variant="body1" color="text.secondary">สินค้าทั้งหมด</Typography>
+                    </Stack>
+                </Breadcrumbs>
+            </div>
+            <div className="flex gap-2 mb-5">
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="ค้นหาชื่อสินค้า..."
+                    className="w-64"
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <Search />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
                 <FormControl sx={{ minWidth: 200 }}>
                     <Autocomplete
                         value={selectedCategory}
                         onChange={(event, newValue) => setSelectedCategory(newValue)}
                         options={categories}
-                        renderInput={(params) => <TextField {...params} label="ประเภทสินค้า" size="small" />}
+                        renderInput={(params) => <TextField {...params} label="ค้นหาตามประเภทสินค้า" size="small" />}
                         isOptionEqualToValue={(option, value) => option === value}
                         disableClearable
                     />
                 </FormControl>
             </div>
             {loading ? (
-                <Box display="flex" justifyContent="center" p={4}>
-                    <CircularProgress />
-                </Box>
+                <Loading />
             ) : (
                 <Grid container spacing={3}>
                     {products.map((product) => (
                         <Grid item xs={12} sm={6} md={4} lg={3} key={product.product_id}>
-                            <Card className="flex flex-col h-full">
+                            <Card className="flex flex-col h-full" elevation={3}>
                                 {renderProductImages(product.product_img)}
                                 <CardContent className="flex-grow">
                                     <div className="flex justify-between">
@@ -188,7 +215,7 @@ const SalesPage = () => {
 
             )}
 
-        </div>
+        </>
 
 
     );

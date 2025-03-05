@@ -4,8 +4,8 @@ import Swal from 'sweetalert2';
 import { API_URL } from '@/utils/config';
 import { MoreVert, ModeEdit, Delete, Add, Search, Home, Badge } from "@mui/icons-material";
 import {
-  MenuItem, Menu, IconButton, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, TextField, InputAdornment, Typography, Stack, Link,
+  MenuItem, Menu, IconButton, Table, TableBody, TableCell, Card,
+  TableContainer, TableHead, TableRow, CardContent, TablePagination, Button, Breadcrumbs, TextField, InputAdornment, Typography, Stack, Link, Divider
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
@@ -90,7 +90,7 @@ const EmployeePage = () => {
 
   return (
     <>
-      <div className="flex justify-start">
+      <div className="flex justify-between items-center">
         <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
           <Link underline="hover" href="/">
             <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
@@ -103,28 +103,6 @@ const EmployeePage = () => {
             <Typography variant="body1" color="text.secondary">พนักงงาน</Typography>
           </Stack>
         </Breadcrumbs>
-      </div>
-      <div className="flex justify-between mb-3">
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="ค้นหาชื่อพนักงาน..."
-          className="w-64"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleSearch();
-            }
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
         <div className="flex gap-2">
           <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มพนักงาน
@@ -133,12 +111,34 @@ const EmployeePage = () => {
             จัดการบทบาท
           </Button>
         </div>
-      </div >
+      </div>
       {
         loading ? (
           <Loading />
         ) : (
-          <Paper className="shadow-md" >
+          <>
+            <div className="flex justify-between mb-3">
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="ค้นหาชื่อพนักงาน..."
+                className="w-64"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
             <TableContainer style={{ minHeight: "24rem" }}>
               <Table>
                 <TableHead>
@@ -156,7 +156,7 @@ const EmployeePage = () => {
                   {
                     employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                       <TableRow key={item.employee_id} hover >
-                        <TableCell>{page * rowsPerPage + index + 1} </TableCell>
+                        <TableCell>{index + 1} </TableCell>
                         <TableCell>
                           <img
                             className="w-8 h-8 rounded-full "
@@ -213,7 +213,7 @@ const EmployeePage = () => {
               onPageChange={onChangePage}
               onRowsPerPageChange={onChangeRowsPerPage}
             />
-          </Paper>
+          </>
         )}
 
       <AddEmployee open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />

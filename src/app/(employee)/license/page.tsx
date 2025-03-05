@@ -90,7 +90,7 @@ const LicensePage = () => {
       {loading ? (
         <Loading />
       ) : (
-        <Paper className="shadow-md" >
+        <>
           <TableContainer style={{ minHeight: "24rem" }}>
             <Table>
               <TableHead>
@@ -146,7 +146,7 @@ const LicensePage = () => {
             onPageChange={onChangePage}
             onRowsPerPageChange={onChangeRowsPerPage}
           />
-        </Paper>
+        </>
       )}
       <AddLicense open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
       <UpdateLicense open={isUpdateDialogOpen} license_id={license_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />

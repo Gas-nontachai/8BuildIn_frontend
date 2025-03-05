@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
-import { MoreVert, Inventory, Delete, Add, Home, Edit, Visibility } from "@mui/icons-material";
+import { MoreVert, Store, Delete, Add, Home, Edit, Visibility } from "@mui/icons-material";
 import {
   MenuItem, Menu, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
@@ -110,7 +110,7 @@ const ProductPage = () => {
             </Stack>
           </Link>
           <Stack direction="row" alignItems="center" spacing={0.5}>
-            <Inventory fontSize="small" />
+            <Store fontSize="small" />
             <Typography variant="body1" color="text.secondary">ข้อมูลสินค้า</Typography>
           </Stack>
         </Breadcrumbs>
@@ -130,7 +130,7 @@ const ProductPage = () => {
       {loading ? (
         <Loading />
       ) : (
-        <Paper className="shadow-md">
+        <>
           <TableContainer style={{ minHeight: "24rem" }}>
             <Table>
               <TableHead>
@@ -230,7 +230,7 @@ const ProductPage = () => {
             onPageChange={onChangePage}
             onRowsPerPageChange={onChangeRowsPerPage}
           />
-        </Paper >
+        </>
       )}
 
       <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />

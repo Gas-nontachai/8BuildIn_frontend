@@ -74,7 +74,7 @@ const SupplierPage = () => {
 
   return (
     <>
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between items-center mb-4">
         <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
           <Link underline="hover" href="/">
             <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
@@ -97,7 +97,7 @@ const SupplierPage = () => {
         loading ? (
           <Loading />
         ) : (
-          <Paper className="shadow-md" >
+          <>
             <TableContainer style={{ minHeight: "24rem" }}>
               <Table>
                 <TableHead>
@@ -160,7 +160,7 @@ const SupplierPage = () => {
               onPageChange={onChangePage}
               onRowsPerPageChange={onChangeRowsPerPage}
             />
-          </Paper>
+          </>
         )}
 
       <AddSupplier open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />

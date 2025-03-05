@@ -2,7 +2,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { Box } from "@mui/material";
+import { Box, Card, CardContent } from "@mui/material";
 import "./globals.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -27,29 +27,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.ico" />
         <title>8BUILT - IN</title>
         <style>
-          {`
-            .swal2-container {
+          {
+            ` .swal2-container {
               z-index: 9999999 !important;
-            }
-          `}
+            }`
+          }
         </style>
       </head>
       <body>
         <ThemeProvider theme={theme}>
           {!isAuthPage && <Sidebar open={open} setOpen={setOpen} />}
           <Box
-            component="main"
             sx={{
               flexGrow: 1,
               p: 3,
-              pt: 1,
+              marginTop: -6,
               marginLeft: !isAuthPage && open ? "240px" : "0px",
               transition: "margin 0.3s ease-in-out",
+              backgroundColor: "#f4f5fa",
+              minHeight: '100vh'
             }}
           >
-            <div className="max-h-screen w-100 p-5 bg-gray-100 text-black rounded-xl">
-              {children}
-            </div>
+            <Card>
+              <CardContent>
+                {/* <div className="max-h-screen w-100 p-5 bg-gray-100 text-black rounded-xl"> */}
+                {children}
+              </CardContent>
+            </Card>
           </Box>
         </ThemeProvider>
       </body>

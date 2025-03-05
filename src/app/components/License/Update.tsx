@@ -13,7 +13,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle, Button, TextField, IconButton, Grid, MenuItem, Select, FormControl
+  DialogTitle, Button, TextField, IconButton, Grid
 } from "@mui/material";
 
 interface Props {

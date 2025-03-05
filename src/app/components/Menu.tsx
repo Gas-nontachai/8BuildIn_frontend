@@ -13,19 +13,13 @@ import {
     ExpandMore,
     Home,
     Store,
-    Inventory,
-    Dashboard,
-    Engineering,
     Inventory2,
-    Storage,
     SupportAgent,
     Badge,
-    Security,
     ManageAccounts,
-    Shield
+    Outbound,
+    Gavel
 } from "@mui/icons-material";
-import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 
 
 export default function SidebarMenu() {
@@ -51,8 +45,8 @@ export default function SidebarMenu() {
     ];
 
     const StockStore = [
-        { text: "บันทึกสต็อกเข้า", href: "/stock-in", icon: <Inventory2OutlinedIcon /> },
-        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <ShoppingCartOutlinedIcon /> }
+        { text: "บันทึกสต็อกเข้า", href: "/stock-in", icon: <InventoryIcon /> },
+        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Outbound /> }
     ];
 
     const MenuList = [
@@ -60,11 +54,11 @@ export default function SidebarMenu() {
     ];
 
     const Product = [
-        { text: "ข้อมูลสินค้า", href: "/product", icon: <Inventory /> },
+        { text: "ข้อมูลสินค้า", href: "/product", icon: <Store /> },
     ];
 
     const Material = [
-        { text: "ข้อมูลวัสดุ", href: "/material", icon: <Store /> },
+        { text: "ข้อมูลวัสดุ", href: "/material", icon: <Gavel /> },
     ];
 
     const Sale = [

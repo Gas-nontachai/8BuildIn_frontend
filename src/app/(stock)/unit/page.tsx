@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { MoreVert, Inventory, Delete, Add, Home, ModeEdit, Storage } from "@mui/icons-material";
+import { MoreVert, Store, Delete, Add, Home, ModeEdit, Storage } from "@mui/icons-material";
 import {
     MenuItem, Menu, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, IconButton
@@ -80,7 +80,7 @@ const UnitPage = () => {
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
                     <Link underline="hover" href="/product">
                         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
-                            <Inventory fontSize="small" />
+                            <Store fontSize="small" />
                             <Typography variant="body1" color="primary">ข้อมูลสินค้า</Typography>
                         </Stack>
                     </Link>
@@ -97,7 +97,7 @@ const UnitPage = () => {
                 loading ? (
                     <Loading />
                 ) : (
-                    <Paper className="shadow-md" >
+                    <>
                         <TableContainer style={{ minHeight: "24rem" }}>
                             <Table>
                                 <TableHead>
@@ -155,7 +155,7 @@ const UnitPage = () => {
                             onPageChange={onChangePage}
                             onRowsPerPageChange={onChangeRowsPerPage}
                         />
-                    </Paper>
+                    </>
                 )}
             <AddUnit open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
             <UpdateUnit open={isUpdateDialogOpen} unit_id={unit_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />

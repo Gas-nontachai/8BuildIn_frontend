@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
-import { Delete, Add, Home, Store } from "@mui/icons-material";
+import { Delete, Add, Home, Gavel } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
@@ -69,7 +69,7 @@ const MaterialPage = () => {
             </Stack>
           </Link>
           <Stack direction="row" alignItems="center" spacing={0.5}>
-            <Store fontSize="small" />
+            <Gavel fontSize="small" />
             <Typography variant="body1" color="text.secondary">ข้อมูลวัสดุ</Typography>
           </Stack>
         </Breadcrumbs>
@@ -82,7 +82,7 @@ const MaterialPage = () => {
       {loading ? (
         <Loading />
       ) : (
-        <Paper className="shadow-md">
+        <>
           <TableContainer style={{ minHeight: "24rem" }}>
             <Table>
               <TableHead>
@@ -129,7 +129,7 @@ const MaterialPage = () => {
             onPageChange={onChangePage}
             onRowsPerPageChange={onChangeRowsPerPage}
           />
-        </Paper>
+        </>
       )}
 
       <ManageMaterialCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />

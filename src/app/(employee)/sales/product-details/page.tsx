@@ -4,14 +4,11 @@ import { useSearchParams } from 'next/navigation';
 import { Newspaper, FirstPage } from "@mui/icons-material";
 import {
     Typography,
-    Card,
-    CardContent,
     Box,
     Grid,
     Link,
     Stack,
     Breadcrumbs,
-    CardHeader
 } from "@mui/material";
 import { useProduct } from "@/hooks/hooks";
 import { Product } from "@/misc/types"
@@ -25,14 +22,13 @@ const ProductDetails = () => {
     const productId = searchParams.get('id');
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
-    const [selectedImage, setSelectedImage] = useState<string>(''); // เพิ่ม state สำหรับรูปที่เลือก
+    const [selectedImage, setSelectedImage] = useState<string>('');
     const { getProductByID } = useProduct();
 
     useEffect(() => {
         fetchProductDetails();
     }, [productId]);
 
-    // เมื่อได้ข้อมูลสินค้า ให้กำหนดรูปแรกเป็นรูปที่เลือก
     useEffect(() => {
         if (product?.product_img) {
             const firstImage = product.product_img.split(',')[0];
@@ -109,67 +105,63 @@ const ProductDetails = () => {
     }
 
     return (
-        <Box >
-            <Card>
-                <CardContent>
-                    <Box sx={{ mb: 4 }}>
-                        <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                            <Link underline="hover" href="/sales">
-                                <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
-                                    <FirstPage fontSize="small" />
-                                    <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
-                                </Stack>
-                            </Link>
-                            <Stack direction="row" alignItems="center" spacing={0.5}>
-                                <Newspaper fontSize="small" />
-                                <Typography variant="body1" color="text.secondary">รายละเอียดสินค้า</Typography>
-                            </Stack>
-                        </Breadcrumbs>
-                    </Box>
-                    <Grid container spacing={4}>
-                        <Grid item xs={12} md={7}>
-                            {renderProductImages(product.product_img)}
-                        </Grid>
-                        <Grid item xs={12} md={5}>
-                            <div className="space-y-4">
-                                <Typography variant="h4">
-                                    {product.product_name}
-                                </Typography>
-                                <Typography variant="h5" color="primary">
-                                    ราคา: {decimalFix(product.product_price)} บาท
-                                </Typography>
-                                <div className="space-y-2">
-                                    <Typography variant="body1" color="text.secondary">
-                                        รหัสสินค้า: {product.product_id}
-                                    </Typography>
-                                    <Typography variant="body1" color="text.secondary">
-                                        จำนวนคงเหลือ: {product.product_quantity} ชิ้น
-                                    </Typography>
-                                </div>
-                                <div className="pt-4 border-t space-y-2">
+        <>
+            <Box sx={{ mb: 4 }}>
+                <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+                    <Link underline="hover" href="/sales">
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                            <FirstPage fontSize="small" />
+                            <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
+                        </Stack>
+                    </Link>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                        <Newspaper fontSize="small" />
+                        <Typography variant="body1" color="text.secondary">รายละเอียดสินค้า</Typography>
+                    </Stack>
+                </Breadcrumbs>
+            </Box>
+            <Grid container spacing={4}>
+                <Grid item xs={12} md={7}>
+                    {renderProductImages(product.product_img)}
+                </Grid>
+                <Grid item xs={12} md={5}>
+                    <div className="space-y-4">
+                        <Typography variant="h4">
+                            {product.product_name}
+                        </Typography>
+                        <Typography variant="h5" color="primary">
+                            ราคา: {decimalFix(product.product_price)} บาท
+                        </Typography>
+                        <div className="space-y-2">
+                            <Typography variant="body1" color="text.secondary">
+                                รหัสสินค้า: {product.product_id}
+                            </Typography>
+                            <Typography variant="body1" color="text.secondary">
+                                จำนวนคงเหลือ: {product.product_quantity} ชิ้น
+                            </Typography>
+                        </div>
+                        <div className="pt-4 border-t space-y-2">
+                            <Typography variant="body2" color="text.secondary">
+                                เพิ่มโดย: {product.addby}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                วันที่เพิ่ม: {formatDate(product.adddate)}
+                            </Typography>
+                            {product.updateby && (
+                                <>
                                     <Typography variant="body2" color="text.secondary">
-                                        เพิ่มโดย: {product.addby}
+                                        แก้ไขโดย: {product.updateby}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        วันที่เพิ่ม: {formatDate(product.adddate)}
+                                        วันที่แก้ไข: {new Date(product.lastupdate!).toLocaleDateString('th-TH')}
                                     </Typography>
-                                    {product.updateby && (
-                                        <>
-                                            <Typography variant="body2" color="text.secondary">
-                                                แก้ไขโดย: {product.updateby}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                วันที่แก้ไข: {new Date(product.lastupdate!).toLocaleDateString('th-TH')}
-                                            </Typography>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-            </Card>
-        </Box>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </Grid>
+            </Grid>
+        </>
     );
 };
 

@@ -95,7 +95,7 @@ const CustomerPage = () => {
         loading ? (
           <Loading />
         ) : (
-          <Paper className="shadow-md" >
+          <>
             <TableContainer style={{ minHeight: "24rem" }}>
               <Table>
                 <TableHead>
@@ -161,7 +161,7 @@ const CustomerPage = () => {
               onPageChange={onChangePage}
               onRowsPerPageChange={onChangeRowsPerPage}
             />
-          </Paper>
+          </>
         )}
 
       <AddCustomer open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
