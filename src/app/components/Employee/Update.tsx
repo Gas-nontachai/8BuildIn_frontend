@@ -97,6 +97,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
         employee_img: files.length > 0 ? files : undefined
       })
       setEmployeeData(initialState)
+      setSelectedImage(null)
       Swal.fire({
         title: "สำเร็จ!",
         text: "เพิ่มพนักงานเรียบร้อยแล้ว",

@@ -41,7 +41,6 @@ const SalesPage = () => {
                 selectedCategory ? { product_category_id: selectedCategory } : {}
             );
             setProducts(docs);
-
             const uniqueProducts = docs.map((product: Product) => product.product_name);
             setCategories(Array.from(new Set(uniqueProducts)));
         } catch (error) {
@@ -57,8 +56,7 @@ const SalesPage = () => {
                     <span className="text-gray-500">ไม่มีรูปภาพ</span>
                 </div>
             );
-        }
-
+        } 
         const images = productImg.split(",");
         const totalImages = images.length;
 
@@ -120,7 +118,6 @@ const SalesPage = () => {
         router.push(`/sales/product-details?id=${productId}`);
     };
 
-
     return (
 
         <div className="p-4">
@@ -139,7 +136,6 @@ const SalesPage = () => {
                     />
                 </FormControl>
             </div>
-
             {loading ? (
                 <Box display="flex" justifyContent="center" p={4}>
                     <CircularProgress />

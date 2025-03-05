@@ -43,12 +43,11 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
     const option_contact = ['โทรศัพท์', 'อีเมล', 'ที่อยู่'];
 
     const handleContactChange = (index: number, value: string) => {
-        if (!contacts) return; 
+        if (!contacts) return;
         const updatedContacts = [...contacts];
         updatedContacts[index].value = value;
         setContacts(updatedContacts);
     };
-
 
     const handleTypeChange = (index: number, type: string) => {
         const updatedContacts = [...contacts];
@@ -85,6 +84,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
                 supplier_img: ""
             };
             await insertSupplier({ supplier: supplierData, supplier_img: files })
+            setSelectedImage(null)
             await onRefresh();
             Swal.fire({
                 icon: 'success',
@@ -108,8 +108,13 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
         }
     };
 
+    const ClearImg = () => {
+        onClose()
+        setSelectedImage(null)
+    }
+
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <Dialog open={open} onClose={ClearImg} fullWidth maxWidth="md">
             <DialogTitle>
                 เพิ่มข้อมูลผู้จำหน่าย
                 <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
@@ -131,6 +136,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
                     </Grid>
                     <Grid item xs={3}>
                         <div className='flex justify-center flex-col items-center'>
+                            <FormLabel component="legend" className="mb-2">โลโก้ผู้จัดจำหน่าย (ถ้ามี)</FormLabel>
                             {selectedImage ? (
                                 <div>
                                     <img
@@ -150,6 +156,7 @@ const AddSupplier: React.FC<AddSupplierProps> = ({ onClose, onRefresh, open }) =
                                 <label htmlFor="upload-image">
                                     <Button
                                         variant="contained"
+                                        size="small"
                                         component="span"
                                         color="primary"
                                         startIcon={<UploadFile />}

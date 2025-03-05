@@ -32,7 +32,7 @@ const updateSupplierBy = async (data: { supplier: Supplier, supplier_img?: File[
         });
     }
     return await formData.post(`${API_URL}${prefix}/updateSupplierBy`, formDataInstance);
-}; 
+};
 
 const deleteSupplierBy = (data: { supplier_id: string }): Promise<Supplier> => {
     return preSecureFetch.post(`${API_URL}${prefix}/deleteSupplierBy`, data);

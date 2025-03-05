@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -12,9 +13,8 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import { MenuItem, Menu } from "@mui/material";
-import { ExitToApp } from "@mui/icons-material";
+import { ExitToApp, ShoppingBag } from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
-
 
 const drawerWidth = 240;
 
@@ -40,6 +40,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+  const pathname = usePathname();
   const { logout } = AuthProvider();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -66,6 +67,13 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
           </Typography>
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+          {pathname === "/sales" && (
+            <IconButton aria-label="cart">
+              <Badge badgeContent={4} className="text-white">
+                <ShoppingBag />
+              </Badge>
+            </IconButton>
+          )}
           <IconButton color="inherit" sx={{ ml: 2 }}>
             <Badge showZero={false} color="error">
               <MailIcon />
