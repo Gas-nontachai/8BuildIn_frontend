@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,7 +13,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import { MenuItem, Menu } from "@mui/material";
-import { ExitToApp, ShoppingBag } from "@mui/icons-material";
+import { Logout, PersonOutlined } from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
 import CartDropdown from "./Cart/CartDropdown";
 
@@ -41,7 +41,9 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+  const { $profile } = AuthProvider()
   const pathname = usePathname();
+  const router = useRouter()
   const { logout } = AuthProvider();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -61,7 +63,6 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
         >
           <MenuIcon />
         </IconButton>
-
         {!open && (
           <Typography variant="h6" noWrap component="div">
             <img src="/logo.jpg" alt="Logo" className="rounded-md" style={{ width: "auto", height: "40px" }} />
@@ -91,8 +92,12 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
             open={Boolean(anchorEl)}
             onClose={() => setAnchorEl(null)}
           >
+            <MenuItem onClick={() => router.push(`/profile?id=${$profile.employee_id}`)}>
+              <PersonOutlined sx={{ mr: 1 }} />
+              <Typography>โปรไฟล์</Typography>
+            </MenuItem>
             <MenuItem onClick={() => logout()}>
-              <ExitToApp sx={{ mr: 1 }} />
+              <Logout sx={{ mr: 1 }} />
               <Typography>ออกจากระบบ</Typography>
             </MenuItem>
           </Menu>
