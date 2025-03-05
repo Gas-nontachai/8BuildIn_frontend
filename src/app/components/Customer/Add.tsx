@@ -87,7 +87,7 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
     setSelectedImage(null)
   }
   return (
-    <Dialog open={open} onClose={ClearImg} fullWidth={true} maxWidth="lg">
+    <Dialog open={open} onClose={ClearImg} fullWidth={true} maxWidth="md">
       <DialogTitle id="alert-dialog-title">
         เพิ่มลูกค้า
         <IconButton
@@ -125,7 +125,7 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={1}>
+            <Grid item xs={12} sm={2}>
               <FormControl fullWidth margin="normal">
                 <Select
                   name="customer_prefix"
@@ -143,7 +143,7 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 label="ชื่อ"
                 size="small"
@@ -154,7 +154,7 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                 margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 label="นามสกุล"
                 size="small"
@@ -165,7 +165,7 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                 margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 label="วันเกิด"
                 size="small"
@@ -178,9 +178,9 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={4}>
               <TextField
-                label="อีเมล"
+                label="อีเมล (ถ้ามี)"
                 size="small"
                 name="customer_email"
                 value={customerData.customer_email}
@@ -200,8 +200,7 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                 margin="normal"
               />
             </Grid>
-
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} sm={12}>
               <TextField
                 label="ที่อยู่"
                 name="customer_address"

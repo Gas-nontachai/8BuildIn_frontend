@@ -23,7 +23,6 @@ const EmployeePage = () => {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [license, setLicense] = useState<License[]>([]);
-
   const [search, setSearch] = useState("")
   const employee_id = useRef('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -155,33 +154,31 @@ const EmployeePage = () => {
                         <TableCell>{item.employee_phone}</TableCell>
                         <TableCell>{item.employee_address}</TableCell>
                         <TableCell>
-                          <div className="flex justify-center gap-2">
-                            <IconButton
-                              size="small"
-                              onClick={(e) => handleClickMenu(e, item)}
-                            >
-                              <MoreVert />
-                            </IconButton>
-                            <Menu
-                              anchorEl={anchorEl}
-                              open={Boolean(anchorEl)}
-                              onClose={handleCloseMenu}
-                            >
-                              <MenuItem onClick={() => {
-                                setIsUpdateDialogOpen(true);
-                                employee_id.current = selected?.employee_id!;
-                                handleCloseMenu();
-                              }}>
-                                <ModeEdit className="mr-2" /> แก้ไข
-                              </MenuItem>
-                              <MenuItem onClick={() => {
-                                onDelete(selected?.employee_id!);
-                                handleCloseMenu();
-                              }}>
-                                <Delete className="mr-2" /> ลบ
-                              </MenuItem>
-                            </Menu>
-                          </div>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => handleClickMenu(e, item)}
+                          >
+                            <MoreVert />
+                          </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleCloseMenu}
+                          >
+                            <MenuItem onClick={() => {
+                              setIsUpdateDialogOpen(true);
+                              employee_id.current = selected?.employee_id!;
+                              handleCloseMenu();
+                            }}>
+                              <ModeEdit className="mr-2" /> แก้ไข
+                            </MenuItem>
+                            <MenuItem onClick={() => {
+                              onDelete(selected?.employee_id!);
+                              handleCloseMenu();
+                            }}>
+                              <Delete className="mr-2" /> ลบ
+                            </MenuItem>
+                          </Menu>
                         </TableCell>
                       </TableRow>
                     ))}

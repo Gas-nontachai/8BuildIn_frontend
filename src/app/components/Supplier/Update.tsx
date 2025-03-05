@@ -172,7 +172,7 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
                                             <img
                                                 src={selectedImage || `${API_URL}${data?.supplier_img}`}
                                                 alt="Selected"
-                                                className="w-32 h-32 rounded-md object-cover"
+                                                className="w-32 h-32 rounded-md object-cover border-2"
                                             />
                                         )}
                                     </div>
@@ -240,7 +240,6 @@ const UpdateSupplier: React.FC<UpdateSupplierProps> = ({ onClose, onRefresh, ope
                                 </Grid>
                             </Grid>
                         ))}
-
                         <Grid item xs={12}>
                             <Button onClick={handleAddContact} startIcon={<Add />} color="primary">
                                 เพิ่มช่องติดต่อ

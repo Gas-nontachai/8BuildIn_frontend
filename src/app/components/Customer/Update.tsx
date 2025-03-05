@@ -100,7 +100,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="lg">
+    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md">
       <DialogTitle id="alert-dialog-title">
         แก้ไขลูกค้า
         <IconButton
@@ -144,7 +144,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={1}>
+              <Grid item xs={12} sm={2}>
                 <FormControl fullWidth margin="normal">
                   <Select
                     name="customer_prefix"
@@ -162,7 +162,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   label="ชื่อ"
                   size="small"
@@ -173,7 +173,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
                   margin="normal"
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   label="นามสกุล"
                   size="small"
@@ -184,7 +184,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
                   margin="normal"
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   label="วันเกิด"
                   size="small"
@@ -197,7 +197,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   label="อีเมล"
                   size="small"
@@ -219,8 +219,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
                   margin="normal"
                 />
               </Grid>
-
-              <Grid item xs={12} sm={5}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   label="ที่อยู่"
                   name="customer_address"
@@ -229,7 +228,7 @@ const UpdateCustomer: React.FC<Props> = ({ onClose, open, onRefresh, customer_id
                   fullWidth
                   margin="normal"
                   multiline
-                  rows={3}
+                  rows={4}
                 />
               </Grid>
             </Grid>

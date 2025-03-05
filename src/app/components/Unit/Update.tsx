@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useEffect, useState } from "react";
 import { Close, } from "@mui/icons-material";
 import {
@@ -10,9 +9,12 @@ import {
     Button,
     TextField,
     IconButton,
+    FormControl
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
+
+import Loading from "../Loading";
 
 import useUnit from "@/hooks/useUnit";
 import { Unit } from '@/misc/types';
@@ -36,6 +38,7 @@ const UpdateUnit: React.FC<UpdateUnitProps> = ({ onClose, open, onRefresh, unit_
         updateby: "",
         lastupdate: "",
     });
+    const [loading, setLoading] = useState(false)
 
     const handleSubmit = async () => {
         const insertData = {
@@ -93,8 +96,10 @@ const UpdateUnit: React.FC<UpdateUnitProps> = ({ onClose, open, onRefresh, unit_
     }, [open]);
 
     const fetchData = async () => {
+        setLoading(true)
         const res = await getUnitByID({ unit_id })
         setFormData(res)
+        setLoading(false)
     }
 
     return (
@@ -106,28 +111,32 @@ const UpdateUnit: React.FC<UpdateUnitProps> = ({ onClose, open, onRefresh, unit_
                 </IconButton>
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
-                <Grid container spacing={2}>
-                    <Grid size={6}>
-                        <TextField
-                            label="หน่วย (th)"
-                            size="small"
-                            fullWidth
-                            type="text"
-                            value={formData.unit_name_th}
-                            onChange={(e) => setFormData({ ...formData, unit_name_th: e.target.value })}
-                        />
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <Grid container spacing={2}>
+                        <Grid size={6}>
+                            <div className="mb-1 text-[15px] text-gray-600">หน่วย (th) <span className="text-red-500">*</span></div>
+                            <TextField
+                                size="small"
+                                fullWidth
+                                type="text"
+                                value={formData.unit_name_th}
+                                onChange={(e) => setFormData({ ...formData, unit_name_th: e.target.value })}
+                            />
+                        </Grid>
+                        <Grid size={6}>
+                            <div className="mb-1 text-[15px] text-gray-600">หน่วย (en) <span className="text-red-500">*</span></div>
+                            <TextField
+                                size="small"
+                                fullWidth
+                                type="text"
+                                value={formData.unit_name_en}
+                                onChange={(e) => setFormData({ ...formData, unit_name_en: e.target.value })}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid size={6}>
-                        <TextField
-                            label="หน่วย (en)"
-                            size="small"
-                            fullWidth
-                            type="text"
-                            value={formData.unit_name_en}
-                            onChange={(e) => setFormData({ ...formData, unit_name_en: e.target.value })}
-                        />
-                    </Grid>
-                </Grid>
+                )}
             </DialogContent>
             <DialogActions sx={{ justifyContent: "center" }}>
                 <Button onClick={handleSubmit} color="success" variant="contained">

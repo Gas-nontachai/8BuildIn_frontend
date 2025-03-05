@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ModeEdit, Delete, Add, ReceiptLongRounded } from "@mui/icons-material";
+import { ModeEdit, Delete, Add, MoreVert } from "@mui/icons-material";
 import Swal from 'sweetalert2';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, CircularProgress, Menu, MenuItem, IconButton } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
 import AddUnit from "@/app/components/Unit/Add";
@@ -20,6 +20,17 @@ const UnitPage = () => {
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
     const [unit, setUnit] = useState<Unit[]>([]);
     const unit_id = useRef('')
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [selected, setSelected] = useState<Unit | null>(null);
+
+    const handleClickMenu = (event: React.MouseEvent<HTMLElement>, unit: Unit) => {
+        setAnchorEl(event.currentTarget);
+        setSelected(unit);
+    };
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+        setSelected(null);
+    };
 
     useEffect(() => {
         fetchData();
@@ -92,23 +103,31 @@ const UnitPage = () => {
                                             < TableCell >{unit.unit_name_th}</TableCell>
                                             < TableCell >{unit.unit_name_en}</TableCell>
                                             < TableCell >
-                                                <div className="flex justify-center gap-2" >
-                                                    <Button
-                                                        variant="outlined"
-                                                        color="primary"
-                                                        startIcon={< ModeEdit />}
-                                                        onClick={() => {
-                                                            setIsUpdateDialogOpen(true);
-                                                            unit_id.current = unit.unit_id;
-                                                        }
-                                                        }
-                                                    >
-                                                        แก้ไข
-                                                    </Button>
-                                                    < Button variant="outlined" color="error" startIcon={< Delete />} onClick={() => onDelete(unit.unit_id)}>
-                                                        ลบ
-                                                    </Button>
-                                                </div>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => handleClickMenu(e, unit)}
+                                                >
+                                                    <MoreVert />
+                                                </IconButton>
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl)}
+                                                    onClose={handleCloseMenu}
+                                                >
+                                                    <MenuItem onClick={() => {
+                                                        setIsUpdateDialogOpen(true);
+                                                        unit_id.current = selected?.unit_id!;
+                                                        handleCloseMenu();
+                                                    }}>
+                                                        <ModeEdit className="mr-2" /> แก้ไข
+                                                    </MenuItem>
+                                                    <MenuItem onClick={() => {
+                                                        onDelete(selected?.unit_id!);
+                                                        handleCloseMenu();
+                                                    }}>
+                                                        <Delete className="mr-2" /> ลบ
+                                                    </MenuItem>
+                                                </Menu>
                                             </TableCell>
                                         </TableRow>
                                     ))}
