@@ -32,9 +32,9 @@ const StockInPage = () => {
         setLoading(true);
         try {
             const { docs: res } = await getStockInBy();
-            const supplier_llist_arr = res.map(item => item.supplier_id)
+            const supplier_list_arr = res.map(item => item.supplier_id)
             const { docs: supplier_llist } = await getSupplierBy({
-                supplier_id: { $in: supplier_llist_arr }
+                supplier_id: { $in: supplier_list_arr }
             });
             setStockIn(res);
             setSupplier(supplier_llist);

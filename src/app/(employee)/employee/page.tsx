@@ -10,10 +10,11 @@ import AddEmployee from "@/app/components/Employee/Add";
 import UpdateEmployee from "@/app/components/Employee/Update";
 import Loading from "@/app/components/Loading";
 
-import { useEmployee } from "@/hooks/hooks";
-import { Employee } from '@/misc/types';
+import { useEmployee, useLicense } from "@/hooks/hooks";
+import { Employee, License } from '@/misc/types';
 
 const { getEmployeeBy, deleteEmployeeBy } = useEmployee();
+const { getLicenseBy } = useLicense();
 
 const EmployeePage = () => {
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
@@ -21,6 +22,8 @@ const EmployeePage = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [license, setLicense] = useState<License[]>([]);
+
   const [search, setSearch] = useState("")
   const employee_id = useRef('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -42,7 +45,12 @@ const EmployeePage = () => {
   const fetchData = async () => {
     setLoading(true);
     const { docs: res } = await getEmployeeBy();
+    const license_id = res.map(item => item.license_id)
+    const { docs: license_list } = await getLicenseBy({
+      license_id: { $in: license_id }
+    })
     setEmployees(res);
+    setLicense(license_list)
     setLoading(false);
   };
 
@@ -83,7 +91,7 @@ const EmployeePage = () => {
       <div className="flex justify-start mb-2">
         <span className="text-xl font-[400]" >พนักงานทั้งหมด</span>
       </div>
-      <div className="flex justify-between mb-2">
+      <div className="flex justify-between mb-3">
         <TextField
           variant="outlined"
           size="small"
@@ -120,6 +128,7 @@ const EmployeePage = () => {
                     <TableCell>#</TableCell>
                     <TableCell>รูปภาพ</TableCell>
                     < TableCell >ชื่อ-นามสกุล</TableCell>
+                    < TableCell >ตำแหน่งงาน</TableCell>
                     < TableCell >เบอร์โทรศัพท์</TableCell>
                     < TableCell >ที่อยู่</TableCell>
                     < TableCell align="center" > จัดการ </TableCell>
@@ -138,6 +147,11 @@ const EmployeePage = () => {
                           />
                         </TableCell>
                         <TableCell>{item.employee_prefix} {item.employee_firstname} {item.employee_lastname} </TableCell>
+                        <TableCell>
+                          {license.find((l) => l.license_id === item.license_id)?.license_name ||
+                            <span className="text-[12px] text-gray-500">ยังไม่มีตำแหน่ง</span>}
+                        </TableCell>
+
                         <TableCell>{item.employee_phone}</TableCell>
                         <TableCell>{item.employee_address}</TableCell>
                         <TableCell>

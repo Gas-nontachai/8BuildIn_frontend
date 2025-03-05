@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
-import { Employee } from "@/misc/types";
-import { useEmployee } from "@/hooks/hooks"
+import { Employee, License } from "@/misc/types";
+import { useEmployee, useLicense } from "@/hooks/hooks"
 
 const { insertEmployee } = useEmployee()
+const { getLicenseBy } = useLicense()
 
 import { Close, UploadFile, VisibilityOff, Visibility } from "@mui/icons-material";
 import {
@@ -24,6 +25,16 @@ const AddEmployee: React.FC<Props> = ({ onClose, open, onRefresh }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [license, setLicense] = useState<License[]>([])
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    const { docs: res } = await getLicenseBy()
+    setLicense(res)
+  }
 
   const prefix_name = [
     { prefix: "นาย" },
@@ -120,7 +131,7 @@ const AddEmployee: React.FC<Props> = ({ onClose, open, onRefresh }) => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <FormControl fullWidth margin="normal">
                     <Select
                       name="employee_gender"
@@ -138,7 +149,7 @@ const AddEmployee: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <FormControl fullWidth margin="normal">
                     <Select
                       name="employee_prefix"
@@ -156,7 +167,7 @@ const AddEmployee: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={4}>
                   <TextField
                     label="ชื่อ"
                     size="small"
@@ -167,7 +178,7 @@ const AddEmployee: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                     margin="normal"
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={4}>
                   <TextField
                     label="นามสกุล"
                     size="small"
@@ -223,6 +234,24 @@ const AddEmployee: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
+                  <FormControl fullWidth margin="normal">
+                    <Select
+                      name="license_id"
+                      size="small"
+                      value={employeeData.license_id}
+                      onChange={handleChange}
+                      displayEmpty
+                    >
+                      <MenuItem value="" disabled>ตำแหน่งงาน</MenuItem>
+                      {license.map((item, index) => (
+                        <MenuItem key={index} value={item.license_id}>
+                          {item.license_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
                   <TextField
                     label="เบอร์โทรศัพท์"
                     size="small"
@@ -246,7 +275,7 @@ const AddEmployee: React.FC<Props> = ({ onClose, open, onRefresh }) => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     label="ที่อยู่"
                     name="employee_address"
