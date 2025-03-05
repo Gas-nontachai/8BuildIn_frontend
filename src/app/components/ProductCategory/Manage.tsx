@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import { Close, Delete } from "@mui/icons-material";
 import {
     Dialog,
@@ -65,7 +66,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
     };
 
     const handleSubmit = async () => {
-        if (!validateForm()) return; // Stop if form validation fails
+        if (!validateForm()) return; 
         try {
             setLoading(true);
             await insertProductCategory(productCategory);
@@ -80,16 +81,32 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
         setLoading(false);
     };
 
-    const onDelete = async (m_id: string) => {
-        try {
-            setLoading(true);
-            await deleteProductCategoryBy({ product_category_id: m_id });
-            await fetchData();
-        } catch (error) {
-            console.log(error);
+    const onDelete = async (p_id: string) => {
+        const result = await Swal.fire({
+            title: "ยืนยันการลบ?",
+            text: "คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "ใช่, ลบเลย!",
+            cancelButtonText: "ยกเลิก",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                setLoading(true);
+                await deleteProductCategoryBy({ product_category_id: p_id });
+                await fetchData();
+                Swal.fire("ลบสำเร็จ!", "หมวดหมู่ถูกลบเรียบร้อยแล้ว", "success");
+            } catch (error) {
+                console.log(error);
+                Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถลบหมวดหมู่ได้", "error");
+            }
+            setLoading(false);
         }
-        setLoading(false);
     };
+
 
     return (
         <>
