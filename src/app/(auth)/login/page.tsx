@@ -14,7 +14,7 @@ import { Employee } from '@/misc/types';
 const { authLogin } = useAuth();
 
 const Login = () => {
-    const { setTokens } = AuthProvider();
+    const { accessProfile, fetchUserProfile } = AuthProvider();
     const router = useRouter();
 
     const [formdata, setFormData] = useState<Employee>({
@@ -57,9 +57,7 @@ const Login = () => {
                 employee_username: formdata.employee_username,
                 employee_password: formdata.employee_password,
             });
-            console.log(res);
-
-            setTokens(res.access_token, res.refresh_token);
+            await accessProfile(res.access_token, res.refresh_token, formdata.employee_username);
             await Swal.fire({
                 icon: 'success',
                 title: 'เข้าสู่ระบบสำเร็จ',

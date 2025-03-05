@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ModeEdit, Delete } from "@mui/icons-material"; 
+import { ModeEdit, Delete } from "@mui/icons-material";
 
 const Page = () => {
   const [data, setData] = useState([
