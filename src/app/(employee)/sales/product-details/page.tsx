@@ -1,12 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
+import { Newspaper, FirstPage } from "@mui/icons-material";
 import {
     Typography,
     Card,
     CardContent,
     Box,
     Grid,
+    Link,
+    Stack,
+    Breadcrumbs,
+    CardHeader
 } from "@mui/material";
 import { useProduct } from "@/hooks/hooks";
 import { Product } from "@/misc/types"
@@ -59,9 +64,7 @@ const ProductDetails = () => {
                 </div>
             );
         }
-
         const images = productImg.split(",");
-
         return (
             <div className="space-y-4">
                 {/* รูปใหญ่ที่เลือก */}
@@ -107,17 +110,26 @@ const ProductDetails = () => {
 
     return (
         <Box >
-            <Card >
+            <Card>
                 <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                        รายละเอียดสินค้า
-                    </Typography>
+                    <Box sx={{ mb: 4 }}>
+                        <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+                            <Link underline="hover" href="/sales">
+                                <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                                    <FirstPage fontSize="small" />
+                                    <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
+                                </Stack>
+                            </Link>
+                            <Stack direction="row" alignItems="center" spacing={0.5}>
+                                <Newspaper fontSize="small" />
+                                <Typography variant="body1" color="text.secondary">รายละเอียดสินค้า</Typography>
+                            </Stack>
+                        </Breadcrumbs>
+                    </Box>
                     <Grid container spacing={4}>
-                        {/* รูปภาพอยู่ทางซ้าย */}
                         <Grid item xs={12} md={7}>
                             {renderProductImages(product.product_img)}
                         </Grid>
-                        {/* ข้อมูลสินค้าอยู่ทางขวา */}
                         <Grid item xs={12} md={5}>
                             <div className="space-y-4">
                                 <Typography variant="h4">
