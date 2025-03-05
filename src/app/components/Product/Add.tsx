@@ -204,6 +204,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                     <Grid size={4}>
                         <Autocomplete
                             disablePortal
+                            size="small"
                             options={option_category}
                             getOptionLabel={(option) => option.title}
                             renderInput={(params) => <TextField {...params} label="ประเภท" />}
@@ -218,8 +219,8 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                         <TextField
                             fullWidth
                             label="ชื่อสินค้า"
+                            size="small"
                             type="text"
-                            size="medium"
                             value={product.product_name}
                             onChange={(e) => handleInputChange(e, 'product_name')}
                         />
@@ -228,8 +229,8 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                         <TextField
                             fullWidth
                             label="จำนวนสินค้า"
+                            size="small"
                             type="text"
-                            size="medium"
                             value={product.product_quantity}
                             onChange={(e) => handleInputChange(e, 'product_quantity')}
                         />
@@ -239,13 +240,14 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                             fullWidth
                             label="ราคาสินค้า"
                             type="text"
-                            size="medium"
+                            size="small"
                             value={product.product_price}
                         />
                     </Grid>
                     <Grid size={4}>
                         <Autocomplete
                             disablePortal
+                            size="small"
                             options={option_unit}
                             getOptionLabel={(option) => option.title}
                             renderInput={(params) => <TextField {...params} label="หน่วย" />}
