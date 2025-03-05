@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Close, DeleteForeverRounded, Add, CloudUpload } from "@mui/icons-material";
+import { Close, DeleteForeverRounded, Add, CloudUpload, Edit } from "@mui/icons-material";
 import {
     Dialog,
     DialogActions,
@@ -50,6 +50,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
     const [selectedUnit, setSelectedUnit] = useState<{ title: string, value: string } | null>(null);
     const [files, setFiles] = useState<File[]>([]);
     const [img, setImg] = useState<string[]>([]);
+    const [isUpdateImg, setIsupdateImg] = useState<boolean>(false);
 
     useEffect(() => {
         if (open) {
@@ -80,6 +81,8 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
             setImg(newFiles);
         }
         setProduct(res);
+        console.log(res);
+
     };
 
     const fetchCategory = async () => {
@@ -165,7 +168,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
         try {
             Swal.fire({
                 icon: 'info',
-                title: 'กำลังเข้าสู่ระบบ...',
+                title: 'กำลังบันทึกข้อมูล...',
                 text: 'โปรดรอสักครู่ขณะกำลังยืนยันตัวตน',
                 allowOutsideClick: false,
                 didOpen: () => {
@@ -193,7 +196,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
             Swal.fire({
                 icon: 'success',
                 title: 'สำเร็จ!',
-                text: 'เพิ่มสินค้าสำเร็จแล้ว',
+                text: 'แก้ไขสินค้าสำเร็จแล้ว',
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
@@ -220,6 +223,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                             getOptionLabel={(option) => option.title}
                             renderInput={(params) => <TextField {...params} label="ประเภท" />}
                             isOptionEqualToValue={(option, value) => option.value === value.value}
+                            value={option_category.find(option => option.value === product.product_category_id) || null}
                             onChange={(event, newValue) => setProduct((prevProduct) => ({
                                 ...prevProduct,
                                 product_category_id: newValue ? newValue.value : '',
@@ -287,10 +291,13 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                     <Autocomplete
                                         disablePortal
                                         size="small"
-                                        options={option_material.filter(option => !material.some(m => m.material_id === option.material_id))}
+                                        options={option_material.filter(option =>
+                                            !material.some((m, i) => i !== index && m.material_id === option.material_id)
+                                        )}
                                         getOptionLabel={(option) => option.material_name}
                                         renderInput={(params) => <TextField {...params} label="วัสดุ" />}
                                         isOptionEqualToValue={(option, value) => option.material_id === value.material_id}
+                                        value={contact.material_id ? option_material.find(option => option.material_id === contact.material_id) || null : null}
                                         onChange={(e, newValue) => {
                                             if (newValue) {
                                                 handleDataChange(index, 'material_id', newValue.material_id);
@@ -315,6 +322,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                         fullWidth
                                         value={contact.material_price * contact.material_quantity}
                                         type="number"
+                                        InputProps={{ readOnly: true }}
                                     />
                                 </Grid>
                                 <Grid size={1}>
@@ -324,52 +332,84 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                 </Grid>
                             </Grid>
                         ))}
-                        <Grid container spacing={2}>
-                            {img.map((img, index) => (
-                                <Grid size={12} key={index}>
-                                    <div>
-                                        <img
-                                            src={`${API_URL}${img}`}
-                                            alt={`img(${index})`}
-                                            style={{ width: '100%', height: 'auto' }}
+                        <Grid container spacing={2} >
+                            <Grid size={12} >
+                                <span>รูปภาพเดิม : </span>
+                                <div className="flex flex-row items-center gap-4 p-2  ">
+                                    {img.map((image, index) => (
+                                        <img key={index}
+                                            src={`${API_URL}${image}`}
+                                            alt={`Image ${index + 1}`}
+                                            className="w-24 h-24 object-cover rounded-lg border"
                                         />
-                                    </div>
-                                </Grid>
-                            ))}
-                        </Grid>
-                        <Grid size={12}>
-                            <div className="grid grid-cols-12">
-                                <div className="flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
-                                    <label className="flex flex-col items-center w-full cursor-pointer">
-                                        <div className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-400 rounded-lg bg-white hover:border-gray-600 transition">
-                                            <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 12a8 8 0 0116 0c0 4.418-3.582 8-8 8s-8-3.582-8-8z" />
-                                            </svg>
-                                            <span className="mt-2 text-sm text-gray-600">คลิกเพื่ออัปโหลดไฟล์</span>
-                                        </div>
-                                        <input id="file-input" type="file" className="hidden" multiple onChange={handleFileChange} />
-                                    </label>
-                                    <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-blue-500 to-orange-600 rounded-lg shadow-lg hover:opacity-90 transition" onClick={handleUploadClick}>
-                                        <CloudUpload className="mr-2" />
-                                        อัปโหลดไฟล์
-                                    </button>
-                                    {files.length > 0 && (
-                                        <div className="mt-4 text-sm text-gray-600 w-full">
-                                            <p>ไฟล์ที่เลือก:</p>
-                                            <ul className="mt-2">
-                                                {files.map((file, index) => (
-                                                    <li key={index} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                                                        <span>{file.name}</span>
-                                                        <button onClick={() => handleRemoveFile(index)} className="text-red-500 hover:text-red-700">
-                                                            ลบ
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
+                                    ))}
                                 </div>
-                            </div>
+                            </Grid>
+                        </Grid>
+                        {
+                            !isUpdateImg && (
+                                <Grid size={12}>
+                                    <Button onClick={() => setIsupdateImg(true)} startIcon={<Edit />} color="primary">
+                                        แก้ไขวัสดุ
+                                    </Button>
+                                </Grid>
+                            )
+                        }
+                        <Grid size={12}>
+                            {
+                                isUpdateImg ? (
+                                    <>
+                                        <div className="grid grid-cols-12">
+                                            <div className="relative flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
+                                                <button
+                                                    className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition"
+                                                    onClick={() => setIsupdateImg(false)}
+                                                >
+                                                    ✖
+                                                </button>
+
+                                                <label className="flex flex-col items-center w-full cursor-pointer">
+                                                    <div className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-400 rounded-lg bg-white hover:border-gray-600 transition">
+                                                        <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 12a8 8 0 0116 0c0 4.418-3.582 8-8 8s-8-3.582-8-8z" />
+                                                        </svg>
+                                                        <span className="mt-2 text-sm text-gray-600">คลิกเพื่ออัปโหลดไฟล์</span>
+                                                    </div>
+                                                    <input id="file-input" type="file" className="hidden" multiple onChange={handleFileChange} />
+                                                </label>
+
+                                                <button
+                                                    className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-blue-500 to-orange-600 rounded-lg shadow-lg hover:opacity-90 transition"
+                                                    onClick={handleUploadClick}
+                                                >
+                                                    <CloudUpload className="mr-2" />
+                                                    อัปโหลดไฟล์
+                                                </button>
+
+                                                {files.length > 0 && (
+                                                    <div className="mt-4 text-sm text-gray-600 w-full">
+                                                        <p>ไฟล์ที่เลือก:</p>
+                                                        <ul className="mt-2">
+                                                            {files.map((file, index) => (
+                                                                <li key={index} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
+                                                                    <span>{file.name}</span>
+                                                                    <button onClick={() => handleRemoveFile(index)} className="text-red-500 hover:text-red-700">
+                                                                        ลบ
+                                                                    </button>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+
+                                    </>
+                                )
+                            }
                         </Grid>
                     </Grid>
                 </Grid>

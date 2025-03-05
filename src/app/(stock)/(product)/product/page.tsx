@@ -219,7 +219,7 @@ const ProductPage = () => {
 
       <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
       <AddProduct open={addProductDialog} onRefresh={() => fetchData()} onClose={() => setAddProductDialog(false)} />
-      <UpdateProduct open={updateProductDialog} product_id={selectedProductId} onRefresh={() => fetchData()} onClose={() => setUpdateProductDialog(false)} />
+      <UpdateProduct open={updateProductDialog} product_id={selectedProductId} onRefresh={() => fetchData()} onClose={() => { setUpdateProductDialog(false); handleClose(); }} />
     </>
   );
 };
