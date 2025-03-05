@@ -105,9 +105,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
             }
             setLoading(false);
         }
-    };
-
-
+    }; 
     return (
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -169,6 +167,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
                                                 <div className="flex justify-center gap-2">
                                                     <Button
                                                         variant="contained"
+                                                        size="small"
                                                         color="error"
                                                         startIcon={<Delete />}
                                                         onClick={() => onDelete(data.product_category_id)}
