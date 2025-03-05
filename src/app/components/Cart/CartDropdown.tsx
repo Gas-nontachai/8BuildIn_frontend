@@ -1,20 +1,28 @@
 "use client";
 import { useState } from "react";
-import { Popover, Box, Typography, IconButton, Badge, List, ListItem, ListItemText, Divider, Button } from "@mui/material";
+import { ListItemSecondaryAction, Avatar, ListItemAvatar, Popover, Box, Typography, IconButton, Badge, List, ListItem, ListItemText, Divider, Button } from "@mui/material";
 import { ShoppingBag } from "@mui/icons-material";
 
 interface CartItem {
     id: number;
     name: string;
+    img: string;
     price: number;
     quantity: number;
 }
 
 const sampleCartItems: CartItem[] = [
-    { id: 1, name: "สินค้า A", price: 500, quantity: 2 },
+    {
+        id: 1,
+        name: "สินค้า A",
+        img: "https://via.placeholder.com/50",
+        price: 500,
+        quantity: 2
+    },
     ...Array(12).fill(null).map((_, index) => ({
         id: 2 + index,
         name: "สินค้า B",
+        img: `https://via.placeholder.com/50?text=B${index + 1}`,
         price: 350,
         quantity: 1
     }))
@@ -54,22 +62,37 @@ export default function CartDropdown() {
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
                 <Box sx={{ width: 350, p: 2 }}>
-                    <Typography variant="h6" gutterBottom>
-                        ตะกร้าสินค้า
-                    </Typography>
-                    <List sx={{ maxHeight: 250, overflow: "auto" }}>
-                        {sampleCartItems.map((item) => (
+                    <span className="text-gray-700 text-[17px] font-[400]">ตะกร้าสินค้า</span>
+                    <List sx={{ maxHeight: 300, overflow: "auto" }}>
+                        {sampleCartItems.slice(0, 3).map((item) => (
                             <Box key={item.id}>
                                 <ListItem>
-                                    <ListItemText primary={item.name} secondary={`฿${item.price} x ${item.quantity}`} />
+                                    <img src={item.img} className="w-10 h-10 runded-sm mr-2" alt="" />
+                                    <div className="flex-1">
+                                        <p className="text-[14px] font-[500] text-gray-700">{item.name}</p>
+                                        <p className="text-sm text-gray-500">x {item.quantity}</p>
+                                    </div>
+                                    <div className="flex-shrink-0">
+                                        <p className="text-[15px] font-[400] text-gray-700">
+                                            ฿{item.price}
+                                        </p>
+                                    </div>
                                 </ListItem>
                                 <Divider />
                             </Box>
                         ))}
+
+                        {sampleCartItems.length > 5 && (
+                            <div className="flex justify-between mt-2">
+                                <span className="text-gray-700 text-[13px] mt-4">
+                                    {sampleCartItems.length} สินค้าเพิ่มเติมในตะกร้า
+                                </span>
+                                <Button variant="contained" color="info">
+                                    ดูตะกร้าสินค้า
+                                </Button>
+                            </div>
+                        )}
                     </List>
-                    <Button fullWidth size="small" variant="contained" color="primary" sx={{ mt: 2 }}>
-                        ไปที่ตะกร้า
-                    </Button>
                 </Box>
             </Popover>
         </>
