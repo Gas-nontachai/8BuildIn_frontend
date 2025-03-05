@@ -15,6 +15,7 @@ import Box from "@mui/material/Box";
 import { MenuItem, Menu } from "@mui/material";
 import { ExitToApp, ShoppingBag } from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
+import CartDropdown from "./Cart/CartDropdown";
 
 const drawerWidth = 240;
 
@@ -68,19 +69,17 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           {pathname === "/sales" && (
-            <IconButton aria-label="cart">
-              <Badge badgeContent={4} className="text-white">
-                <ShoppingBag />
-              </Badge>
-            </IconButton>
+            <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+              {pathname === "/sales" && <CartDropdown />}
+            </Box>
           )}
           <IconButton color="inherit" sx={{ ml: 2 }}>
-            <Badge showZero={false} color="error">
+            <Badge showZero={false}>
               <MailIcon />
             </Badge>
           </IconButton>
           <IconButton color="inherit" sx={{ ml: 2 }}>
-            <Badge showZero={false} color="error">
+            <Badge showZero={false}>
               <NotificationsIcon />
             </Badge>
           </IconButton>
