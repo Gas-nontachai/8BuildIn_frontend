@@ -17,10 +17,12 @@ import {
     Dashboard,
     Engineering,
     Inventory2,
-    AcUnit,
+    Storage,
     SupportAgent,
     Badge,
-    Security
+    Security,
+    ManageAccounts,
+    Shield
 } from "@mui/icons-material";
 
 
@@ -35,15 +37,14 @@ export default function SidebarMenu() {
     const [openProduct, setOpenProduct] = useState(false);
 
     const Employee = [
-        { text: "หน้าหลัก", href: "/dashboard-employee", icon: <Dashboard /> },
-        { text: "จัดสิทธิ์การเข้าถึง", href: "/permission", icon: <LockIcon /> },
-        { text: "บทบาท", href: "/license", icon: <Security /> },
+        { text: "หน้าหลัก", href: "/dashboard-employee", icon: <Dashboard /> }, 
+        { text: "บทบาท", href: "/license", icon: <Shield /> },
         { text: "พนักงาน", href: "/employee", icon: <Badge /> },
     ];
 
     const Customer = [
         { text: "หน้าหลัก", href: "/dash-cus", icon: <Dashboard /> },
-        { text: "ลูกค้า", href: "/customer", icon: <SupportAgent /> }
+        { text: "ลูกค้า", href: "/customer", icon: <ManageAccounts /> }
     ];
 
     const Account = [
@@ -52,11 +53,11 @@ export default function SidebarMenu() {
     ];
 
     const StockStore = [
-
         { text: "หน้าหลัก", href: "/dashboard-stock", icon: <Dashboard /> },
         { text: "บันทึกสินค้าเข้า", href: "/stock-in", icon: <Inventory2 /> },
         { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Engineering /> },
-        { text: "จัดการหน่วยสินค้า", href: "/unit", icon: <AcUnit /> },
+        { text: "จัดการหน่วยสินค้า", href: "/unit", icon: <Storage /> }
+
     ];
 
     const MenuList = [

@@ -20,7 +20,7 @@ const Page = () => {
           <tr className="bg-gray-200">
             <th className="border p-2">#</th>
             <th className="border p-2">ชื่อ</th>
-            <th className="border p-2">ตำแหน่ง</th>
+            <th className="border p-2">บทบาท</th>
             <th className="border p-2">จัดการ</th>
           </tr>
         </thead>

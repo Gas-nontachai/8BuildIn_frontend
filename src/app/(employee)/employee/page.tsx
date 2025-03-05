@@ -95,7 +95,7 @@ const EmployeePage = () => {
         <TextField
           variant="outlined"
           size="small"
-          placeholder="ค้นหาชื่อพนักงงาน..."
+          placeholder="ค้นหาชื่อพนักงาน..."
           className="w-64"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -128,7 +128,7 @@ const EmployeePage = () => {
                     <TableCell>#</TableCell>
                     <TableCell>รูปภาพ</TableCell>
                     < TableCell >ชื่อ-นามสกุล</TableCell>
-                    < TableCell >ตำแหน่งงาน</TableCell>
+                    < TableCell >บทบาท</TableCell>
                     < TableCell >เบอร์โทรศัพท์</TableCell>
                     < TableCell >ที่อยู่</TableCell>
                     < TableCell align="center" > จัดการ </TableCell>
@@ -149,7 +149,7 @@ const EmployeePage = () => {
                         <TableCell>{item.employee_prefix} {item.employee_firstname} {item.employee_lastname} </TableCell>
                         <TableCell>
                           {license.find((l) => l.license_id === item.license_id)?.license_name ||
-                            <span className="text-[12px] text-gray-500">ยังไม่มีตำแหน่ง</span>}
+                            <span className="text-[12px] text-gray-500">ยังไม่มีบทบาท</span>}
                         </TableCell>
 
                         <TableCell>{item.employee_phone}</TableCell>

@@ -256,7 +256,7 @@ const UpdateEmployee: React.FC<Props> = ({ onClose, open, onRefresh, employee_id
                         onChange={handleChange}
                         displayEmpty
                       >
-                        <MenuItem value="" disabled>ตำแหน่งงาน</MenuItem>
+                        <MenuItem value="" disabled>บทบาท</MenuItem>
                         {license.map((item, index) => (
                           <MenuItem key={index} value={item.license_id}>
                             {item.license_name}
