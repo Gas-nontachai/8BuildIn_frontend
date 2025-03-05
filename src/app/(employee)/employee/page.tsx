@@ -8,6 +8,7 @@ import { usePagination } from "@/context/PaginationContext";
 
 import AddEmployee from "@/app/components/Employee/Add";
 import UpdateEmployee from "@/app/components/Employee/Update";
+import Loading from "@/app/components/Loading";
 
 import { useEmployee } from "@/hooks/hooks";
 import { Employee } from '@/misc/types';
@@ -28,7 +29,7 @@ const EmployeePage = () => {
   const handleClickMenu = (event: React.MouseEvent<HTMLElement>, employee: Employee) => {
     setAnchorEl(event.currentTarget);
     setSelected(employee);
-  }; 
+  };
   const handleCloseMenu = () => {
     setAnchorEl(null);
     setSelected(null);
@@ -109,10 +110,7 @@ const EmployeePage = () => {
       </div>
       {
         loading ? (
-          <div className="flex justify-center flex-col items-center py-4 text-[15px]" >
-            <CircularProgress />
-            < span className="mt-3" > กำลังโหลดข้อมูล...</span>
-          </div>
+          <Loading />
         ) : (
           <Paper className="shadow-md" >
             <TableContainer style={{ minHeight: "24rem" }}>
