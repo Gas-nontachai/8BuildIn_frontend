@@ -91,7 +91,7 @@ const EditProfile = () => {
         try {
             await updateEmployeeBy({
                 employee: employeeData,
-                employee_img: files.length > 0 ? files : undefined
+                employee_img: files.length > 0 ? files : []
             });
             setEmployeeData(initialState);
             setSelectedImage(null);
