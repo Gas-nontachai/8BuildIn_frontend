@@ -3,24 +3,25 @@ import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
-    CardMedia,
+    CardActions,
     Typography,
     Grid,
     FormControl,
-    InputLabel,
-    Select,
+    Button,
     Autocomplete,
     CircularProgress,
     Box,
     IconButton,
     TextField
 } from "@mui/material";
-import axios from "axios";
 import { API_URL } from "@/utils/config"
 import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
-import { useProduct } from "@/hooks/hooks";
-import { Product } from "@/misc/types"
+import { useProduct, useCart } from "@/hooks/hooks";
+import { Product, Cart } from "@/misc/types"
+
+const { getProductBy } = useProduct();
+const { insertCart } = useCart();
 
 const SalesPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +29,6 @@ const SalesPage = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [categories, setCategories] = useState<string[]>([]);
     const router = useRouter();
-    const { getProductBy } = useProduct();
 
     useEffect(() => {
         fetchProducts();
@@ -49,6 +49,14 @@ const SalesPage = () => {
         setLoading(false);
     };
 
+    const addToCart = async (product_id: string) => {
+        try {
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const renderProductImages = (productImg: string | null) => {
         if (!productImg) {
             return (
@@ -56,7 +64,7 @@ const SalesPage = () => {
                     <span className="text-gray-500">ไม่มีรูปภาพ</span>
                 </div>
             );
-        } 
+        }
         const images = productImg.split(",");
         const totalImages = images.length;
 
@@ -100,7 +108,6 @@ const SalesPage = () => {
                             alt={`Product ${index + 1}`}
                             className="w-full h-full object-cover"
                         />
-                        {/* แสดงจำนวนรูปที่เหลือถ้ามีรูปมากกว่า 5 รูป */}
                         {totalImages > 5 && index === 4 && (
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                                 <span className="text-white text-lg font-medium">
@@ -170,6 +177,9 @@ const SalesPage = () => {
                                         ราคา: {decimalFix(product.product_price)} บาท
                                     </Typography>
                                 </CardContent>
+                                <CardActions sx={{ display: 'flex', justifyContent: 'end' }}>
+                                    <Button onClick={() => addToCart(product.product_id)} variant="contained" size="small">เพิ่มเข้าตะกร้า</Button>
+                                </CardActions>
                             </Card>
                         </Grid>
                     ))}
