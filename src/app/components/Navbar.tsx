@@ -68,9 +68,9 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
           </Typography>
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
-          {pathname === "/sales" && (
+          {pathname.includes("/sales") && (
             <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
-              {pathname === "/sales" && <CartDropdown />}
+              <CartDropdown />
             </Box>
           )}
           <IconButton color="inherit" sx={{ ml: 2 }}>
