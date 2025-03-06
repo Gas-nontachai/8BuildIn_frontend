@@ -22,21 +22,29 @@ import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
 import Loading from "@/app/components/Loading";
 
 import useMaterial from "@/hooks/useMaterial";
-import { Material } from '@/misc/types';
-
+import useMaterialCategory from "@/hooks/useMaterialCategory";
+import { Material, MaterialCategory } from '@/misc/types';
 const MaterialPage = () => {
   const { getMaterialBy } = useMaterial()
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [materialCategory, setMaterialCategory] = useState<MaterialCategory[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const { getMaterialCategoryBy } = useMaterialCategory();
 
   const filterNameMaterial = useMemo(() => {
     return materials.filter((item) =>
       item.material_name?.toLowerCase().includes(searchTerm.trim().toLowerCase())
     );
   }, [materials, searchTerm]);
+
+  const filterMaterialCategory = useMemo(() => {
+    return materialCategory.filter((item) =>
+      item.material_category_name?.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    );
+  }, [materialCategory, searchTerm]);
 
   useEffect(() => {
     fetchData();
@@ -45,8 +53,13 @@ const MaterialPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { docs: res } = await getMaterialBy();
-      setMaterials(res);
+      const [materialsRes, categoriesRes] = await Promise.all([
+        getMaterialBy(),
+        getMaterialCategoryBy(),
+      ]);
+
+      setMaterials(materialsRes.docs);
+      setMaterialCategory(categoriesRes.docs);
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
@@ -124,13 +137,14 @@ const MaterialPage = () => {
 
         <FormControl sx={{ minWidth: 200 }}>
           <Autocomplete
-            /* value={selectedCategory} */
-            /* onChange={(event, newValue) => setSelectedCategory(newValue)} */
-            /* options={categories} */
-            renderInput={(params) => <TextField {...params} label="ค้นหาตามประเภทวัสดุ" size="small" />}
-            isOptionEqualToValue={(option, value) => option === value}
+            options={filterMaterialCategory}
+            getOptionLabel={(option) => option.material_category_name ?? "ไม่มีชื่อ"}
+            renderInput={(params) => (
+              <TextField {...params} label="ค้นหาตามประเภทวัสดุ" size="small" />
+            )}
+            isOptionEqualToValue={(option, value) => option.material_category_name === value?.material_category_name} // Correct comparison
             disableClearable
-            options={[]}
+            noOptionsText="ไม่มีประเภทวัสดุ"
           />
         </FormControl>
       </div>
