@@ -169,7 +169,6 @@ const EmployeePage = () => {
                           {license.find((l) => l.license_id === item.license_id)?.license_name ||
                             <span className="text-[12px] text-gray-500">ยังไม่มีบทบาท</span>}
                         </TableCell>
-
                         <TableCell>{item.employee_phone}</TableCell>
                         <TableCell>{item.employee_address}</TableCell>
                         <TableCell>

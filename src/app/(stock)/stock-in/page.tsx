@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
-import { ModeEdit, Delete, Add, Inventory2, Home } from "@mui/icons-material";
+import { ModeEdit, Delete, Add, Inventory2, Home, MoreVert } from "@mui/icons-material";
 import {
     Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, TextField, InputAdornment, Typography, Stack, Link,
+    TableContainer, TableHead, TableRow, Menu, TablePagination, Button, Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link,
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
@@ -27,6 +27,18 @@ const StockInPage = () => {
     const [supplier, setSupplier] = useState<Supplier[]>([]);
     const [stockIn, setStockIn] = useState<StockIn[]>([]);
     const stock_in_id = useRef('')
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [selected, setSelected] = useState<StockIn | null>(null);
+
+    const handleClickMenu = (event: React.MouseEvent<HTMLElement>, stockin: StockIn) => {
+        setAnchorEl(event.currentTarget);
+        setSelected(stockin);
+    };
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+        setSelected(null);
+    };
+
 
     useEffect(() => {
         fetchData();
@@ -91,7 +103,7 @@ const StockInPage = () => {
                 loading ? (
                     <Loading />
                 ) : (
-                    <Paper className="shadow-md" >
+                    <>
                         <TableContainer style={{ minHeight: "24rem" }}>
                             <Table>
                                 <TableHead>
@@ -100,7 +112,7 @@ const StockInPage = () => {
                                         <TableCell>รหัสสต็อก </TableCell>
                                         < TableCell > ชื่อสต็อกเข้า </TableCell>
                                         < TableCell > ผู้จัดจำหน่าย </TableCell>
-                                        < TableCell align="center" > จัดการ </TableCell>
+                                        < TableCell > จัดการ </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -130,23 +142,31 @@ const StockInPage = () => {
                                                 {supplier.find((s) => s.supplier_id === stock.supplier_id)?.supplier_name || "Unknown"}
                                             </TableCell>
                                             < TableCell >
-                                                <div className="flex justify-center gap-2" >
-                                                    <Button
-                                                        variant="outlined"
-                                                        color="primary"
-                                                        startIcon={< ModeEdit />}
-                                                        onClick={() => {
-                                                            setIsUpdateDialogOpen(true);
-                                                            stock_in_id.current = stock.stock_in_id;
-                                                        }
-                                                        }
-                                                    >
-                                                        แก้ไข
-                                                    </Button>
-                                                    < Button variant="outlined" color="error" startIcon={< Delete />} onClick={() => onDelete(stock.stock_in_id)}>
-                                                        ลบ
-                                                    </Button>
-                                                </div>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={(e) => handleClickMenu(e, stock)}
+                                                >
+                                                    <MoreVert />
+                                                </IconButton>
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl)}
+                                                    onClose={handleCloseMenu}
+                                                >
+                                                    <MenuItem onClick={() => {
+                                                        setIsUpdateDialogOpen(true);
+                                                        stock_in_id.current = selected?.stock_in_id!;
+                                                        handleCloseMenu();
+                                                    }}>
+                                                        <ModeEdit className="mr-2" /> แก้ไข
+                                                    </MenuItem>
+                                                    <MenuItem onClick={() => {
+                                                        onDelete(selected?.stock_in_id!);
+                                                        handleCloseMenu();
+                                                    }}>
+                                                        <Delete className="mr-2" /> ลบ
+                                                    </MenuItem>
+                                                </Menu>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -162,7 +182,7 @@ const StockInPage = () => {
                             onPageChange={onChangePage}
                             onRowsPerPageChange={onChangeRowsPerPage}
                         />
-                    </Paper>
+                    </>
                 )}
 
             <AddStockin open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />

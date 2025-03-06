@@ -33,7 +33,7 @@ const ProductPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [unit, setUnit] = useState<Unit[]>([]);
   const [productCategory, setProductCategory] = useState<ProductCategory[]>([]);
-
+  
   useEffect(() => {
     fetchData();
   }, []);
