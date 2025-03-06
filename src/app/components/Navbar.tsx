@@ -22,9 +22,15 @@ import {
   PersonOutlined,
   ShoppingCart,
   Delete,
+  LockOpenOutlined
 } from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
 import { API_URL } from "@/utils/config";
+import { useCart } from "@/hooks/hooks";
+import { CartItemWithProduct, Cart } from "@/misc/cart";
+import { Product } from "@/misc/product";
+import { useProduct } from "@/hooks/hooks";
+import { decimalFix } from "@/utils/number-helper";
 
 import ChangePassword from "./Auth/ChangePassword";
 
@@ -45,6 +51,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
   const router = useRouter();
   const { logout } = AuthProvider();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openChangePassword, setOpenChangePassword] = useState(false);
   const [cartAnchorEl, setCartAnchorEl] = useState<null | HTMLElement>(null);
   const [cartItems, setCartItems] = useState<CartItemWithProduct[]>([]);
   const { getCartBy, deleteCartBy } = useCart();
@@ -101,7 +108,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
   };
 
   const handleViewCart = () => {
-    router.push('/sales/cart-details'); 
+    router.push('/sales/cart-details');
   };
 
   return (
@@ -127,7 +134,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
               <IconButton
                 color="inherit"
                 onMouseEnter={(e) => setCartAnchorEl(e.currentTarget)}
-                
+
               >
                 <Badge badgeContent={cartItems.length} color="error">
                   <ShoppingCart />
@@ -143,7 +150,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
                     <Typography>ไม่มีสินค้าในตะกร้า</Typography>
                   </MenuItem>
                 ) : (
-                  <div> 
+                  <div>
                     {cartItems.map((item) => (
                       <MenuItem key={item.cart_id} onClick={handleViewCart}>
                         <Box sx={{
