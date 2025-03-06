@@ -1,22 +1,35 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import Badge from "@mui/material/Badge";
-import Box from "@mui/material/Box";
-import { MenuItem, Menu } from "@mui/material";
-import { Logout, PersonOutlined } from "@mui/icons-material";
+import {
+  Toolbar,
+  Typography,
+  IconButton,
+  Badge,
+  Box,
+  MenuItem,
+  Menu,
+  Divider,
+} from "@mui/material";
+import {
+  Menu as MenuIcon,
+  Mail as MailIcon,
+  Notifications as NotificationsIcon,
+  AccountCircle as AccountCircleIcon,
+  Logout,
+  PersonOutlined,
+  ShoppingCart,
+  Delete,
+} from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
-import CartDropdown from "./Cart/CartDropdown";
 import { API_URL } from "@/utils/config";
+import { useCart } from "@/hooks/hooks";
+import { CartItemWithProduct, Cart } from "@/misc/cart";
+import { Product } from "@/misc/product";
+import { useProduct } from "@/hooks/hooks";
+import { decimalFix } from "@/utils/number-helper";
 
 const drawerWidth = 240;
 
@@ -27,29 +40,71 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
 }));
 
 export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
-  const { $profile } = AuthProvider()
+  const { $profile } = AuthProvider();
   const pathname = usePathname();
-  const router = useRouter()
+  const router = useRouter();
   const { logout } = AuthProvider();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [cartAnchorEl, setCartAnchorEl] = useState<null | HTMLElement>(null);
+  const [cartItems, setCartItems] = useState<CartItemWithProduct[]>([]);
+  const { getCartBy, deleteCartBy } = useCart();
+  const { getProductByID } = useProduct();
+
+  useEffect(() => {
+    if (pathname.includes("/sales")) {
+      fetchCartItems();
+    }
+  }, [pathname]);
+
+  const fetchCartItems = async () => {
+    try {
+      const { docs } = await getCartBy({
+        addby: $profile.employee_id,
+        cart_status: "0"
+      });
+
+      // ดึงข้อมูลสินค้าสำหรับแต่ละรายการในตะกร้า
+      const cartWithProducts = await Promise.all(
+        docs.map(async (item: CartItemWithProduct) => {
+          try {
+            const productData = await getProductByID({
+              product_id: item.product_id
+            });
+            return {
+              ...item,
+              product: productData
+            };
+          } catch (error) {
+            console.error(`Error fetching product ${item.product_id}:`, error);
+            return item;
+          }
+        })
+      );
+
+      setCartItems(cartWithProducts as CartItemWithProduct[]);
+    } catch (error) {
+      console.error('Error fetching cart items:', error);
+    }
+  };
+
+  const handleDeleteItem = async (cart_id: string) => {
+    try {
+      await deleteCartBy({ cart_id });
+      await fetchCartItems();
+    } catch (error) {
+      console.error('Error deleting cart item:', error);
+    }
+  };
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleViewCart = () => {
+    router.push('/sales/cart-details'); 
   };
 
   return (
@@ -71,9 +126,67 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
         )}
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           {pathname.includes("/sales") && (
-            <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
-              <CartDropdown />
-            </Box>
+            <>
+              <IconButton
+                color="inherit"
+                onMouseEnter={(e) => setCartAnchorEl(e.currentTarget)}
+                
+              >
+                <Badge badgeContent={cartItems.length} color="error">
+                  <ShoppingCart />
+                </Badge>
+              </IconButton>
+              <Menu
+                anchorEl={cartAnchorEl}
+                open={Boolean(cartAnchorEl)}
+                onClose={() => setCartAnchorEl(null)}
+              >
+                {cartItems.length === 0 ? (
+                  <MenuItem>
+                    <Typography>ไม่มีสินค้าในตะกร้า</Typography>
+                  </MenuItem>
+                ) : (
+                  <div> 
+                    {cartItems.map((item) => (
+                      <MenuItem key={item.cart_id} onClick={handleViewCart}>
+                        <Box sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          alignItems: 'center'
+                        }}>
+                          <Typography>
+                            {item.product?.product_name} x {item.cart_amount}
+                          </Typography>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteItem(item.cart_id!)}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </MenuItem>
+                    ))}
+                    <Divider />
+                    <MenuItem>
+                      <Box sx={{ width: '100%' }}>
+                        <Typography>
+                          รวมทั้งหมด: {cartItems.length} รายการ
+                        </Typography>
+                        <Typography variant="h6" color="primary">
+                          ราคารวม: {decimalFix(
+                            cartItems.reduce((total, item) =>
+                              total + (decimalFix(item.product?.product_price || 0) * decimalFix(item.cart_amount)),
+                              0
+                            ).toString()
+                          )} บาท
+                        </Typography>
+                      </Box>
+                    </MenuItem>
+                  </div>
+                )}
+              </Menu>
+            </>
           )}
           <IconButton color="inherit" sx={{ ml: 2 }}>
             <Badge showZero={false}>
@@ -86,17 +199,15 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
             </Badge>
           </IconButton>
           <IconButton color="inherit" sx={{ ml: 2 }} onClick={handleClick}>
-            {
-              $profile.employee_img ? (
-                <img
-                  className="w-9 h-9 rounded-full"
-                  src={`${API_URL}${$profile.employee_img}`}
-                  alt="img_profile"
-                />
-              ) : (
-                <AccountCircleIcon className="w-9 h-9" />
-              )
-            }
+            {$profile.employee_img ? (
+              <img
+                className="w-9 h-9 rounded-full"
+                src={`${API_URL}${$profile.employee_img}`}
+                alt="img_profile"
+              />
+            ) : (
+              <AccountCircleIcon className="w-9 h-9" />
+            )}
           </IconButton>
           <Menu
             anchorEl={anchorEl}
