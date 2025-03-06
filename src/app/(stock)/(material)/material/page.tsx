@@ -1,10 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Swal from 'sweetalert2';
-import { Delete, Add, Home, Gavel } from "@mui/icons-material";
+import { Delete, Add, Home, Gavel, Search } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Autocomplete,
+  InputAdornment,
+  TextField,
+  List,
+  ListItem,
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
@@ -21,6 +30,13 @@ const MaterialPage = () => {
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filterNameMaterial = useMemo(() => {
+    return materials.filter((item) =>
+      item.material_name?.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    );
+  }, [materials, searchTerm]);
 
   useEffect(() => {
     fetchData();
@@ -73,12 +89,52 @@ const MaterialPage = () => {
             <Typography variant="body1" color="text.secondary">ข้อมูลวัสดุ</Typography>
           </Stack>
         </Breadcrumbs>
+
         <div className="flex gap-2">
           <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทวัสดุ
           </Button>
         </div>
       </div>
+
+      <div className="flex gap-2 mb-5">
+        <Autocomplete
+          className="w-64"
+          options={filterNameMaterial}
+          getOptionLabel={(option) => option.material_name ?? "ไม่มีชื่อ"}
+          noOptionsText="ไม่มีวัสดุ"
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              size="small"
+              placeholder="ค้นหาชื่อวัสดุ..."
+              className="w-64"
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+        />
+
+        <FormControl sx={{ minWidth: 200 }}>
+          <Autocomplete
+            /* value={selectedCategory} */
+            /* onChange={(event, newValue) => setSelectedCategory(newValue)} */
+            /* options={categories} */
+            renderInput={(params) => <TextField {...params} label="ค้นหาตามประเภทวัสดุ" size="small" />}
+            isOptionEqualToValue={(option, value) => option === value}
+            disableClearable
+            options={[]}
+          />
+        </FormControl>
+      </div>
+
       {loading ? (
         <Loading />
       ) : (
