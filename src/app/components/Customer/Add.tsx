@@ -6,7 +6,7 @@ import { useCustomer } from "@/hooks/hooks"
 
 const { insertCustomer } = useCustomer()
 
-import { Close, UploadFile, VisibilityOff, Visibility } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import {
   Dialog,
   DialogActions,
@@ -21,9 +21,6 @@ interface Props {
 }
 
 const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
 
   const prefix_name = [
     { prefix: "นาย" },
@@ -55,20 +52,11 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
     setCustomerData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]
-      setSelectedImage(URL.createObjectURL(file));
-      setFiles([file]);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await insertCustomer(customerData)
       setCustomerData(initialState)
-      setSelectedImage(null)
       Swal.fire({
         title: "สำเร็จ!",
         text: "เพิ่มลูกค้าเรียบร้อยแล้ว",
@@ -81,13 +69,8 @@ const AddCustomer: React.FC<Props> = ({ onClose, open, onRefresh }) => {
       console.error(error)
     }
   };
-
-  const ClearImg = () => {
-    onClose()
-    setSelectedImage(null)
-  }
   return (
-    <Dialog open={open} onClose={ClearImg} fullWidth={true} maxWidth="md">
+    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md">
       <DialogTitle id="alert-dialog-title">
         เพิ่มลูกค้า
         <IconButton

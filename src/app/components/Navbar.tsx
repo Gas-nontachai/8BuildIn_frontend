@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
@@ -13,10 +13,12 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import { MenuItem, Menu } from "@mui/material";
-import { Logout, PersonOutlined } from "@mui/icons-material";
+import { Logout, PersonOutlined, LockOpenOutlined } from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
 import CartDropdown from "./Cart/CartDropdown";
 import { API_URL } from "@/utils/config";
+
+import ChangePassword from "./Auth/ChangePassword";
 
 const drawerWidth = 240;
 
@@ -47,6 +49,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
   const router = useRouter()
   const { logout } = AuthProvider();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openChangePassword, setOpenChangePassword] = useState(false);
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -103,17 +106,37 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
             open={Boolean(anchorEl)}
             onClose={() => setAnchorEl(null)}
           >
-            <MenuItem onClick={() => router.push(`/profile?id=${$profile.employee_id}`)}>
+            <MenuItem onClick={() => {
+              router.push(`/profile?id=${$profile.employee_id}`);
+              setAnchorEl(null);
+            }}>
               <PersonOutlined sx={{ mr: 1 }} />
               <Typography>โปรไฟล์</Typography>
             </MenuItem>
-            <MenuItem onClick={() => logout()}>
+            <MenuItem onClick={() => {
+              setOpenChangePassword(true);
+              setAnchorEl(null);
+            }}>
+              <LockOpenOutlined sx={{ mr: 1 }} />
+              <Typography>เปลี่ยนรหัสผ่าน</Typography>
+            </MenuItem>
+
+            <MenuItem onClick={() => {
+              logout();
+              setAnchorEl(null);
+            }}>
               <Logout sx={{ mr: 1 }} />
               <Typography>ออกจากระบบ</Typography>
             </MenuItem>
           </Menu>
         </Box>
       </Toolbar>
+
+      <ChangePassword
+        open={openChangePassword}
+        onClose={() => setOpenChangePassword(false)}
+        employee_id={$profile.employee_id}
+      />
     </AppBar>
   );
 }

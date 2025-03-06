@@ -34,9 +34,9 @@ const authLogin = (data: { employee_username: string, employee_password: string 
 //   return SecureFetch.post(`/${prefix}/getMyCredential`);
 // };
 
-// const changePassword = (data: { current_password: string, new_password: string }): Promise<any> => {
-//   return SecureFetch.post(`/${prefix}/changePassword`, data);
-// };
+const changePassword = (data: { current_password: string, new_password: string }): Promise<any> => {
+    return SecureFetch.post(`${API_URL}${prefix}/changePassword`, data);
+};
 
 // const refresh = (data: { refresh_token: string }): Promise<AuthToken> => {
 //   return SecureFetch.post(`/${prefix}/refresh`, data);
@@ -45,5 +45,6 @@ const authLogin = (data: { employee_username: string, employee_password: string 
 export default function useAuth() {
     return {
         authLogin,
+        changePassword
     };
 }
