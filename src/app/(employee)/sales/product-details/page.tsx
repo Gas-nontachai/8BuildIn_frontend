@@ -9,8 +9,10 @@ import {
     Link,
     Stack,
     Breadcrumbs,
+    Button,
 } from "@mui/material";
-import { useProduct } from "@/hooks/hooks";
+import { AuthProvider } from "@/context/AuthContext";
+import { useProduct, useCart } from "@/hooks/hooks";
 import { Product } from "@/misc/types"
 import { formatDate } from "@/utils/date-helper"
 import { decimalFix } from "@/utils/number-helper"
@@ -24,6 +26,9 @@ const ProductDetails = () => {
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<string>('');
     const { getProductByID } = useProduct();
+    const { getCartBy, insertCart, updateCartBy } = useCart();  // เพิ่ม hook สำหรับตะกร้า
+
+
 
     useEffect(() => {
         fetchProductDetails();
@@ -35,6 +40,25 @@ const ProductDetails = () => {
             setSelectedImage(firstImage);
         }
     }, [product]);
+
+    const addToCart = async (product_id: string) => {
+        try {
+
+
+            await insertCart({
+                cart_id: "",
+                cart_amount: "1",
+                cart_status: "0",
+                product_id: product_id,
+            });
+
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            alert('เกิดข้อผิดพลาดในการเพิ่มสินค้าลงตะกร้า');
+        }
+    };
+
+
 
     const fetchProductDetails = async () => {
         if (!productId) return;
@@ -140,6 +164,15 @@ const ProductDetails = () => {
                                 จำนวนคงเหลือ: {product.product_quantity} ชิ้น
                             </Typography>
                         </div>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            fullWidth 
+                            onClick={() => addToCart(product.product_id)}
+                            disabled={!product.product_quantity || parseInt(product.product_quantity) <= 0}
+                        >
+                            เพิ่มเข้าตะกร้า
+                        </Button>
                         <div className="pt-4 border-t space-y-2">
                             <Typography variant="body2" color="text.secondary">
                                 เพิ่มโดย: {product.addby}
