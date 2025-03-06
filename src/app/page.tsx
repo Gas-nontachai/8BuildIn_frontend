@@ -2,7 +2,6 @@
 import { getAccessToken } from '@/context/AuthContext';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
 
 const Page = () => {
   const router = useRouter();
@@ -11,21 +10,11 @@ const Page = () => {
   useEffect(() => {
     const token = getAccessToken();
     setAccessToken(token);
-  }, []);
 
-  useEffect(() => {
-    if (!accessToken) {
-      Swal.fire({
-        icon: "warning",
-        title: "Unauthorized",
-        text: "กรุณาเข้าสู่ระบบก่อน!",
-        showConfirmButton: false,
-        timer: 1500,
-      }).then(() => {
-        router.push("/login");
-      });
+    if (!token) {
+      router.push("/login");
     }
-  }, [accessToken, router]);
+  }, [router]);
 
   return (
     <>

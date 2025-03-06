@@ -59,16 +59,17 @@ export const AuthProvider = () => {
   };
 
   const accessProfile = (accessToken: string, refreshToken: string, username: string) => {
-    localStorage.setItem('username', username);
     localStorage.setItem('access_token', accessToken);
     localStorage.setItem('refresh_token', refreshToken);
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
+    localStorage.setItem('username', username);
   };
 
   const clearTokens = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('username');
     setAccessToken(null);
     setRefreshToken(null);
   };
