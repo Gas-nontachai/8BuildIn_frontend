@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import { MoreVert, Store, Delete, Add, Home, Edit, Visibility } from "@mui/icons-material";
 import {
   MenuItem, Menu, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
+  TableContainer, TableHead, TableRow, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link, IconButton
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
@@ -33,7 +33,7 @@ const ProductPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [unit, setUnit] = useState<Unit[]>([]);
   const [productCategory, setProductCategory] = useState<ProductCategory[]>([]);
-  
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -166,55 +166,48 @@ const ProductPage = () => {
                     <TableCell align="center">{decimalFix(product.product_price)} ฿ / {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">{product.product_quantity} {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'} </TableCell>
                     <TableCell align="center">
-                      <div className="flex justify-center gap-2">
-
-                        {
-                          !product.stock_in_id ? (
-                            <>
-                              <Button variant="text" color="inherit" startIcon={<MoreVert />}
-                                id="demo-positioned-button"
-                                aria-controls={open ? 'demo-positioned-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open ? 'true' : undefined}
-                                onClick={(event) => handleClick(event, product.product_id)}
-                              />
-                              <Menu
-                                id="demo-positioned-menu"
-                                aria-labelledby="demo-positioned-button"
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                anchorOrigin={{
-                                  vertical: 'top',
-                                  horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                  vertical: 'top',
-                                  horizontal: 'left',
-                                }}
-                              >
-                                <MenuItem >
-                                  <Button variant="text" color="primary" startIcon={<Visibility />} onClick={() => { }} />
-                                  <span>View</span>
-                                </MenuItem>
-                                <MenuItem >
-                                  <Button variant="text" color="warning" startIcon={<Edit />} onClick={() => setUpdateProductDialog(true)} />
-                                  <span>Edit</span>
-                                </MenuItem>
-                                <MenuItem  >
-                                  <Button variant="text" color="error" startIcon={<Delete />} onClick={() => {
-                                    onDelete(selectedProductId);
-                                  }}
-                                  />
-                                  <span>Delete</span>
-                                </MenuItem>
-                              </Menu>
-                            </>
-                          ) : (
-                            <Button variant="text" color="primary" startIcon={<Visibility />} onClick={() => { }} />
-                          )
-                        }
-                      </div>
+                      {!product.stock_in_id ? (
+                        <>
+                          <IconButton
+                            color="inherit"
+                            id="demo-positioned-button"
+                            aria-controls={open ? 'demo-positioned-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={(event) => handleClick(event, product.product_id)}
+                            sx={{ fontSize: 24 }}
+                          >
+                            <MoreVert fontSize="inherit" />
+                          </IconButton>
+                          <Menu
+                            id="demo-positioned-menu"
+                            aria-labelledby="demo-positioned-button"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                          >
+                            <MenuItem sx={{ padding: '4px 8px' }}>
+                              <Button startIcon={<Visibility />} onClick={() => { }} size="small">
+                                View
+                              </Button>
+                            </MenuItem>
+                            <MenuItem sx={{ padding: '4px 8px' }}>
+                              <Button startIcon={<Edit />} onClick={() => setUpdateProductDialog(true)} size="small">
+                                Edit
+                              </Button>
+                            </MenuItem>
+                            <MenuItem sx={{ padding: '4px 8px' }}>
+                              <Button startIcon={<Delete />} onClick={() => onDelete(selectedProductId)} size="small">
+                                Delete
+                              </Button>
+                            </MenuItem>
+                          </Menu>
+                        </>
+                      ) : (
+                        <IconButton color="inherit" onClick={() => { }}>
+                          <Visibility sx={{ fontSize: 20, color: '#1565c0' }} />
+                        </IconButton>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -231,7 +224,8 @@ const ProductPage = () => {
             onRowsPerPageChange={onChangeRowsPerPage}
           />
         </>
-      )}
+      )
+      }
 
       <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
       <AddProduct open={addProductDialog} onRefresh={() => fetchData()} onClose={() => setAddProductDialog(false)} />
