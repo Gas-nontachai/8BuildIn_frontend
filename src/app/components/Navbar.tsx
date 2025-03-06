@@ -16,6 +16,7 @@ import { MenuItem, Menu } from "@mui/material";
 import { Logout, PersonOutlined } from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
 import CartDropdown from "./Cart/CartDropdown";
+import { API_URL } from "@/utils/config";
 
 const drawerWidth = 240;
 
@@ -85,7 +86,17 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
             </Badge>
           </IconButton>
           <IconButton color="inherit" sx={{ ml: 2 }} onClick={handleClick}>
-            <AccountCircleIcon />
+            {
+              $profile.employee_img ? (
+                <img
+                  className="w-9 h-9 rounded-full"
+                  src={`${API_URL}${$profile.employee_img}`}
+                  alt="img_profile"
+                />
+              ) : (
+                <AccountCircleIcon className="w-9 h-9" />
+              )
+            }
           </IconButton>
           <Menu
             anchorEl={anchorEl}
