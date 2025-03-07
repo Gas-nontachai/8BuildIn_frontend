@@ -49,11 +49,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 minHeight: '100vh'
               }}
             >
-              <Card>
-                <CardContent>
+              {!isAuthPage && (
+                <Card>
+                  <CardContent>
+                    {children}
+                  </CardContent>
+                </Card>
+              )}
+              {isAuthPage && (
+                <Box sx={{ padding: 3 }}>
                   {children}
-                </CardContent>
-              </Card>
+                </Box>
+              )}
             </Box>
           </CartProvider>
         </ThemeProvider>

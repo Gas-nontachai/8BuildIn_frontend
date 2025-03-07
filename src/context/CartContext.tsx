@@ -14,15 +14,15 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
     const [cartItems, setCartItems] = useState<Cart[]>([]);
     const { getCartBy } = useCart();
-    const { $profile } = AuthProvider();
+    const { $profile, accessToken } = AuthProvider();
 
     const refreshCart = async () => {
         try {
-            const { docs } = await getCartBy({ 
-                match: { 
+            const { docs } = await getCartBy({
+                match: {
                     addby: $profile.employee_id,
                     cart_status: "0"
-                } 
+                }
             });
             setCartItems(docs);
         } catch (error) {
@@ -31,7 +31,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
 
     useEffect(() => {
-        refreshCart();
+        if (accessToken) {
+            refreshCart();
+        }
     }, [$profile.employee_id]);
 
     return (
