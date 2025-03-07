@@ -8,12 +8,14 @@ import { decimalFix } from "@/utils/number-helper";
 import { API_URL } from "@/utils/config";
 import { useRouter } from "next/navigation";
 import { useCartContext } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const { deleteCartBy } = useCart();
 
 export default function CartDropdown() {
     const router = useRouter();
     const { cartItems, refreshCart } = useCartContext();
+    const { $profile } = AuthProvider();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
@@ -114,7 +116,7 @@ export default function CartDropdown() {
                         {cartItems.length > 0 && (
                             <div className="flex justify-between items-center mt-2">
                                 <span className="text-gray-700 text-[13px]">{cartItems.length} สินค้า</span>
-                                <Button variant="text" color="info" onClick={() => router.push(`/sales/cart-details`)}>
+                                <Button variant="text" color="info" onClick={() => router.push(`/sales/cart-details?emp_id=${$profile.employee_id}`)}>
                                     ดูตะกร้าสินค้า
                                 </Button>
                             </div>

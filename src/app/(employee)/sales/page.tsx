@@ -60,11 +60,11 @@ const SalesPage = () => {
         try {
             await insertCart({
                 cart_id: "",
-                cart_amount: "1",
+                cart_amount: 1,
                 cart_status: "0",
                 product_id: product_id,
             });
-            await refreshCart(); 
+            await refreshCart();
         } catch (error) {
             console.error("Error adding to cart:", error);
             alert('เกิดข้อผิดพลาดในการเพิ่มสินค้าลงตะกร้า');
