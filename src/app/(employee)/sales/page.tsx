@@ -23,7 +23,7 @@ import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
 import { useProduct, useCart } from "@/hooks/hooks";
 import { Product, Cart } from "@/misc/types"
-
+import { useCartContext } from "@/context/CartContext";
 import Loading from "@/app/components/Loading";
 
 const SalesPage = () => {
@@ -34,6 +34,7 @@ const SalesPage = () => {
     const router = useRouter();
     const { getProductBy } = useProduct();
     const { insertCart } = useCart();
+    const { refreshCart } = useCartContext();
 
 
     useEffect(() => {
@@ -63,6 +64,7 @@ const SalesPage = () => {
                 cart_status: "0",
                 product_id: product_id,
             });
+            await refreshCart(); 
         } catch (error) {
             console.error("Error adding to cart:", error);
             alert('เกิดข้อผิดพลาดในการเพิ่มสินค้าลงตะกร้า');
