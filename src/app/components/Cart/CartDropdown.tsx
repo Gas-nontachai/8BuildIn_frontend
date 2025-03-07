@@ -87,9 +87,9 @@ export default function CartDropdown() {
                                 <Box key={item.cart_id}>
                                     <ListItem>
                                         <img
-                                            src={productDetails?.product_img 
+                                            src={productDetails?.product_img
                                                 ? `${API_URL}${productDetails.product_img.split(',').pop()}`
-                                                : "default-cart.png"
+                                                : "/default-cart.png"
                                             }
                                             className="w-10 h-10 object-cover mr-5"
                                             alt="Product"
