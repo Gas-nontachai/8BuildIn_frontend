@@ -11,13 +11,13 @@ import {
     Breadcrumbs,
     Button,
 } from "@mui/material";
-import { AuthProvider } from "@/context/AuthContext";
 import { useProduct, useCart } from "@/hooks/hooks";
 import { Product } from "@/misc/types"
 import { formatDate } from "@/utils/date-helper"
 import { decimalFix } from "@/utils/number-helper"
 import { API_URL } from "@/utils/config";
-import Loading from "@/app/components/Loading";
+    import Loading from "@/app/components/Loading";
+    import { useCartContext } from "@/context/CartContext";
 
 const ProductDetails = () => {
     const searchParams = useSearchParams();
@@ -27,7 +27,7 @@ const ProductDetails = () => {
     const [selectedImage, setSelectedImage] = useState<string>('');
     const { getProductByID } = useProduct();
     const { getCartBy, insertCart, updateCartBy } = useCart();
-
+    const { refreshCart } = useCartContext();
     useEffect(() => {
         fetchProductDetails();
     }, [productId]);
@@ -47,7 +47,7 @@ const ProductDetails = () => {
                 cart_status: "0",
                 product_id: product_id,
             });
-
+            await refreshCart();
         } catch (error) {
             console.error("Error adding to cart:", error);
             alert('เกิดข้อผิดพลาดในการเพิ่มสินค้าลงตะกร้า');

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Box, Card, CardContent } from "@mui/material";
 import "./globals.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { CartProvider } from "@/context/CartContext";
 
 const theme = createTheme({
   typography: {
@@ -15,7 +16,6 @@ const theme = createTheme({
 const Sidebar = dynamic(() => import("./components/Sidebar"), { ssr: false });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
   const [open, setOpen] = useState(true);
   const pathname = usePathname();
 
@@ -36,25 +36,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider theme={theme}>
-          {!isAuthPage && <Sidebar open={open} setOpen={setOpen} />}
-          <Box
-            sx={{
-              flexGrow: 1,
-              p: 3,
-              marginTop: -6,
-              marginLeft: !isAuthPage && open ? "240px" : "0px",
-              transition: "margin 0.3s ease-in-out",
-              backgroundColor: "#f4f5fa",
-              minHeight: '100vh'
-            }}
-          >
-            <Card>
-              <CardContent>
-                {/* <div className="max-h-screen w-100 p-5 bg-gray-100 text-black rounded-xl"> */}
-                {children}
-              </CardContent>
-            </Card>
-          </Box>
+          <CartProvider>
+            {!isAuthPage && <Sidebar open={open} setOpen={setOpen} />}
+            <Box
+              sx={{
+                flexGrow: 1,
+                p: 3,
+                marginTop: -6,
+                marginLeft: !isAuthPage && open ? "240px" : "0px",
+                transition: "margin 0.3s ease-in-out",
+                backgroundColor: "#f4f5fa",
+                minHeight: '100vh'
+              }}
+            >
+              <Card>
+                <CardContent>
+                  {children}
+                </CardContent>
+              </Card>
+            </Box>
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>
