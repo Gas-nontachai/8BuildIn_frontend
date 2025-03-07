@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react'
 import { pdf } from '@react-pdf/renderer';
-import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
-import { Delete, Add, Remove } from "@mui/icons-material";
+import { Box, Button, Divider, IconButton, Typography, Breadcrumbs, Link, Stack, } from "@mui/material";
+import { HighlightOff, Add, Remove, ReceiptLong, ShoppingCart, FirstPage, ShoppingBag } from "@mui/icons-material";
 import { useCart, useEmployee, useProduct } from "@/hooks/hooks";
 import { Cart, Product } from '@/misc/types';
 import { API_URL } from "@/utils/config";
@@ -45,12 +45,10 @@ const CartDetailPage = () => {
             const product_list_arr = res.map(item => item.product_id);
             const { docs: product_list } = await getProductBy({
                 match: { product_id: { $in: product_list_arr } }
-            });
-
+            }); 
             setCart(res);
             setEditedCart(res);
-            setProduct(product_list);
-
+            setProduct(product_list); 
             res.forEach(cartItem => {
                 const product = product_list.find(item => item.product_id === cartItem.product_id);
                 if (product) {
@@ -152,69 +150,90 @@ const CartDetailPage = () => {
 
 
     return (
-        <Box sx={{ p: 4 }}>
-            <span className='text-gray-700 font-1000 font-bold text-[30px] mb-2'>ตะกร้าสินค้า</span>
-            {loading ? (
-                <Typography variant="body1">กำลังโหลดข้อมูล...</Typography>
-            ) : (
-                <Box>
-                    {cart.length === 0 ? (
-                        <span className='text-gray-700 font-4000 text-[20px] mb-t'>ไม่มีสินค้าในตะกร้า ....</span>
-                    ) : (
-                        editedCart.map((item, index) => {
-                            const productDetail = product.find(p => p.product_id === item.product_id);
-                            return (
-                                <Box key={item.cart_id} sx={{ mb: 2 }}>
-                                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                                        <img
-                                            src={productDetail?.product_img ? `${API_URL}${productDetail.product_img.split(",").pop()}` : "/default-cart.png"}
-                                            alt="Product"
-                                            className="w-16 h-16 object-cover mr-5"
-                                        />
-                                        <Box sx={{ flexGrow: 1 }}>
-                                            <Typography variant="body1">{productDetail?.product_name || "Unknown"}</Typography>
-                                            <Typography variant="body2" color="textSecondary">x {item.cart_amount}</Typography>
-                                        </Box>
-                                        <Box sx={{ textAlign: "right" }}>
-                                            <p className="text-gray-600 font-[400]">
-                                                ฿ {decimalFix(productDetail?.product_price || 0)}
-                                            </p>
-                                        </Box>
-                                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                                            <IconButton onClick={() => onUpdateCartAmount(index, 'decrease')} disabled={Number(item.cart_amount) <= 1}>
-                                                <Remove fontSize="small" />
+        <>
+            <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+                <Link underline="hover" href="/sales">
+                    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                        <FirstPage fontSize="small" />
+                        <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
+                    </Stack>
+                </Link>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                    <ShoppingBag fontSize="small" sx={{ color: 'text.secondary' }} />
+                    <Typography variant="body1" color="text.secondary">รายละเอียดตะกร้า</Typography>
+                </Stack>
+            </Breadcrumbs>
+            <Divider />
+            <Box sx={{ p: 4 }}>
+                <div className='mb-5'>
+                    <span className='text-gray-700 font-500 font-bold text-[25px]'>ตะกร้าสินค้า</span>
+                </div>
+                {loading ? (
+                    <Typography variant="body1">กำลังโหลดข้อมูล...</Typography>
+                ) : (
+                    <Box>
+                        {cart.length === 0 ? (
+                            <span className='text-gray-700 font-4000 text-[20px] mb-t'>ไม่มีสินค้าในตะกร้า ....</span>
+                        ) : (
+                            editedCart.map((item, index) => {
+                                const productDetail = product.find(p => p.product_id === item.product_id);
+                                return (
+                                    <Box key={item.cart_id} sx={{ mb: 2 }}>
+                                        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                                            <img
+                                                src={productDetail?.product_img ? `${API_URL}${productDetail.product_img.split(",").pop()}` : "/default-cart.png"}
+                                                alt="Product"
+                                                className="w-16 h-16 object-cover mr-5"
+                                            />
+                                            <Box sx={{ flexGrow: 1 }}>
+                                                <Typography variant="body1">{productDetail?.product_name || "Unknown"}</Typography>
+                                                <Typography variant="body2" color="textSecondary">x {item.cart_amount}</Typography>
+                                            </Box>
+                                            <Box sx={{ textAlign: "right" }}>
+                                                <p className="text-gray-600 font-[400] mr-10">
+                                                    ฿ {decimalFix(productDetail?.product_price || 0)}
+                                                </p>
+                                            </Box>
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                                <IconButton onClick={() => onUpdateCartAmount(index, 'decrease')} disabled={Number(item.cart_amount) <= 1}>
+                                                    <Remove fontSize="small" />
+                                                </IconButton>
+                                                <Typography variant="body2">{item.cart_amount}</Typography>
+                                                <IconButton onClick={() => onUpdateCartAmount(index, 'increase')}>
+                                                    <Add fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+                                            <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error">
+                                                <HighlightOff />
                                             </IconButton>
-                                            <Typography variant="body2">{item.cart_amount}</Typography>
-                                            <IconButton onClick={() => onUpdateCartAmount(index, 'increase')}>
-                                                <Add fontSize="small" />
-                                            </IconButton>
                                         </Box>
-                                        <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error" size="small">
-                                            <Delete fontSize="small" />
-                                        </IconButton>
+                                        <Divider />
                                     </Box>
-                                    <Divider />
-                                </Box>
-                            );
-                        })
-                    )}
-                    {cart.length > 0 && (
-                        <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <Typography variant="h6">รวม {cart.length} สินค้า</Typography>
-                            <Typography variant="h6">฿ {decimalFix(totalPrice)}</Typography>
-                            {isEdited && (
-                                <Button variant="contained" color="primary" onClick={onSaveChanges}>
-                                    อัพเดตตะกร้า
-                                </Button>
-                            )}
-                            <Button onClick={() => openPdfInNewTab(editedCart)} variant="contained" color="secondary">
-                                ออกใบเสนอราคา
-                            </Button>
-                        </Box>
-                    )}
-                </Box>
-            )}
-        </Box>
+                                );
+                            })
+                        )}
+                        {cart.length > 0 && (
+                            <div className='flex justify-between items-center'>
+                                <div className="flex flex-col justify-start gap-2">
+                                    <span className="font-[400] text-[17px]">สินค้าในตะกร้า {cart.length} สินค้า</span>
+                                    <p className="font-[500] text-blue-600  text-[20px]">฿ {decimalFix(totalPrice)}</p>
+                                </div>
+                                <div className='flex gap-2'>
+                                    {isEdited && (
+                                        <Button variant="contained" size='small' color="primary" onClick={onSaveChanges} startIcon={<ShoppingCart />}>
+                                            อัพเดตตะกร้า
+                                        </Button>
+                                    )}
+                                    <Button onClick={() => openPdfInNewTab(editedCart)} size='small' variant="contained" color="secondary" startIcon={<ReceiptLong />}>
+                                        ออกใบเสนอราคา
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </Box>
+                )}
+            </Box>
+        </>
     );
 }
 

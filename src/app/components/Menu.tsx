@@ -13,7 +13,6 @@ import {
     ExpandMore,
     Home,
     Store,
-    Inventory2,
     SupportAgent,
     Badge,
     ManageAccounts,

@@ -210,12 +210,19 @@ const SalesPage = () => {
                                     <Typography variant="body2" color="text.secondary" className="mb-2">
                                         จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} ชิ้น</span>
                                     </Typography>
-                                    <Typography variant="body1" color="error" className="mt-3 font-semibold">
+                                    <p className=" text-blue-600 mt-3 text-[18px] font-[400]">
                                         ฿ {decimalFix(product.product_price)}
-                                    </Typography>
+                                    </p>
                                 </CardContent>
                                 <CardActions sx={{ display: 'flex', justifyContent: 'end' }}>
-                                    <Button variant="contained" className="rounded-xl" size="small" onClick={() => addToCart(product.product_id)} startIcon={<AddShoppingCart />}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        className="rounded-xl w-1/3"
+                                        size="small"
+                                        onClick={() => addToCart(product.product_id)}
+                                        startIcon={<AddShoppingCart />}
+                                    >
                                         เพิ่มลงตะกร้า
                                     </Button>
                                 </CardActions>

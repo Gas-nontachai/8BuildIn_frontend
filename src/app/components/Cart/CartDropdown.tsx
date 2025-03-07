@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Popover, Box, Button, List, ListItem, Divider, IconButton } from "@mui/material";
-import { ShoppingBag, Delete } from "@mui/icons-material";
+import { ShoppingBag, HighlightOff } from "@mui/icons-material";
 import { useProduct, useCart } from "@/hooks/hooks";
 import { Product } from '@/misc/types';
 import { decimalFix } from "@/utils/number-helper";
@@ -116,8 +116,8 @@ export default function CartDropdown() {
                                                         ฿ {decimalFix(productDetails?.product_price || 0)}
                                                     </p>
                                                 </div>
-                                                <IconButton onClick={() => onDeleteCart(item.cart_id)} size="small" color="error">
-                                                    <Delete fontSize="small" />
+                                                <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error">
+                                                    <HighlightOff fontSize="small" />
                                                 </IconButton>
                                             </ListItem>
                                             <Divider />
