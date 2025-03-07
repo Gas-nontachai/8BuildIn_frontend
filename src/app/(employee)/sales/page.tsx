@@ -215,9 +215,9 @@ const SalesPage = () => {
                                     </Typography>
                                 </CardContent>
                                 <CardActions sx={{ display: 'flex', justifyContent: 'end' }}>
-                                    <button className="text-[15px] px-3 py-1 bg-blue-500 hover:bg-blue-600 rounded-2xl text-white font-[500]" onClick={() => addToCart(product.product_id)}>
-                                        <AddShoppingCart /> เพิ่มลงตะกร้า
-                                    </button>
+                                    <Button variant="contained" className="rounded-xl" size="small" onClick={() => addToCart(product.product_id)} startIcon={<AddShoppingCart />}>
+                                        เพิ่มลงตะกร้า
+                                    </Button>
                                 </CardActions>
                             </Card>
                         </Grid>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react'
+import { pdf } from '@react-pdf/renderer';
 import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
 import { Delete, Add, Remove } from "@mui/icons-material";
 import { useCart, useProduct } from "@/hooks/hooks";
@@ -8,6 +9,8 @@ import { API_URL } from "@/utils/config";
 import { decimalFix, toFloat, toInt } from "@/utils/number-helper";
 import { useSearchParams } from 'next/navigation';
 import { useCartContext } from "@/context/CartContext";
+import Quotation from '@/app/components/Sales/(PDF)/Quotation';
+
 
 const { getCartBy, deleteCartBy, updateCartBy } = useCart();
 const { getProductBy } = useProduct();
@@ -29,11 +32,10 @@ const CartDetailPage = () => {
             setLoading(true);
             fetchData();
         } catch (error) {
-
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [cartItems]);
 
     const fetchData = async () => {
         try {
@@ -97,15 +99,23 @@ const CartDetailPage = () => {
         }
     };
 
+    const openPdfInNewTab = async () => {
+        const blob = await pdf(<Quotation />).toBlob();
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        // setTimeout(() => URL.revokeObjectURL(url), 10000);
+    };
+
+
     return (
         <Box sx={{ p: 4 }}>
-            <Typography variant="h4" gutterBottom>ตะกร้าสินค้า</Typography>
+            <span className='text-gray-700 font-1000 font-bold text-[30px] mb-2'>ตะกร้าสินค้า</span>
             {loading ? (
                 <Typography variant="body1">กำลังโหลดข้อมูล...</Typography>
             ) : (
                 <Box>
                     {cart.length === 0 ? (
-                        <Typography variant="body1">ตะกร้าของคุณว่างเปล่า</Typography>
+                        <span className='text-gray-700 font-4000 text-[20px] mb-t'>ไม่มีสินค้าในตะกร้า ....</span>
                     ) : (
                         editedCart.map((item, index) => {
                             const productDetail = product.find(p => p.product_id === item.product_id);
@@ -122,9 +132,9 @@ const CartDetailPage = () => {
                                             <Typography variant="body2" color="textSecondary">x {item.cart_amount}</Typography>
                                         </Box>
                                         <Box sx={{ textAlign: "right" }}>
-                                            <Typography variant="body1" color="error">
+                                            <p className="text-gray-600 font-[400]">
                                                 ฿ {decimalFix(productDetail?.product_price || 0)}
-                                            </Typography>
+                                            </p>
                                         </Box>
                                         <Box sx={{ display: "flex", alignItems: "center" }}>
                                             <IconButton onClick={() => onUpdateCartAmount(index, 'decrease')} disabled={Number(item.cart_amount) <= 1}>
@@ -153,7 +163,7 @@ const CartDetailPage = () => {
                                     อัพเดตตะกร้า
                                 </Button>
                             )}
-                            <Button variant="contained" color="secondary">
+                            <Button onClick={() => openPdfInNewTab(editedCart)} variant="contained" color="secondary">
                                 ออกใบเสนอราคา
                             </Button>
                         </Box>
