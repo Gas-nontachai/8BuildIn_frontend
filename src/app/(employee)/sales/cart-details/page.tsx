@@ -1,215 +1,113 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Box, Button, Typography, Grid, IconButton, Paper } from "@mui/material";
-import { Delete, Remove, Add } from "@mui/icons-material";
-import { useCart, useProduct } from "@/hooks/hooks"; // นำเข้า useProduct
-import { CartItemWithProduct } from "@/misc/cart";
-import { decimalFix } from "@/utils/number-helper";
+import { Button, Box, List, ListItem, Divider, IconButton } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+import { AuthProvider } from "@/context/AuthContext";
+import { useCart, useProduct } from "@/hooks/hooks";
+import { Cart, Product } from '@/misc/types';
+import { decimalFix } from "@/utils/number-helper"
 import { API_URL } from "@/utils/config";
+import { useRouter } from "next/navigation";
 
-const CartDetails = () => {
+const { getCartBy, deleteCartBy } = useCart();
+const { getProductBy } = useProduct();
+
+export default function CartDetail() {
     const router = useRouter();
-    const { getCartBy, updateCartBy, deleteCartBy } = useCart();
-    const { getProductByID } = useProduct(); // สร้าง instance ของ useProduct
-    const [cartItems, setCartItems] = useState<CartItemWithProduct[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { $profile } = AuthProvider();
+
+    const [loading, setLoading] = useState(false);
+    const [cart, setCart] = useState<Cart[]>([]);
+    const [product, setProduct] = useState<Product[]>([]);
 
     useEffect(() => {
-        fetchCartItems();
+        fetchData();
     }, []);
 
-    const fetchCartItems = async () => {
+    const fetchData = async () => {
+        setLoading(true);
         try {
-            const { docs } = await getCartBy({
-                addby: "your_employee_id", // เปลี่ยนเป็น ID ของผู้ใช้ที่ล็อกอิน
-                cart_status: "0"
+            const { docs: res } = await getCartBy({ match: { addby: $profile.employee_id } });
+            const product_list_arr = res.map(item => item.product_id);
+
+            const { docs: product_list } = await getProductBy({
+                match: {
+                    product_id: { $in: product_list_arr }
+                }
             });
-            const cartWithProducts = await Promise.all(
-                docs.map(async (item) => {
-                    const productData = await getProductByID({ product_id: item.product_id });
-                    return { ...item, product: productData };
-                })
-            );
-            setCartItems(cartWithProducts as CartItemWithProduct[]);
+            setCart(res);
+            setProduct(product_list);
         } catch (error) {
-            console.error("Error fetching cart items:", error);
-        } finally {
-            setLoading(false);
+            console.error("Error fetching Cart details:", error);
         }
+        setLoading(false);
     };
 
-    const handleQuantityChange = (cart_id: string, amount: number) => {
-        setCartItems((prevItems) =>
-            prevItems.map((item) =>
-                item.cart_id === cart_id ? { ...item, cart_amount: String(Number(item.cart_amount) + amount) } : item
-            )
-        );
-    };
-
-    const handleUpdateCart = async () => {
+    const handleRemoveItem = async (cartId: string) => {
         try {
-            await Promise.all(cartItems.map(item => updateCartBy(item)));
-            alert("อัพเดตตะกร้าเรียบร้อยแล้ว");
+            await deleteCartBy({ cart_id: cartId });
+            fetchData();
         } catch (error) {
-            console.error("Error updating cart:", error);
+            console.error("Error removing item:", error);
         }
     };
 
-    const handleDeleteItem = async (cart_id: string) => {
-        try {
-            await deleteCartBy({ cart_id });
-            setCartItems((prevItems) => prevItems.filter(item => item.cart_id !== cart_id));
-        } catch (error) {
-            console.error("Error deleting cart item:", error);
-        }
-    };
-
-    if (loading) {
-        return <Typography>กำลังโหลด...</Typography>;
-    }
-
-    // ฟังก์ชันสำหรับกำหนด class ของ grid ตามจำนวนรูป
-    const getGridClass = (total: number) => {
-        switch (total) {
-            case 1:
-                return 'grid-cols-1';
-            case 2:
-                return 'grid-cols-2';
-            case 3:
-                return 'grid-cols-3';
-            case 4:
-                return 'grid-cols-2 grid-rows-2';
-            default:
-                return 'grid-cols-3';
-        }
+    const calculateTotal = () => {
+        return cart.reduce((total, item) => {
+            const productPrice = product.find((p) => p.product_id === item.product_id)?.product_price || 0;
+            return total + (productPrice * Number(item.cart_amount));
+        }, 0);
     };
 
     return (
-        <Box p={4}>
-            <Typography variant="h4" gutterBottom>รายละเอียดตะกร้า</Typography>
-            <Box>
-                {cartItems.map((item) => (
-                    <Paper
-                        key={item.cart_id}
-                        elevation={2}
-                        sx={{
-                            mb: 2,
-                            p: 2,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2
-                        }}
-                    >
-                        {/* ส่วนรูปภาพด้านซ้าย */}
-                        <Box sx={{ width: '150px', height: '150px' }}>
-                            <Box className={`grid ${getGridClass(item.product?.product_img?.split(',').length || 0)}`}>
-                                {item.product?.product_img ? (
-                                    item.product.product_img.split(',').map((img, index) => (
-                                        <img
-                                            key={index}
-                                            src={`${API_URL}${img}`}
-                                            alt={`Product ${index + 1}`}
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                objectFit: 'cover'
-                                            }}
-                                        />
-                                    ))
-                                ) : (
-                                    <Typography>ไม่มีรูปภาพ</Typography>
-                                )}
-                            </Box>
+        <Box sx={{ width: "100%", p: 2 }}>
+            <h2>รายละเอียดตะกร้าสินค้า</h2>
+            <List sx={{ maxHeight: 400, overflowY: "auto" }}>
+                {cart.map((item) => {
+                    const productDetails = product.find((p) => p.product_id === item.product_id);
+                    return (
+                        <Box key={item.cart_id}>
+                            <ListItem>
+                                <img
+                                    src={productDetails?.product_img ? `${API_URL}${productDetails.product_img.split(',').pop()}` : "default-cart.png"}
+                                    alt="Product"
+                                    className="w-10 h-10 object-cover mr-5"
+                                />
+                                <div className="flex-1">
+                                    <p>{productDetails?.product_name || "Unknown"}</p>
+                                    <p className="text-sm text-gray-500">x {item.cart_amount}</p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                    <p>{decimalFix(productDetails?.product_price || 0)}</p>
+                                </div>
+                                {/* Remove item button */}
+                                <IconButton size="small" color="error" onClick={() => handleRemoveItem(item.cart_id)}>
+                                    <Delete fontSize="small" />
+                                </IconButton>
+                            </ListItem>
+                            <Divider />
                         </Box>
+                    );
+                })}
 
-                        {/* ส่วนรายละเอียดสินค้า */}
-                        <Box sx={{ flex: 1 }}>
-                            <Typography variant="h6">
-                                {item.product?.product_name}
-                            </Typography>
-                            <Typography color="primary" variant="h6">
-                                ฿{decimalFix(item.product?.product_price || 0)}
-                            </Typography>
-                        </Box>
+                {cart.length > 0 && (
+                    <div className="flex justify-between items-center mt-2">
+                        <span className="text-gray-700 text-[13px]">รวม {cart.length} สินค้า</span>
+                        <span className="text-gray-700 text-[15px]">Total: ฿{decimalFix(calculateTotal())}</span>
+                    </div>
+                )}
+            </List>
 
-                        {/* ส่วนปุ่มเพิ่ม/ลดจำนวน */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <IconButton
-                                onClick={() => handleQuantityChange(item.cart_id, -1)}
-                                disabled={decimalFix(item.cart_amount) <= 1}
-                                size="small"
-                            >
-                                <Remove />
-                            </IconButton>
-                            <Typography sx={{ minWidth: '40px', textAlign: 'center' }}>
-                                {item.cart_amount}
-                            </Typography>
-                            <IconButton
-                                onClick={() => handleQuantityChange(item.cart_id, 1)}
-                                size="small"
-                            >
-                                <Add />
-                            </IconButton>
-                        </Box>
-
-                        {/* ส่วนแสดงจำนวนคงเหลือ */}
-                        <Box sx={{ minWidth: '100px', textAlign: 'center' }}>
-                            <Typography color="text.secondary">
-                                คงเหลือ
-                            </Typography>
-                            <Typography>
-                                {item.product?.product_quantity} ชิ้น
-                            </Typography>
-                        </Box>
-
-                        {/* ปุ่มลบ */}
-                        <IconButton
-                            onClick={() => handleDeleteItem(item.cart_id)}
-                            color="error"
-                        >
-                            <Delete />
-                        </IconButton>
-                    </Paper>
-                ))}
-            </Box>
-
-            <Paper
-                elevation={2}
-                sx={{
-                    p: 2,
-                    mt: 2,
-                    mb: 2,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                }}
-            >
-                <Box>
-                    <Typography variant="h6">
-                        รวมทั้งหมด: {cartItems.length} รายการ
-                    </Typography>
-                    <Typography variant="h5" color="primary">
-                        ราคารวม: {decimalFix(
-                            cartItems.reduce((total, item) =>
-                                total + (decimalFix(item.product?.product_price || 0) * decimalFix(item.cart_amount)),
-                                0
-                            ).toString()
-                        )} บาท
-                    </Typography>
-                </Box>
-                </Paper>
+            {cart.length > 0 && (
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleUpdateCart}
+                    onClick={() => router.push(`/sales/checkout`)}
                     sx={{ mt: 2 }}
-                    fullWidth
                 >
-                    บันทึกการเปลี่ยนแปลง
+                    ไปที่การชำระเงิน
                 </Button>
-         
+            )}
         </Box>
     );
-};
-export default CartDetails;
+}

@@ -22,7 +22,6 @@ import { API_URL } from "@/utils/config"
 import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
 import { useProduct, useCart } from "@/hooks/hooks";
-import { AuthProvider } from "@/context/AuthContext";
 import { Product, Cart } from "@/misc/types"
 
 import Loading from "@/app/components/Loading";
@@ -34,7 +33,7 @@ const SalesPage = () => {
     const [categories, setCategories] = useState<string[]>([]);
     const router = useRouter();
     const { getProductBy } = useProduct();
-    const {  insertCart } = useCart(); 
+    const { insertCart } = useCart();
 
 
     useEffect(() => {
@@ -60,14 +59,14 @@ const SalesPage = () => {
 
     const addToCart = async (product_id: string) => {
         try {
-       
 
-                await insertCart({
-                    cart_id: "",
-                    cart_amount: "1",
-                    cart_status: "0",
-                    product_id: product_id,
-                });
+
+            await insertCart({
+                cart_id: "",
+                cart_amount: "1",
+                cart_status: "0",
+                product_id: product_id,
+            });
 
         } catch (error) {
             console.error("Error adding to cart:", error);
@@ -230,13 +229,8 @@ const SalesPage = () => {
                         </Grid>
                     ))}
                 </Grid>
-
-
             )}
-
         </>
-
-
     );
 };
 

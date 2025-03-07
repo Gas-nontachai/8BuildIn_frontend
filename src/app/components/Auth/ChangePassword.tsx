@@ -14,9 +14,6 @@ interface ChangePasswordProps {
 }
 
 export default function ChangePassword({ open, onClose, employee_id }: ChangePasswordProps) {
-
-    console.log(employee_id);
-
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");

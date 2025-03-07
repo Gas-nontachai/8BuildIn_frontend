@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+
 import {
   Toolbar,
   Typography,
@@ -11,8 +12,8 @@ import {
   Box,
   MenuItem,
   Menu,
-  Divider,
 } from "@mui/material";
+
 import {
   Menu as MenuIcon,
   Mail as MailIcon,
@@ -20,21 +21,13 @@ import {
   AccountCircle as AccountCircleIcon,
   Logout,
   PersonOutlined,
-  ShoppingCart,
-  Delete,
   LockOpenOutlined
 } from "@mui/icons-material";
+
 import { AuthProvider } from "@/context/AuthContext";
 import { API_URL } from "@/utils/config";
-import { useCart } from "@/hooks/hooks";
-import { CartItemWithProduct, Cart } from "@/misc/cart";
-import { Product } from "@/misc/product";
-import { useProduct } from "@/hooks/hooks";
-import { decimalFix } from "@/utils/number-helper";
-
 import ChangePassword from "./Auth/ChangePassword";
-
-const drawerWidth = 240;
+import CartDropdown from "@/app/components/Cart/CartDropdown";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -52,63 +45,9 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
   const { logout } = AuthProvider();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openChangePassword, setOpenChangePassword] = useState(false);
-  const [cartAnchorEl, setCartAnchorEl] = useState<null | HTMLElement>(null);
-  const [cartItems, setCartItems] = useState<CartItemWithProduct[]>([]);
-  const { getCartBy, deleteCartBy } = useCart();
-  const { getProductByID } = useProduct();
-
-  useEffect(() => {
-    if (pathname.includes("/sales")) {
-      fetchCartItems();
-    }
-  }, [pathname]);
-
-  const fetchCartItems = async () => {
-    try {
-      const { docs } = await getCartBy({
-        addby: $profile.employee_id,
-        cart_status: "0"
-      });
-
-      // ดึงข้อมูลสินค้าสำหรับแต่ละรายการในตะกร้า
-      const cartWithProducts = await Promise.all(
-        docs.map(async (item: CartItemWithProduct) => {
-          try {
-            const productData = await getProductByID({
-              product_id: item.product_id
-            });
-            return {
-              ...item,
-              product: productData
-            };
-          } catch (error) {
-            console.error(`Error fetching product ${item.product_id}:`, error);
-            return item;
-          }
-        })
-      );
-
-      setCartItems(cartWithProducts as CartItemWithProduct[]);
-    } catch (error) {
-      console.error('Error fetching cart items:', error);
-    }
-  };
-
-  const handleDeleteItem = async (cart_id: string) => {
-    try {
-      await deleteCartBy({ cart_id });
-      await fetchCartItems();
-    } catch (error) {
-      console.error('Error deleting cart item:', error);
-    }
-  };
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
-  };
-
-  const handleViewCart = () => {
-    router.push('/sales/cart-details');
   };
 
   return (
@@ -131,65 +70,7 @@ export default function Navbar({ open, setOpen }: { open: boolean; setOpen: (val
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           {pathname.includes("/sales") && (
             <>
-              <IconButton
-                color="inherit"
-                onMouseEnter={(e) => setCartAnchorEl(e.currentTarget)}
-
-              >
-                <Badge badgeContent={cartItems.length} color="error">
-                  <ShoppingCart />
-                </Badge>
-              </IconButton>
-              <Menu
-                anchorEl={cartAnchorEl}
-                open={Boolean(cartAnchorEl)}
-                onClose={() => setCartAnchorEl(null)}
-              >
-                {cartItems.length === 0 ? (
-                  <MenuItem>
-                    <Typography>ไม่มีสินค้าในตะกร้า</Typography>
-                  </MenuItem>
-                ) : (
-                  <div>
-                    {cartItems.map((item) => (
-                      <MenuItem key={item.cart_id} onClick={handleViewCart}>
-                        <Box sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          width: '100%',
-                          alignItems: 'center'
-                        }}>
-                          <Typography>
-                            {item.product?.product_name} x {item.cart_amount}
-                          </Typography>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDeleteItem(item.cart_id!)}
-                          >
-                            <Delete fontSize="small" />
-                          </IconButton>
-                        </Box>
-                      </MenuItem>
-                    ))}
-                    <Divider />
-                    <MenuItem>
-                      <Box sx={{ width: '100%' }}>
-                        <Typography>
-                          รวมทั้งหมด: {cartItems.length} รายการ
-                        </Typography>
-                        <Typography variant="h6" color="primary">
-                          ราคารวม: {decimalFix(
-                            cartItems.reduce((total, item) =>
-                              total + (decimalFix(item.product?.product_price || 0) * decimalFix(item.cart_amount)),
-                              0
-                            ).toString()
-                          )} บาท
-                        </Typography>
-                      </Box>
-                    </MenuItem>
-                  </div>
-                )}
-              </Menu>
+              <CartDropdown />
             </>
           )}
           <IconButton color="inherit" sx={{ ml: 2 }}>
