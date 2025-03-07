@@ -5,11 +5,11 @@ import { ShoppingBag, Delete } from "@mui/icons-material";
 import { AuthProvider } from "@/context/AuthContext";
 import { useCart, useProduct } from "@/hooks/hooks";
 import { Cart, Product } from '@/misc/types';
-import { decimalFix } from "@/utils/number-helper"
-import { API_URL } from "@/utils/config"
+import { decimalFix } from "@/utils/number-helper";
+import { API_URL } from "@/utils/config";
 import { useRouter } from "next/navigation";
 
-const { getCartBy } = useCart();
+const { getCartBy, deleteCartBy } = useCart();
 const { getProductBy } = useProduct();
 
 export default function CartDropdown() {
@@ -30,54 +30,58 @@ export default function CartDropdown() {
         setLoading(true);
         try {
             const { docs: res } = await getCartBy({ match: { addby: $profile.employee_id } });
-            const product_list_arr = res.map(item => item.product_id)
+            const product_list_arr = res.map(item => item.product_id);
+
             const { docs: product_list } = await getProductBy({
                 match: {
                     product_id: { $in: product_list_arr }
                 }
             });
-            setCart(res)
-            setProduct(product_list)
+            setCart(res);
+            setProduct(product_list);
         } catch (error) {
             console.error("Error fetching StockIn:", error);
         }
         setLoading(false);
     };
 
-    const handleHover = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(anchorEl ? null : event.currentTarget);
     };
 
     const handleClose = () => {
         setAnchorEl(null);
     };
 
+    const onDeleteCart = async (cart_id: string) => {
+        try {
+            await deleteCartBy({ cart_id: cart_id })
+            fetchData()
+        } catch (error) {
+
+        }
+    }
+
     return (
         <>
-            {/* ปุ่มไอคอนตะกร้า */}
             <button
                 className="relative p-2 hover:bg-[#333333] rounded-md transition-transform hover:scale-110"
-                onMouseEnter={handleHover}
+                onClick={handleClick}
             >
-                {
-                    cart.length > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-[500] rounded-full w-5 h-5 flex items-center justify-center">
-                            {cart.length}
-                        </span>
-                    )
-                }
-                < ShoppingBag className="text-white text-2xl" />
-            </button >
-
-            {/* Popover ตะกร้าสินค้า */}
-            < Popover
+                {cart.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-[500] rounded-full w-5 h-5 flex items-center justify-center">
+                        {cart.length}
+                    </span>
+                )}
+                <ShoppingBag className="text-white text-2xl" />
+            </button>
+            <Popover
                 open={Boolean(anchorEl)}
                 anchorEl={anchorEl}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-                <Box sx={{ width: 350, p: 2 }}>
+                transformOrigin={{ vertical: "top", horizontal: "right" }}>
+                <Box sx={{ width: 400, p: 2 }}>
                     <span className="text-gray-700 text-[17px] font-[400]">ตะกร้าสินค้า</span>
                     <List sx={{ maxHeight: 300, overflowY: "auto" }}>
                         {cart.map((item, index) => (
@@ -98,31 +102,29 @@ export default function CartDropdown() {
                                         </p>
                                         <p className="text-sm text-gray-500">x {item.cart_amount}</p>
                                     </div>
-                                    <div className="flex-shrink-0">
-                                        <p>
-                                            {decimalFix(product.find((s) => s.product_id === cart[index].product_id)?.product_price || 0)}
+                                    <div className="flex-shrink-0 mr-2">
+                                        <p className="text-[#d32f2f] font-[400]">
+                                            ฿ {decimalFix(product.find((s) => s.product_id === cart[index].product_id)?.product_price || 0)}
                                         </p>
                                     </div>
-                                    {/* ปุ่มลบสินค้า */}
-                                    <IconButton size="small" color="error">
+                                    <IconButton onClick={() => onDeleteCart(item.cart_id)} size="small" color="default">
                                         <Delete fontSize="small" />
                                     </IconButton>
                                 </ListItem>
                                 <Divider />
                             </Box>
                         ))}
-
                         {cart.length > 0 && (
                             <div className="flex justify-between items-center mt-2">
                                 <span className="text-gray-700 text-[13px]">{cart.length} สินค้า </span>
-                                <Button variant="contained" color="info" onClick={() => router.push(`/sales/cart-details`)}>
+                                <Button variant="text" color="info" onClick={() => router.push(`/sales/cart-details`)}>
                                     ดูตะกร้าสินค้า
                                 </Button>
                             </div>
                         )}
                     </List>
                 </Box>
-            </Popover >
+            </Popover>
         </>
     );
 }

@@ -17,7 +17,7 @@ import {
     TextField,
     InputAdornment
 } from "@mui/material";
-import { Home, Store, Search } from "@mui/icons-material";
+import { Home, Store, Search, AddShoppingCart } from "@mui/icons-material";
 import { API_URL } from "@/utils/config"
 import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
@@ -40,8 +40,6 @@ const SalesPage = () => {
         fetchProducts();
     }, [selectedCategory]);
 
-
-
     const fetchProducts = async () => {
         setLoading(true);
         try {
@@ -59,15 +57,12 @@ const SalesPage = () => {
 
     const addToCart = async (product_id: string) => {
         try {
-
-
             await insertCart({
                 cart_id: "",
                 cart_amount: "1",
                 cart_status: "0",
                 product_id: product_id,
             });
-
         } catch (error) {
             console.error("Error adding to cart:", error);
             alert('เกิดข้อผิดพลาดในการเพิ่มสินค้าลงตะกร้า');
@@ -190,40 +185,37 @@ const SalesPage = () => {
                 <Grid container spacing={3}>
                     {products.map((product) => (
                         <Grid item xs={12} sm={6} md={4} lg={3} key={product.product_id}>
-                            <Card className="flex flex-col h-full" elevation={3}>
+                            <Card className="flex flex-col h-full shadow-lg rounded-lg overflow-hidden">
                                 {renderProductImages(product.product_img)}
-                                <CardContent className="flex-grow">
-                                    <div className="flex justify-between">
-                                        <Typography gutterBottom variant="h6" component="div">
+                                <CardContent className="flex-grow p-4">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <Typography gutterBottom variant="h6" component="div" className="font-semibold text-lg">
                                             {product.product_name}
                                         </Typography>
                                         <IconButton
                                             onClick={() => handleViewDetails(product.product_id)}
-                                            className="hover:bg-gray-100"
+                                            className="hover:bg-gray-200 rounded-full p-1"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                                 <path fill="currentColor" d="M17.4 17h-1.8a1.6 1.6 0 0 1-1.6-1.6v-3.8a1.6 1.6 0 0 1 1.6-1.6h1.8a1.6 1.6 0 0 1 1.6 1.6v3.8a1.6 1.6 0 0 1-1.6 1.6m-9 0H6.6A1.6 1.6 0 0 1 5 15.4V3.6A1.6 1.6 0 0 1 6.6 2h1.8A1.6 1.6 0 0 1 10 3.6v11.8A1.6 1.6 0 0 1 8.4 17" />
                                                 <path fill="currentColor" fillRule="evenodd" d="M1 21a1 1 0 0 0 1 1h20a1 1 0 1 0 0-2H2a1 1 0 0 0-1 1" clipRule="evenodd" />
                                             </svg>
-                                        </IconButton>      </div>
-                                    <Typography variant="body2" color="text.secondary">
-                                        รหัสสินค้า: {product.product_id}
+                                        </IconButton>
+                                    </div>
+                                    <Typography variant="body2" color="text.secondary" className="mb-2">
+                                        รหัสสินค้า: <span className="font-medium">{product.product_id}</span>
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        จำนวนคงเหลือ: {product.product_quantity} ชิ้น
+                                    <Typography variant="body2" color="text.secondary" className="mb-2">
+                                        จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} ชิ้น</span>
                                     </Typography>
-                                    <Typography variant="h6" color="primary" className="mt-2">
-                                        ราคา: {decimalFix(product.product_price)} บาท
+                                    <Typography variant="body1" color="error" className="mt-3 font-semibold">
+                                        ฿ {decimalFix(product.product_price)}
                                     </Typography>
                                 </CardContent>
                                 <CardActions sx={{ display: 'flex', justifyContent: 'end' }}>
-                                    <Button
-                                        onClick={() => addToCart(product.product_id)}
-                                        variant="contained"
-                                        size="small"
-                                    >
-                                        เพิ่มเข้าตะกร้า
-                                    </Button>
+                                    <button className="text-[15px] px-3 py-1 bg-blue-500 hover:bg-blue-600 rounded-2xl text-white font-[500]" onClick={() => addToCart(product.product_id)}>
+                                        <AddShoppingCart /> เพิ่มลงตะกร้า
+                                    </button>
                                 </CardActions>
                             </Card>
                         </Grid>

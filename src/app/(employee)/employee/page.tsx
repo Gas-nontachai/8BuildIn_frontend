@@ -112,108 +112,107 @@ const EmployeePage = () => {
           </Button>
         </div>
       </div>
-      {
-        loading ? (
-          <Loading />
-        ) : (
-          <>
-            <div className="flex justify-between mb-3">
-              <TextField
-                variant="outlined"
-                size="small"
-                placeholder="ค้นหาชื่อพนักงาน..."
-                className="w-64"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearch();
-                  }
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </div>
-            <TableContainer style={{ minHeight: "24rem" }}>
-              <Table>
-                <TableHead>
-                  <TableRow className="bg-gray-200" >
-                    <TableCell>#</TableCell>
-                    <TableCell>รูปภาพ</TableCell>
-                    < TableCell >ชื่อ-นามสกุล</TableCell>
-                    < TableCell >บทบาท</TableCell>
-                    < TableCell >เบอร์โทรศัพท์</TableCell>
-                    < TableCell >ที่อยู่</TableCell>
-                    < TableCell> จัดการ </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {
-                    employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-                      <TableRow key={item.employee_id} hover >
-                        <TableCell>{index + 1} </TableCell>
-                        <TableCell>
-                          <img
-                            className="w-8 h-8 rounded-full "
-                            src={item.employee_img ? `${API_URL}${item.employee_img}` : 'default-emp.jpg'}
-                            alt="Employee"
-                          />
-                        </TableCell>
-                        <TableCell>{item.employee_prefix} {item.employee_firstname} {item.employee_lastname} </TableCell>
-                        <TableCell>
-                          {license.find((l) => l.license_id === item.license_id)?.license_name ||
-                            <span className="text-[12px] text-gray-500">ยังไม่มีบทบาท</span>}
-                        </TableCell>
-                        <TableCell>{item.employee_phone}</TableCell>
-                        <TableCell>{item.employee_address}</TableCell>
-                        <TableCell>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => handleClickMenu(e, item)}
-                          >
-                            <MoreVert />
-                          </IconButton>
-                          <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleCloseMenu}
-                          >
-                            <MenuItem onClick={() => {
-                              setIsUpdateDialogOpen(true);
-                              employee_id.current = selected?.employee_id!;
-                              handleCloseMenu();
-                            }}>
-                              <ModeEdit className="mr-2" /> แก้ไข
-                            </MenuItem>
-                            <MenuItem onClick={() => {
-                              onDelete(selected?.employee_id!);
-                              handleCloseMenu();
-                            }}>
-                              <Delete className="mr-2" /> ลบ
-                            </MenuItem>
-                          </Menu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            < TablePagination
-              rowsPerPageOptions={[5, 10, 15]}
-              component="div"
-              count={employees.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onChangePage}
-              onRowsPerPageChange={onChangeRowsPerPage}
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <div className="flex justify-between mb-3">
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="ค้นหาชื่อพนักงาน..."
+              className="w-64"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
             />
-          </>
-        )}
+          </div>
+          <TableContainer style={{ minHeight: "24rem" }}>
+            <Table>
+              <TableHead>
+                <TableRow className="bg-gray-200" >
+                  <TableCell>#</TableCell>
+                  <TableCell>รูปภาพ</TableCell>
+                  < TableCell >ชื่อ-นามสกุล</TableCell>
+                  < TableCell >บทบาท</TableCell>
+                  < TableCell >เบอร์โทรศัพท์</TableCell>
+                  < TableCell >ที่อยู่</TableCell>
+                  < TableCell> จัดการ </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {
+                  employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                    <TableRow key={item.employee_id} hover >
+                      <TableCell>{index + 1} </TableCell>
+                      <TableCell>
+                        <img
+                          className="w-8 h-8 rounded-full "
+                          src={item.employee_img ? `${API_URL}${item.employee_img}` : 'default-emp.jpg'}
+                          alt="Employee"
+                        />
+                      </TableCell>
+                      <TableCell>{item.employee_prefix} {item.employee_firstname} {item.employee_lastname} </TableCell>
+                      <TableCell>
+                        {license.find((l) => l.license_id === item.license_id)?.license_name ||
+                          <span className="text-[12px] text-gray-500">ยังไม่มีบทบาท</span>}
+                      </TableCell>
+                      <TableCell>{item.employee_phone}</TableCell>
+                      <TableCell>{item.employee_address}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleClickMenu(e, item)}
+                        >
+                          <MoreVert />
+                        </IconButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleCloseMenu}
+                        >
+                          <MenuItem onClick={() => {
+                            setIsUpdateDialogOpen(true);
+                            employee_id.current = selected?.employee_id!;
+                            handleCloseMenu();
+                          }}>
+                            <ModeEdit className="mr-2" /> แก้ไข
+                          </MenuItem>
+                          <MenuItem onClick={() => {
+                            onDelete(selected?.employee_id!);
+                            handleCloseMenu();
+                          }}>
+                            <Delete className="mr-2" /> ลบ
+                          </MenuItem>
+                        </Menu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          < TablePagination
+            rowsPerPageOptions={[5, 10, 15]}
+            component="div"
+            count={employees.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+          />
+        </>
+      )}
 
       <AddEmployee open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
       <UpdateEmployee open={isUpdateDialogOpen} employee_id={employee_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />

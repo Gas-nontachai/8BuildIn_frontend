@@ -26,9 +26,7 @@ const ProductDetails = () => {
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<string>('');
     const { getProductByID } = useProduct();
-    const { getCartBy, insertCart, updateCartBy } = useCart();  // เพิ่ม hook สำหรับตะกร้า
-
-
+    const { getCartBy, insertCart, updateCartBy } = useCart();
 
     useEffect(() => {
         fetchProductDetails();
@@ -43,8 +41,6 @@ const ProductDetails = () => {
 
     const addToCart = async (product_id: string) => {
         try {
-
-
             await insertCart({
                 cart_id: "",
                 cart_amount: "1",
@@ -58,8 +54,6 @@ const ProductDetails = () => {
         }
     };
 
-
-
     const fetchProductDetails = async () => {
         if (!productId) return;
         try {
@@ -70,7 +64,7 @@ const ProductDetails = () => {
         } catch (error) {
             console.error("Error fetching product details:", error);
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     };
 
@@ -115,11 +109,9 @@ const ProductDetails = () => {
             </div>
         );
     };
-
-    if (loading) {
-        return <Loading />;
-    }
-
+    // if (loading) {
+    //     return <Loading />;
+    // }
     if (!product) {
         return (
             <Box p={4}>
@@ -127,7 +119,6 @@ const ProductDetails = () => {
             </Box>
         );
     }
-
     return (
         <>
             <Box sx={{ mb: 4 }}>
@@ -144,56 +135,60 @@ const ProductDetails = () => {
                     </Stack>
                 </Breadcrumbs>
             </Box>
-            <Grid container spacing={4}>
-                <Grid item xs={12} md={7}>
-                    {renderProductImages(product.product_img)}
-                </Grid>
-                <Grid item xs={12} md={5}>
-                    <div className="space-y-4">
-                        <Typography variant="h4">
-                            {product.product_name}
-                        </Typography>
-                        <Typography variant="h5" color="primary">
-                            ราคา: {decimalFix(product.product_price)} บาท
-                        </Typography>
-                        <div className="space-y-2">
-                            <Typography variant="body1" color="text.secondary">
-                                รหัสสินค้า: {product.product_id}
+            {loading ? (
+                <Loading />
+            ) : (
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={7}>
+                        {renderProductImages(product.product_img)}
+                    </Grid>
+                    <Grid item xs={12} md={5}>
+                        <div className="space-y-4">
+                            <Typography variant="h4">
+                                {product.product_name}
                             </Typography>
-                            <Typography variant="body1" color="text.secondary">
-                                จำนวนคงเหลือ: {product.product_quantity} ชิ้น
+                            <Typography variant="h5" color="primary">
+                                ราคา: {decimalFix(product.product_price)} บาท
                             </Typography>
-                        </div>
-                        <Button 
-                            variant="contained" 
-                            color="primary" 
-                            fullWidth 
-                            onClick={() => addToCart(product.product_id)}
-                            disabled={!product.product_quantity || parseInt(product.product_quantity) <= 0}
-                        >
-                            เพิ่มเข้าตะกร้า
-                        </Button>
-                        <div className="pt-4 border-t space-y-2">
-                            <Typography variant="body2" color="text.secondary">
-                                เพิ่มโดย: {product.addby}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                วันที่เพิ่ม: {formatDate(product.adddate)}
-                            </Typography>
-                            {product.updateby && (
-                                <>
-                                    <Typography variant="body2" color="text.secondary">
-                                        แก้ไขโดย: {product.updateby}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        วันที่แก้ไข: {new Date(product.lastupdate!).toLocaleDateString('th-TH')}
-                                    </Typography>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </Grid>
-            </Grid>
+                            <div className="space-y-2">
+                                <Typography variant="body1" color="text.secondary">
+                                    รหัสสินค้า: {product.product_id}
+                                </Typography>
+                                <Typography variant="body1" color="text.secondary">
+                                    จำนวนคงเหลือ: {product.product_quantity} ชิ้น
+                                </Typography>
+                            </div>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                onClick={() => addToCart(product.product_id)}
+                                disabled={!product.product_quantity || parseInt(product.product_quantity) <= 0}
+                            >
+                                เพิ่มเข้าตะกร้า
+                            </Button>
+                            <div className="pt-4 border-t space-y-2">
+                                <Typography variant="body2" color="text.secondary">
+                                    เพิ่มโดย: {product.addby}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    วันที่เพิ่ม: {formatDate(product.adddate)}
+                                </Typography>
+                                {product.updateby && (
+                                    <>
+                                        <Typography variant="body2" color="text.secondary">
+                                            แก้ไขโดย: {product.updateby}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            วันที่แก้ไข: {new Date(product.lastupdate!).toLocaleDateString('th-TH')}
+                                        </Typography>
+                                    </>
+                                )}
+                            </div>
+                        </div >
+                    </Grid >
+                </Grid >
+            )}
         </>
     );
 };

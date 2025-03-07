@@ -47,8 +47,17 @@ export default function ChangePassword({ open, onClose, employee_id }: ChangePas
         onClose();
     };
 
+    const ClearData = () => {
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setError("");
+        setErrorOld("");
+        onClose();
+    }
+
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <Dialog open={open} onClose={ClearData} fullWidth maxWidth="sm">
             <DialogTitle id="alert-dialog-title">
                 เปลี่ยนรหัสผ่าน
                 <IconButton
