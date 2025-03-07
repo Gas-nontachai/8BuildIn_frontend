@@ -1,140 +1,190 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Employee, Product } from '@/misc/types';
+import { decimalFix } from '@/utils/number-helper';
 
-// Define the styles for the PDF document
+// ลงทะเบียนฟอนต์ไทย
+Font.register({
+    family: 'Sarabun',
+    fonts: [
+        {
+            src: 'https://cdn.jsdelivr.net/npm/@fontsource/sarabun@4.5.0/files/sarabun-all-400-normal.woff',
+            fontWeight: 'normal'
+        },
+        {
+            src: 'https://cdn.jsdelivr.net/npm/@fontsource/sarabun@4.5.0/files/sarabun-all-700-normal.woff',
+            fontWeight: 'bold'
+        }
+    ]
+});
+
 const styles = StyleSheet.create({
     page: {
-        padding: 30,
+        padding: 40,
+        fontSize: 14,
+        fontFamily: 'Sarabun',
     },
     header: {
-        textAlign: 'center',
-        marginBottom: 20,
+        marginBottom: 30,
     },
-    heading: {
+    brandName: {
         fontSize: 24,
         fontWeight: 'bold',
+        color: '#2B3674',
+        marginBottom: 5,
     },
-    subheading: {
-        fontSize: 18,
-        marginTop: 10,
-        fontWeight: 'bold',
+    documentTitle: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginBottom: 20,
+        marginTop: 20,
+        color: '#2B3674',
     },
-    section: {
-        marginBottom: 15,
+    infoSection: {
+        marginBottom: 20,
+        padding: 10,
+        backgroundColor: '#F4F7FE',
+    },
+    infoText: {
+        marginBottom: 5,
+        color: '#4B4B4B',
     },
     table: {
-        display: 'flex',
-        flexDirection: 'column',
         marginTop: 20,
-        borderTop: '1px solid #000',
     },
     tableHeader: {
         flexDirection: 'row',
-        borderBottom: '1px solid #000',
-        paddingBottom: 5,
-        fontWeight: 'bold',
-    },
-    tableCell: {
-        width: '33%',
-        padding: 5,
-        textAlign: 'center',
+        backgroundColor: '#2B3674',
+        padding: 10,
+        color: '#FFFFFF',
     },
     tableRow: {
         flexDirection: 'row',
-        borderBottom: '1px solid #000',
-        paddingBottom: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E0E5F2',
+        padding: 10,
+    },
+    columnItem: {
+        flex: 3,
+    },
+    columnPrice: {
+        flex: 2,
+        textAlign: 'right',
+    },
+    columnQty: {
+        flex: 1,
+        textAlign: 'center',
+    },
+    columnTotal: {
+        flex: 2,
+        textAlign: 'right',
+    },
+    totalSection: {
+        marginTop: 30,
+        borderTopWidth: 1,
+        borderTopColor: '#2B3674',
+        paddingTop: 10,
     },
     totalRow: {
         flexDirection: 'row',
-        marginTop: 10,
-        fontWeight: 'bold',
+        justifyContent: 'flex-end',
+        marginTop: 5,
     },
     totalLabel: {
-        width: '66%',
         textAlign: 'right',
         paddingRight: 10,
+        color: '#4B4B4B',
+        flex: 1,
     },
     totalAmount: {
-        width: '33%',
+        width: 120,
+        textAlign: 'right',
+        fontWeight: 'bold',
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 30,
+        left: 40,
+        right: 40,
         textAlign: 'center',
+        color: '#697586',
+        fontSize: 10,
     },
 });
 
-const Quotation = () => {
+interface QuotationProps {
+    employee: Employee;
+    products: (Product & { quantity: string; total: number; })[];
+    totalAmount: number;
+}
+
+const Quotation = ({ employee, products, totalAmount }: QuotationProps) => {
     const date = new Date();
     const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const quotationNumber = `QT-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(date.getTime()).slice(-4)}`;
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                {/* Header section with company name and quotation title */}
+                {/* Header */}
                 <View style={styles.header}>
-                    <Text style={styles.heading}>Quotation</Text>
-                    <Text>Quote Number: #12345</Text>
-                    <Text>Date: {formattedDate}</Text>
+                    <Text style={styles.brandName}>8BUILT-IN</Text>
+                    <Text style={styles.documentTitle}>ใบเสนอราคา / Quotation</Text>
                 </View>
 
-                {/* Vendor Information Section */}
-                <View style={styles.section}>
-                    <Text style={styles.subheading}>Vendor Information</Text>
-                    <Text>Company Name: ABC Corporation</Text>
-                    <Text>Address: 1234 Business Ave, Suite 100, City, Country</Text>
-                    <Text>Email: info@abccorp.com</Text>
-                    <Text>Phone: +1 (800) 123-4567</Text>
+                {/* Document Info */}
+                <View style={styles.infoSection}>
+                    <Text style={styles.infoText}>เลขที่ใบเสนอราคา: {quotationNumber}</Text>
+                    <Text style={styles.infoText}>วันที่: {formattedDate}</Text>
+                    <Text style={styles.infoText}>
+                        ผู้ออกเอกสาร: {employee.employee_prefix}{employee.employee_firstname} {employee.employee_lastname}
+                    </Text>
+                    {/* <Text style={styles.infoText}>ตำแหน่ง: {employee.license_name}</Text> */}
                 </View>
 
-                {/* Customer Information Section */}
-                <View style={styles.section}>
-                    <Text style={styles.subheading}>Customer Information</Text>
-                    <Text>Customer Name: John Doe</Text>
-                    <Text>Address: 5678 Residential St, City, Country</Text>
-                    <Text>Email: johndoe@example.com</Text>
-                    <Text>Phone: +123456789</Text>
-                </View>
-
-                {/* Products Table Section */}
+                {/* Products Table */}
                 <View style={styles.table}>
-                    {/* Table Header */}
                     <View style={styles.tableHeader}>
-                        <Text style={styles.tableCell}>Description</Text>
-                        <Text style={styles.tableCell}>Unit Price</Text>
-                        <Text style={styles.tableCell}>Amount</Text>
+                        <Text style={styles.columnItem}>รายการสินค้า</Text>
+                        <Text style={styles.columnPrice}>ราคา/หน่วย</Text>
+                        <Text style={styles.columnQty}>จำนวน</Text>
+                        <Text style={styles.columnTotal}>ราคารวม</Text>
                     </View>
 
-                    {/* Product Rows */}
-                    <View style={styles.tableRow}>
-                        <Text style={styles.tableCell}>Product A</Text>
-                        <Text style={styles.tableCell}>$50.00</Text>
-                        <Text style={styles.tableCell}>$50.00</Text>
-                    </View>
-                    <View style={styles.tableRow}>
-                        <Text style={styles.tableCell}>Product B</Text>
-                        <Text style={styles.tableCell}>$30.00</Text>
-                        <Text style={styles.tableCell}>$30.00</Text>
-                    </View>
-                    <View style={styles.tableRow}>
-                        <Text style={styles.tableCell}>Product C</Text>
-                        <Text style={styles.tableCell}>$20.00</Text>
-                        <Text style={styles.tableCell}>$20.00</Text>
-                    </View>
+                    {products.map((product, index) => (
+                        <View key={index} style={[
+                            styles.tableRow,
+                            { backgroundColor: index % 2 === 0 ? '#F8F9FF' : '#FFFFFF' }
+                        ]}>
+                            <Text style={styles.columnItem}>{product.product_name}</Text>
+                            <Text style={styles.columnPrice}>{Number(product.product_price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</Text>
+                            <Text style={styles.columnQty}>{product.quantity}</Text>
+                            <Text style={styles.columnTotal}>{product.total.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</Text>
+                        </View>
+                    ))}
+                </View>
 
-                    {/* Total Row */}
+                {/* Total Section */}
+                <View style={styles.totalSection}>
                     <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>Total</Text>
-                        <Text style={styles.totalAmount}>$100.00</Text>
+                        <Text style={styles.totalLabel}>จำนวนรายการทั้งหมด:</Text>
+                        <Text style={styles.totalAmount}>{products.length} รายการ</Text>
+                    </View>
+                    <View style={styles.totalRow}>
+                        <Text style={styles.totalLabel}>ยอดรวมทั้งสิ้น:</Text>
+                        <Text style={styles.totalAmount}>
+                            ฿ {totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                        </Text>
                     </View>
                 </View>
 
-                {/* Terms & Conditions Section */}
-                <View style={styles.section}>
-                    <Text style={styles.subheading}>Terms & Conditions</Text>
-                    <Text>1. Prices are exclusive of taxes.</Text>
-                    <Text>2. Payment due within 30 days of receipt of the quotation.</Text>
-                    <Text>3. Delivery will be made within 15 working days upon order confirmation.</Text>
-                </View>
+                {/* Footer */}
+                <Text style={styles.footer}>
+                    เอกสารนี้ออกโดยระบบอัตโนมัติ - This is a computer-generated document
+                </Text>
             </Page>
         </Document>
     );
-}
+};
 
 export default Quotation;

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { pdf } from '@react-pdf/renderer';
 import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
 import { Delete, Add, Remove } from "@mui/icons-material";
-import { useCart, useProduct } from "@/hooks/hooks";
+import { useCart, useEmployee, useProduct } from "@/hooks/hooks";
 import { Cart, Product } from '@/misc/types';
 import { API_URL } from "@/utils/config";
 import { decimalFix, toFloat, toInt } from "@/utils/number-helper";
@@ -11,9 +11,10 @@ import { useSearchParams } from 'next/navigation';
 import { useCartContext } from "@/context/CartContext";
 import Quotation from '@/app/components/Sales/(PDF)/Quotation';
 
-
 const { getCartBy, deleteCartBy, updateCartBy } = useCart();
 const { getProductBy } = useProduct();
+const { getEmployeeByID } = useEmployee();
+const { getProductByID } = useProduct();
 
 const CartDetailPage = () => {
     const searchParams = useSearchParams();
@@ -99,12 +100,55 @@ const CartDetailPage = () => {
         }
     };
 
-    const openPdfInNewTab = async () => {
-        const blob = await pdf(<Quotation />).toBlob();
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        // setTimeout(() => URL.revokeObjectURL(url), 10000);
+    const openPdfInNewTab = async (editedCart: Cart[]) => {
+        try {
+            // 1. ดึงข้อมูลพนักงาน
+            const employeeData = await getEmployeeByID({
+                employee_id: editedCart[0].addby || ""
+            });
+
+            // 2. ดึงข้อมูลสินค้าทั้งหมด
+            const productPromises = editedCart.map(cart =>
+                getProductByID({ product_id: cart.product_id })
+            );
+            const products = await Promise.all(productPromises);
+
+            // 3. สร้างข้อมูลสำหรับ PDF
+            const quotationData = {
+                employee: employeeData,
+                products: products.map((product, index) => ({
+                    ...product,
+                    quantity: editedCart[index].cart_amount.toString(),
+                    total: Number(product.product_price) * Number(editedCart[index].cart_amount)
+                })),
+                totalAmount: products.reduce((sum, product, index) =>
+                    sum + (Number(product.product_price) * Number(editedCart[index].cart_amount)),
+                    0
+                )
+            };
+
+            // 4. สร้าง PDF
+            const blob = await pdf(
+                <Quotation
+                    employee={quotationData.employee}
+                    products={quotationData.products}
+                    totalAmount={quotationData.totalAmount}
+                />
+            ).toBlob();
+
+            // 5. เปิด PDF ในแท็บใหม่
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            console.log("quotationData", quotationData);
+            console.log("editedCart", editedCart);
+            console.log("employeeData", employeeData);
+            console.log("productPromises", productPromises);
+            console.log("products", products);
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        }
     };
+
 
 
     return (

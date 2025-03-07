@@ -43,7 +43,7 @@ const ProductDetails = () => {
         try {
             await insertCart({
                 cart_id: "",
-                cart_amount: "1",
+                cart_amount: 1,
                 cart_status: "0",
                 product_id: product_id,
             });
