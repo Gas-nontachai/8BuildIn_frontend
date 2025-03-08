@@ -15,41 +15,73 @@ import {
     Link,
     IconButton,
     TextField,
-    InputAdornment
+    InputAdornment,
+    MenuItem,
+    Menu
 } from "@mui/material";
-import { Home, Store, Search, AddShoppingCart } from "@mui/icons-material";
+import { Home, Store, Search, AddShoppingCart, Clear, Sort, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { API_URL } from "@/utils/config"
 import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
-import { useProduct, useCart } from "@/hooks/hooks";
-import { Product, Cart } from "@/misc/types"
+import { useProduct, useCart, useProductCategory } from "@/hooks/hooks";
+import { Product, Cart, ProductCategory } from "@/misc/types"
 import { useCartContext } from "@/context/CartContext";
 import Loading from "@/app/components/Loading";
 
+const { getProductBy } = useProduct();
+const { insertCart } = useCart();
+const { getProductCategoryBy } = useProductCategory();
+
 const SalesPage = () => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
     const [products, setProducts] = useState<Product[]>([]);
+    const [productCategory, setProductCategory] = useState<{ title: string, value: string }[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const [categories, setCategories] = useState<string[]>([]);
+    const [search, setSearch] = useState<string>("");
     const router = useRouter();
-    const { getProductBy } = useProduct();
-    const { insertCart } = useCart();
     const { refreshCart } = useCartContext();
-
+    const [sort, setSort] = useState<{ name: string; order: "ASC" | "DESC" }>({
+        name: "adddate",
+        order: "DESC",
+    });
 
     useEffect(() => {
         fetchProducts();
-    }, [selectedCategory]);
+        fetchProductCategory()
+    }, []);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [selectedCategory, sort]);
 
     const fetchProducts = async () => {
         setLoading(true);
         try {
-            const { docs } = await getProductBy(
+            const { docs } = await getProductBy({
+                search: {
+                    text: search,
+                    columns: ["product_name"],
+                    condition: "LIKE",
+                },
+                match: selectedCategory ? { product_category_id: selectedCategory } : {},
+                sorter: [{ key: sort.name, order: sort.order }],
+            });
+            setProducts(docs);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+        setLoading(false);
+    };
+
+    const fetchProductCategory = async () => {
+        setLoading(true);
+        try {
+            const { docs } = await getProductCategoryBy(
                 selectedCategory ? { product_category_id: selectedCategory } : {}
             );
-            setProducts(docs);
-            const uniqueProducts = docs.map((product: Product) => product.product_name);
-            setCategories(Array.from(new Set(uniqueProducts)));
+            setProductCategory(docs.map(item => ({ title: item.product_category_name, value: item.product_category_id })));
         } catch (error) {
             console.error("Error fetching products:", error);
         }
@@ -83,7 +115,6 @@ const SalesPage = () => {
         const images = productImg.split(",");
         const totalImages = images.length;
 
-        // ฟังก์ชันสำหรับกำหนด class ของ grid ตามจำนวนรูป
         const getGridClass = (total: number) => {
             switch (total) {
                 case 1:
@@ -98,13 +129,10 @@ const SalesPage = () => {
                     return 'grid-cols-3';
             }
         };
-
-        // ฟังก์ชันสำหรับกำหนดจำนวนรูปที่จะแสดง
         const getDisplayImages = () => {
             if (totalImages <= 5) {
                 return images;
             }
-            // ถ้ามีรูปมากกว่า 5 รูป จะแสดงแค่ 5 รูปแรก
             return images.slice(0, 5);
         };
 
@@ -140,6 +168,30 @@ const SalesPage = () => {
         router.push(`/sales/product-details?id=${productId}`);
     };
 
+    const openMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const closeMenu = () => {
+        setAnchorEl(null);
+    };
+
+    const toggleSort = (key: "name" | "order", value: string) => {
+        setSort((prevSort) => {
+            if (prevSort.name === value) {
+                return {
+                    ...prevSort,
+                    order: prevSort.order === "ASC" ? "DESC" : "ASC",
+                };
+            } else {
+                return {
+                    name: value,
+                    order: "ASC",
+                };
+            }
+        });
+    };
+
     return (
         <>
             <div className="flex justify-start items-center mb-2">
@@ -162,24 +214,71 @@ const SalesPage = () => {
                     size="small"
                     placeholder="ค้นหาชื่อสินค้า..."
                     className="w-64"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                     InputProps={{
                         startAdornment: (
-                            <InputAdornment position="start">
+                            <InputAdornment position="start" onClick={fetchProducts} className="cursor-pointer">
                                 <Search />
                             </InputAdornment>
                         ),
                     }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            fetchProducts();
+                        }
+                    }}
                 />
                 <FormControl sx={{ minWidth: 200 }}>
                     <Autocomplete
-                        value={selectedCategory}
-                        onChange={(event, newValue) => setSelectedCategory(newValue)}
-                        options={categories}
-                        renderInput={(params) => <TextField {...params} label="ค้นหาตามประเภทสินค้า" size="small" />}
-                        isOptionEqualToValue={(option, value) => option === value}
-                        disableClearable
+                        size="small"
+                        options={productCategory}
+                        getOptionLabel={(option) => option.title}
+                        value={productCategory.find(item => item.value === selectedCategory) || null}
+                        onChange={(event, newValue) => setSelectedCategory(newValue?.value || "")}
+                        renderInput={(params) => <TextField {...params} label="ค้นหาโดยประเภทสินค้า" />}
                     />
                 </FormControl>
+                {
+                    (search || selectedCategory) && (
+                        <button
+                            className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
+                            onClick={() => {
+                                setSearch('');
+                                setSelectedCategory('');
+                            }}
+                        >
+                            <Clear />
+                        </button>
+                    )
+                }
+                <div className="flex gap-2">
+                    <Button
+                        className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
+                        onClick={openMenu}
+                        endIcon={<Sort />}
+                    >
+                        Sort
+                    </Button>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={closeMenu}
+                    >
+                        <MenuItem onClick={() => toggleSort("name", "adddate")}>
+                            Sort by Date
+                            {sort.name === "adddate" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+                        </MenuItem>
+                        <MenuItem onClick={() => toggleSort("name", "product_price")}>
+                            Sort by Price
+                            {sort.name === "product_price" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+                        </MenuItem>
+                        <MenuItem onClick={() => toggleSort("name", "product_name")}>
+                            Sort by Product Name
+                            {sort.name === "product_name" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+                        </MenuItem>
+                    </Menu>
+                </div>
             </div>
             {loading ? (
                 <Loading />
