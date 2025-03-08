@@ -273,7 +273,7 @@ const StockInPage = () => {
                                                                             <TableRow key={product.product_name}>
                                                                                 <TableCell>{product.product_name}</TableCell>
                                                                                 <TableCell>{product.product_quantity}</TableCell>
-                                                                                <TableCell>฿ {product.product_price}</TableCell>
+                                                                                <TableCell>{product.product_price} ฿</TableCell>
                                                                             </TableRow>
                                                                         ))}
                                                                     </TableBody>
@@ -303,7 +303,7 @@ const StockInPage = () => {
                                                                             <TableRow key={material.material_name}>
                                                                                 <TableCell>{material.material_name}</TableCell>
                                                                                 <TableCell>{material.material_quantity}</TableCell>
-                                                                                <TableCell>฿ {material.material_price}</TableCell>
+                                                                                <TableCell>{material.material_price} ฿</TableCell>
                                                                             </TableRow>
                                                                         ))}
                                                                     </TableBody>
@@ -311,17 +311,15 @@ const StockInPage = () => {
                                                             </Box>
                                                         )}
                                                         {stock.stock_in_note && (
-                                                            <Box>
-                                                                <div className="my-2">
-                                                                    <Chip
-                                                                        sx={{ fontSize: 14, fontWeight: 600 }}
-                                                                        label={`หมายเหตุ`}
-                                                                    />
-                                                                </div>
-                                                                <span>
-                                                                    {stock.stock_in_note}
-                                                                </span>
-                                                            </Box>
+                                                            <div className="my-2">
+                                                                <p className="text-[20px] font-[300]"> หมายเหตุ <span className="text-red-500">*</span></p>
+                                                                <textarea
+                                                                    value={stock.stock_in_note}
+                                                                    disabled
+                                                                    rows={3}
+                                                                    className="w-full p-2 mt-2 border border-gray-400 text-[16px] font-[300] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                />
+                                                            </div>
                                                         )}
                                                     </Box>
 

@@ -36,18 +36,18 @@ interface AddStockInProps {
 
 const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => {
     const [formData, setFormData] = useState<StockIn>({
-        stock_in_id: "",
-        product: "",
-        material: "",
+        stock_in_id: '',
+        product: '',
+        material: '',
         stock_in_price: 0,
-        supplier_id: "",
-        stock_in_note: "",
+        stock_in_note: '',
+        supplier_id: '',
+        supplier_note: '',
     });
 
     const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([]);
     const [product, setProduct] = useState<{ product_name: string, product_quantity: number, product_price: number }[]>([]);
     const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, material_price: number }[]>([]);
-    const [isAddNote, setIsAddNote] = useState(false);
 
     const handleChange = (e: any) => {
         setFormData({
@@ -75,14 +75,13 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
             await onClose();
             await insertStockIn(insertData);
             setFormData({
-                stock_in_id: "",
-                product: "",
-                material: "",
+                stock_in_id: '',
+                product: '',
+                material: '',
                 stock_in_price: 0,
-                supplier_id: "",
-                stock_in_note: "",
-                addby: "",
-                adddate: ""
+                stock_in_note: '',
+                supplier_id: '',
+                supplier_note: '',
             });
             setMaterial([]);
             setProduct([]);
@@ -193,14 +192,29 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={3}>
+                    <Grid size={4}>
                         <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             fullWidth
                             type="number"
                             size="small"
+                            InputProps={{
+                                readOnly: true,
+                            }}
                             value={formData.stock_in_price}
                             onChange={(e) => setFormData({ ...formData, stock_in_price: Number(e.target.value) })}
+                        />
+                    </Grid>
+                    <Grid size={12}>
+                        <FormLabel component="legend">หมายเหตุ (ไม่บังคับ) </FormLabel>
+                        <textarea
+                            value={formData.supplier_note}
+                            onChange={(e) =>
+                                setFormData({ ...formData, supplier_note: e.target.value })
+                            }
+                            placeholder="เพิ่มหมายเหตุ..."
+                            className="w-full p-2 mt-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            rows={3}
                         />
                     </Grid>
                     <Grid size={12}>
@@ -209,9 +223,6 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                         </Button>
                         <Button onClick={() => handleAddContact("material")} startIcon={<Add />} color="primary">
                             เพิ่มวัสดุ
-                        </Button>
-                        <Button onClick={() => setIsAddNote(true)} startIcon={<Add />} color="primary">
-                            เพิ่มหมายเหตุ
                         </Button>
                     </Grid>
                     {product.length > 0 && (
@@ -310,33 +321,9 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
 
                         ))}
                     </Grid>
-                    <Grid size={12}>
-                        {isAddNote && (
-                            <div className="grid grid-cols-12">
-                                <FormLabel component="legend">หมายเหตุ <span className="text-red-500">*</span></FormLabel>
-                                <div className="relative flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
-                                    <button
-                                        className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition"
-                                        onClick={() => setIsAddNote(false)}
-                                    >
-                                        ✖
-                                    </button>
-                                    <input
-                                        type="text"
-                                        value={formData.stock_in_note}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, stock_in_note: e.target.value })
-                                        }
-                                        placeholder="เพิ่มหมายเหตุ..."
-                                        className="w-full p-2 mt-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                            </div>
-                        )}
-                    </Grid>
                 </Grid>
             </DialogContent>
-            <DialogActions sx={{ justifyContent: "center" }}>
+            <DialogActions sx={{ justifyContent: "center", marginBottom: 3 }}>
                 <Button onClick={handleSubmit} color="success" variant="contained">
                     บันทึก
                 </Button>

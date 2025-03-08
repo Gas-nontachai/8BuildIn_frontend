@@ -3,8 +3,9 @@ export type StockIn = {
     product: string;
     material: string;
     stock_in_price: number;
-    supplier_id: string;
     stock_in_note: string;
+    supplier_id: string;
+    supplier_note: string;
     addby?: string;
     adddate?: Date | string;
 }
