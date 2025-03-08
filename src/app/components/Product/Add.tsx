@@ -147,10 +147,11 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
         const data = { ...product }
         data.material = JSON.stringify(material)
         data.product_quantity = data.product_quantity ? data.product_quantity : '1'
+        data.product_price = Number(data.product_price)
         try {
             Swal.fire({
                 icon: 'info',
-                title: 'กำลังเข้าสู่ระบบ...',
+                title: 'กำลังเพิ่มข้อมูล...',
                 text: 'โปรดรอสักครู่ขณะกำลังยืนยันตัวตน',
                 allowOutsideClick: false,
                 didOpen: () => {

@@ -310,6 +310,19 @@ const StockInPage = () => {
                                                                 </Table>
                                                             </Box>
                                                         )}
+                                                        {stock.stock_in_note && (
+                                                            <Box>
+                                                                <div className="my-2">
+                                                                    <Chip
+                                                                        sx={{ fontSize: 14, fontWeight: 600 }}
+                                                                        label={`หมายเหตุ`}
+                                                                    />
+                                                                </div>
+                                                                <span>
+                                                                    {stock.stock_in_note}
+                                                                </span>
+                                                            </Box>
+                                                        )}
                                                     </Box>
 
                                                 </Collapse>

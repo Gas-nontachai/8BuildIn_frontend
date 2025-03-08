@@ -41,9 +41,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
         material: "",
         stock_in_price: 0,
         supplier_id: "",
-        supplier_note: "",
-        addby: "",
-        adddate: ''
+        stock_in_note: "",
     });
 
     const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([]);
@@ -82,7 +80,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                 material: "",
                 stock_in_price: 0,
                 supplier_id: "",
-                supplier_note: "",
+                stock_in_note: "",
                 addby: "",
                 adddate: ""
             });
@@ -325,9 +323,9 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                     </button>
                                     <input
                                         type="text"
-                                        value={formData.supplier_note}
+                                        value={formData.stock_in_note}
                                         onChange={(e) =>
-                                            setFormData({ ...formData, supplier_note: e.target.value })
+                                            setFormData({ ...formData, stock_in_note: e.target.value })
                                         }
                                         placeholder="เพิ่มหมายเหตุ..."
                                         className="w-full p-2 mt-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
