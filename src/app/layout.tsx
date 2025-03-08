@@ -20,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
 
   const isAuthPage = pathname === "/login" || pathname === "/register";
+  const isDashboard = pathname === "/dash-stock";
 
   return (
     <html lang="en">
@@ -49,17 +50,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 minHeight: '100vh'
               }}
             >
-              {!isAuthPage && (
+              {isDashboard ? (
+                <Box sx={{ padding: 3 }}>{children}</Box>
+              ) : isAuthPage ? (
+                <Box sx={{ padding: 3 }}>{children}</Box>
+              ) : (
                 <Card>
-                  <CardContent>
-                    {children}
-                  </CardContent>
+                  <CardContent>{children}</CardContent>
                 </Card>
-              )}
-              {isAuthPage && (
-                <Box sx={{ padding: 3 }}>
-                  {children}
-                </Box>
               )}
             </Box>
           </CartProvider>

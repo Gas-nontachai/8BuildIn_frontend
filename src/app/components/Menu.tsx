@@ -17,7 +17,8 @@ import {
     Badge,
     ManageAccounts,
     Outbound,
-    Gavel
+    Gavel,
+    Timeline
 } from "@mui/icons-material";
 
 
@@ -44,6 +45,7 @@ export default function SidebarMenu() {
     ];
 
     const StockStore = [
+        { text: "รายงานโสตร์", href: "/dash-stock", icon: <Timeline /> },
         { text: "บันทึกสต็อกเข้า", href: "/stock-in", icon: <InventoryIcon /> },
         { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Outbound /> }
     ];
