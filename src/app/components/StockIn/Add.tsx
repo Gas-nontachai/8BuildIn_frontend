@@ -41,6 +41,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
         material: "",
         stock_in_price: 0,
         supplier_id: "",
+        supplier_note: "",
         addby: "",
         adddate: ''
     });
@@ -48,6 +49,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
     const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([]);
     const [product, setProduct] = useState<{ product_name: string, product_quantity: number, product_price: number }[]>([]);
     const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, material_price: number }[]>([]);
+    const [isAddNote, setIsAddNote] = useState(false);
 
     const handleChange = (e: any) => {
         setFormData({
@@ -62,8 +64,17 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
             product: JSON.stringify(product),
             material: JSON.stringify(material),
         };
+        Swal.fire({
+            title: 'กำลังดำเนินการ...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
         try {
-            await onClose()
+            await onClose();
             await insertStockIn(insertData);
             setFormData({
                 stock_in_id: "",
@@ -71,26 +82,32 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                 material: "",
                 stock_in_price: 0,
                 supplier_id: "",
+                supplier_note: "",
                 addby: "",
-                adddate: ''
-            })
-            setMaterial([])
-            setProduct([])
-            await onRefresh()
+                adddate: ""
+            });
+            setMaterial([]);
+            setProduct([]);
+            await onRefresh();
             Swal.fire({
-                title: 'Success!',
-                text: 'Stock has been successfully added.',
+                toast: true,
+                position: 'top-end',
                 icon: 'success',
-                confirmButtonText: 'OK'
+                title: 'เพิ่มสต็อกเรียบร้อย',
+                showConfirmButton: false,
+                timer: 2000
             });
 
         } catch (error) {
             console.error("Error inserting stock:", error);
             Swal.fire({
-                title: 'Error!',
-                text: 'There was an error while inserting stock.',
+                toast: true,
+                position: 'top-end',
                 icon: 'error',
-                confirmButtonText: 'Try Again'
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถเพิ่มสต็อกได้',
+                showConfirmButton: false,
+                timer: 3000
             });
         }
     };
@@ -195,6 +212,9 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                         <Button onClick={() => handleAddContact("material")} startIcon={<Add />} color="primary">
                             เพิ่มวัสดุ
                         </Button>
+                        <Button onClick={() => setIsAddNote(true)} startIcon={<Add />} color="primary">
+                            เพิ่มหมายเหตุ
+                        </Button>
                     </Grid>
                     {product.length > 0 && (
                         <>
@@ -291,6 +311,30 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                             </Grid>
 
                         ))}
+                    </Grid>
+                    <Grid size={12}>
+                        {isAddNote && (
+                            <div className="grid grid-cols-12">
+                                <FormLabel component="legend">หมายเหตุ <span className="text-red-500">*</span></FormLabel>
+                                <div className="relative flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
+                                    <button
+                                        className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition"
+                                        onClick={() => setIsAddNote(false)}
+                                    >
+                                        ✖
+                                    </button>
+                                    <input
+                                        type="text"
+                                        value={formData.supplier_note}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, supplier_note: e.target.value })
+                                        }
+                                        placeholder="เพิ่มหมายเหตุ..."
+                                        className="w-full p-2 mt-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </Grid>
                 </Grid>
             </DialogContent>

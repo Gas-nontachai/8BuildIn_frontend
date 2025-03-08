@@ -46,7 +46,13 @@ const EmployeePage = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const { docs: res } = await getEmployeeBy();
+    const { docs: res } = await getEmployeeBy({
+      search: {
+        text: search,
+        columns: ["employee_firstname", "employee_lastname", "employee_id"],
+        condition: "LIKE",
+      },
+    });
     const license_id = res.map(item => item.license_id)
     const { docs: license_list } = await getLicenseBy({
       license_id: { $in: license_id }
@@ -76,16 +82,6 @@ const EmployeePage = () => {
         console.error("Error deleting employee:", error);
       }
     }
-  };
-  const handleSearch = async () => {
-    setLoading(true);
-    const { docs: res } = await getEmployeeBy();
-    const filterData = res.filter((item: any) =>
-      item.employee_firstname.toLowerCase().includes(search.toLowerCase()) ||
-      item.employee_lastname.toLowerCase().includes(search.toLowerCase())
-    );
-    setEmployees(filterData);
-    setLoading(false);
   };
 
   return (
@@ -126,7 +122,7 @@ const EmployeePage = () => {
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleSearch();
+                  fetchData();
                 }
               }}
               InputProps={{

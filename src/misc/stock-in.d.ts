@@ -4,6 +4,7 @@ export type StockIn = {
     material: string;
     stock_in_price: number;
     supplier_id: string;
+    supplier_note: string;
     addby: string;
     adddate: Date | string;
 }

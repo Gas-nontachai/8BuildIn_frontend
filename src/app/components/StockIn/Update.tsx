@@ -42,6 +42,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
         material: "",
         stock_in_price: 0,
         supplier_id: "",
+        supplier_note: "",
         addby: "",
         adddate: ''
     });
@@ -82,6 +83,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                 material: "",
                 stock_in_price: 0,
                 supplier_id: "",
+                supplier_note: "",
                 addby: "",
                 adddate: ''
             });

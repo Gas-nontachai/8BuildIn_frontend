@@ -45,10 +45,10 @@ const CartDetailPage = () => {
             const product_list_arr = res.map(item => item.product_id);
             const { docs: product_list } = await getProductBy({
                 match: { product_id: { $in: product_list_arr } }
-            }); 
+            });
             setCart(res);
             setEditedCart(res);
-            setProduct(product_list); 
+            setProduct(product_list);
             res.forEach(cartItem => {
                 const product = product_list.find(item => item.product_id === cartItem.product_id);
                 if (product) {

@@ -2,10 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
-import { ModeEdit, Delete, Add, Inventory2, Home, MoreVert } from "@mui/icons-material";
+import { ModeEdit, Delete, Add, Inventory2, Home, MoreVert, Search, SwapVert } from "@mui/icons-material";
 import {
     Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Menu, TablePagination, Button, Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField
+    TableContainer, TableHead, TableRow, Menu, TablePagination, InputAdornment, Button, Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
@@ -21,6 +21,8 @@ const { getStockInBy, deleteStockInBy } = useStockIn();
 const { getSupplierBy } = useSupplier();
 
 const StockInPage = () => {
+    const [search, setSearch] = useState("");
+    const [sortDate, setSortDate] = useState<"ASC" | "DESC">("DESC");
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [loading, setLoading] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -47,13 +49,23 @@ const StockInPage = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const { docs: res } = await getStockInBy();
-            const supplier_list_arr = res.map(item => item.supplier_id)
-            const { docs: supplier_llist } = await getSupplierBy({
-                supplier_id: { $in: supplier_list_arr }
+            const { docs: res } = await getStockInBy({
+                sorter: { key: "adddate", order: sortDate },
+                search: {
+                    text: search,
+                    columns: ["stock_in_id"],
+                    condition: "LIKE",
+                },
             });
+
+            const supplier_list_arr = res.map(item => item.supplier_id);
+
+            const { docs: supplier_list } = await getSupplierBy({
+                supplier_id: { $in: supplier_list_arr },
+            });
+
             setStockIn(res);
-            setSupplier(supplier_llist);
+            setSupplier(supplier_list);
         } catch (error) {
             console.error("Error fetching StockIn:", error);
         }
@@ -80,6 +92,15 @@ const StockInPage = () => {
             }
         }
     };
+
+    const toggleSort = () => {
+        setSortDate(prevSort => prevSort === "DESC" ? "ASC" : "DESC");
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [sortDate]);
+
     return (
         <>
             <div className="flex justify-start items-center mb-4" >
@@ -97,17 +118,47 @@ const StockInPage = () => {
                 </Breadcrumbs>
             </div>
             <div className="flex justify-between items-center mb-4">
-                <div className=" ">
+                <div>
                     <TextField
                         variant="outlined"
                         size="small"
-                        placeholder="ค้นหารหัสสต็อก..."
+                        placeholder="ค้นหาชื่อพนักงาน..."
                         className="w-64"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                fetchData();
+                            }
+                        }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Search />
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                 </div>
-                <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
-                    เพิ่มสต็อกเข้า
-                </Button>
+
+                <div className="flex gap-2">
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={toggleSort}
+                        startIcon={<SwapVert />}
+                    >
+                        {sortDate === "ASC" ? "ASC" : "DESC"}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setIsAddDialogOpen(true)}
+                        startIcon={<Add />}
+                    >
+                        เพิ่มสต็อกเข้า
+                    </Button>
+                </div>
             </div>
             {loading ? (
                 <Loading />
