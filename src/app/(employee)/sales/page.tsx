@@ -10,7 +10,6 @@ import {
     Button,
     Autocomplete,
     Breadcrumbs,
-    Box,
     Stack,
     Link,
     IconButton,
