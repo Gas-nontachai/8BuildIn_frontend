@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { Close, Add, DeleteForeverRounded } from "@mui/icons-material";
+import { Close, Add, DeleteForeverRounded, UndoRounded } from "@mui/icons-material";
 import {
     Dialog,
     DialogActions,
@@ -51,6 +51,8 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
     const [unit, setUnit] = useState<{ id: string; name: string }[]>([]);
     const [product, setProduct] = useState<{ product_id: string, product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
     const [material, setMaterial] = useState<{ material_id: string, material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
+    const [del_product, setDelProduct] = useState<{ product_id: string, product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
+    const [del_material, setDelMaterial] = useState<{ material_id: string, material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
 
     const handleChange = (e: any) => {
         setFormData({
@@ -66,6 +68,10 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
             material: JSON.stringify(material),
             stock_in_note: note
         };
+
+        const del_pd_arr = del_product.map(item => item.product_id)
+        const del_mt_arr = del_material.map(item => item.material_id)
+
         try {
             onClose();
             Swal.fire({
@@ -76,7 +82,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                     Swal.showLoading();
                 }
             });
-            await updateStockInBy(insertData);
+            await updateStockInBy(insertData, del_pd_arr, del_mt_arr);
             setFormData({
                 stock_in_id: '',
                 product: '',
@@ -87,6 +93,8 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
             });
             setMaterial([]);
             setProduct([]);
+            setDelProduct([]);
+            setDelMaterial([]);
             onRefresh();
             Swal.fire({
                 title: 'สำเร็จ!',
@@ -127,9 +135,21 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
 
     const handleRemoveData = (index: number, type: "product" | "material") => {
         if (type === "product") {
+            setDelProduct([...del_product, product[index]]);
             setProduct(product.filter((_, i) => i !== index));
         } else {
+            setDelMaterial([...del_material, material[index]]);
             setMaterial(material.filter((_, i) => i !== index));
+        }
+    };
+
+    const handleReverseData = (index: number, type: "product" | "material") => {
+        if (type === "product") {
+            setProduct([...product, del_product[index]]);
+            setDelProduct(del_product.filter((_, i) => i !== index));
+        } else {
+            setMaterial([...material, del_material[index]]);
+            setDelMaterial(del_material.filter((_, i) => i !== index));
         }
     };
 
@@ -314,6 +334,36 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
 
                             ))}
                         </Grid>
+                        {/* แสดงสินค้าที่กำลังจะถูกลบ */}
+                        {del_product.length > 0 && (
+                            <>
+                                <FormLabel component="legend" className="text-red-500">สินค้า (รอลบ)</FormLabel>
+                                <Grid size={12}>
+                                    {del_product.map((product, index) => (
+                                        <Grid container spacing={2} key={index} sx={{ mb: 1, backgroundColor: "#FFECEC", padding: "8px", borderRadius: "8px", alignItems: "center" }}>
+                                            <Grid size={3}>
+                                                <TextField label="ชื่อสินค้า" size="small" fullWidth value={product.product_name} disabled />
+                                            </Grid>
+                                            <Grid size={3}>
+                                                <TextField label="จำนวน" size="small" fullWidth value={product.product_quantity} type="number" disabled />
+                                            </Grid>
+                                            <Grid size={2}>
+                                                <TextField label="หน่วย" size="small" fullWidth value={unit.find(u => u.id === product.unit_id)?.name || "-"} disabled />
+                                            </Grid>
+                                            <Grid size={3}>
+                                                <TextField label="ราคาทั้งหมด" size="small" fullWidth value={product.product_price} type="number" disabled />
+                                            </Grid>
+                                            <Grid size={1}>
+                                                <IconButton onClick={() => handleReverseData(index, "product")} color="primary">
+                                                    <UndoRounded />
+                                                </IconButton>
+                                            </Grid>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </>
+                        )}
+
                         {material.length > 0 && (
                             <>
                                 <FormLabel component="legend">วัสดุ <span className="text-red-500">*</span></FormLabel>
@@ -375,9 +425,37 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                         </IconButton>
                                     </Grid>
                                 </Grid>
-
                             ))}
                         </Grid>
+                        {/* แสดงวัสดุที่กำลังจะถูกลบ */}
+                        {del_material.length > 0 && (
+                            <>
+                                <FormLabel component="legend" className="text-red-500">วัสดุ (รอลบ)</FormLabel>
+                                <Grid size={12}>
+                                    {del_material.map((material, index) => (
+                                        <Grid container spacing={2} key={index} sx={{ mb: 1, backgroundColor: "#FFECEC", padding: "8px", borderRadius: "8px", alignItems: "center" }}>
+                                            <Grid size={3}>
+                                                <TextField label="ชื่อวัสดุ" size="small" fullWidth value={material.material_name} disabled />
+                                            </Grid>
+                                            <Grid size={3}>
+                                                <TextField label="จำนวน" size="small" fullWidth value={material.material_quantity} type="number" disabled />
+                                            </Grid>
+                                            <Grid size={2}>
+                                                <TextField label="หน่วย" size="small" fullWidth value={unit.find(u => u.id === material.unit_id)?.name || "-"} disabled />
+                                            </Grid>
+                                            <Grid size={3}>
+                                                <TextField label="ราคาทั้งหมด" size="small" fullWidth value={material.material_price} type="number" disabled />
+                                            </Grid>
+                                            <Grid size={1}>
+                                                <IconButton onClick={() => handleReverseData(index, "material")} color="primary">
+                                                    <UndoRounded />
+                                                </IconButton>
+                                            </Grid>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </>
+                        )}
                     </Grid>
                 </DialogContent>
             )
