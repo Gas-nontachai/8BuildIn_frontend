@@ -1,11 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
 import { API_URL } from "@/utils/config"
+import { useEffect, useMemo, useState } from "react";
 import Swal from 'sweetalert2';
-import { Delete, Add, Home, Gavel } from "@mui/icons-material";
+import { Delete, Add, Home, Gavel, Search } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
+  TableContainer, TableHead, TableRow, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
+  FormControl,
+  Autocomplete,
+  InputAdornment,
+  TextField,
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
@@ -13,24 +17,70 @@ import { decimalFix } from "@/utils/number-helper"
 import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
 import Loading from "@/app/components/Loading";
 
-import { useMaterial, useUnit } from "@/hooks/hooks";
-import { Material, Unit } from '@/misc/types';
+import { useUnit } from "@/hooks/hooks";
+import { Unit } from '@/misc/types';
 
 const { getMaterialBy } = useMaterial()
 const { getUnitBy } = useUnit()
 
+import useMaterial from "@/hooks/useMaterial";
+import useMaterialCategory from "@/hooks/useMaterialCategory";
+import { Material, MaterialCategory } from '@/misc/types';
 const MaterialPage = () => {
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [selectedMaterial, setSelectedMaterialCategory] = useState<string>("");
   const [unit, setUnit] = useState<Unit[]>([]);
+  const [materialCategory, setMaterialCategory] = useState<{ material_category_name: string, value: string }[]>([]);
+  const { getMaterialCategoryBy } = useMaterialCategory();
+  const [search, setSearch] = useState<string>("");
+
+  const [sort, setSort] = useState<{ name: string; order: "ASC" | "DESC" }>({
+    name: "adddate",
+    order: "DESC",
+  });
+
+  const fetchMaterials = async () => {
+    setLoading(true);
+    try {
+      const { docs } = await getMaterialBy({
+        search: {
+          text: search,
+          columns: ["material_name"],
+          condition: "LIKE",
+        },
+        match: selectedMaterial ? { material_id: selectedMaterial } : {},
+        sorter: [{ key: sort.name, order: sort.order }],
+      });
+      setMaterials(docs);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+    setLoading(false);
+  };
+
+  const fetchMaterialCategory = async () => {
+    setLoading(true);
+    try {
+      const { docs } = await getMaterialCategoryBy(
+        selectedMaterial ? { material_category_id: selectedMaterial } : {}
+      );
+      setMaterialCategory(docs.map(item => ({ material_category_name: item.material_category_name, value: item.material_category_id })));
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     try {
       setLoading(true);
       fetchData();
-      fetchUnit()
+      fetchUnit();
+      fetchMaterials();
+      fetchMaterialCategory();
     } catch (error) {
       console.error("Error fetching materials:", error);
     } finally {
@@ -40,8 +90,18 @@ const MaterialPage = () => {
 
   const fetchData = async () => {
     try {
-      const { docs: res } = await getMaterialBy();
-      setMaterials(res);
+      const [materialsRes, categoriesRes] = await Promise.all([
+        getMaterialBy(),
+        getMaterialCategoryBy(),
+      ]);
+
+      setMaterials(materialsRes.docs);
+      setMaterialCategory(
+        categoriesRes.docs.map((category) => ({
+          material_category_name: category.material_category_name,
+          value: category.material_category_id,
+        }))
+      );
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
@@ -92,12 +152,52 @@ const MaterialPage = () => {
             <Typography variant="body1" color="text.secondary">ข้อมูลวัสดุ</Typography>
           </Stack>
         </Breadcrumbs>
+
         <div className="flex gap-2">
           <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทวัสดุ
           </Button>
         </div>
       </div>
+
+      <div className="flex gap-2 mb-5">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="ค้นหาชื่อวัสดุ..."
+          className="w-64"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment
+                position="start"
+                onClick={fetchMaterials}
+                className="cursor-pointer"
+              >
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              fetchMaterials();
+            }
+          }}
+        />
+
+        <FormControl sx={{ minWidth: 200 }}>
+          <Autocomplete
+            size="small"
+            options={materialCategory}
+            getOptionLabel={(option) => option.material_category_name}
+            value={materialCategory.find(item => item.value === selectedMaterial) || null}
+            onChange={(event, newValue) => setSelectedMaterialCategory(newValue?.value || "")}
+            renderInput={(params) => <TextField {...params} label="ค้นหาโดยประเภทวัสดุ" />}
+          />
+        </FormControl>
+      </div>
+
       {loading ? (
         <Loading />
       ) : (
