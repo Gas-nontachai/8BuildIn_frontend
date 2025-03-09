@@ -85,84 +85,83 @@ const CustomerPage = () => {
           </Stack>
         </Breadcrumbs>
         <div className="flex gap-2" >
-          <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
+          <Button variant="contained" color="success" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มลูกค้า
           </Button>
         </div>
       </div>
 
-      {
-        loading ? (
-          <Loading />
-        ) : (
-          <>
-            <TableContainer style={{ minHeight: "24rem" }}>
-              <Table>
-                <TableHead>
-                  <TableRow className="bg-gray-200">
-                    <TableCell align="center">#</TableCell>
-                    <TableCell align="center">ชื่อ-นามสกุล</TableCell>
-                    <TableCell align="center">อีเมล</TableCell>
-                    <TableCell align="center">เบอร์โทร</TableCell>
-                    <TableCell align="center">วัน/เดือน/ปีเกิด</TableCell>
-                    <TableCell align="center">เพศ</TableCell>
-                    <TableCell align="center">ที่อยู่</TableCell>
-                    <TableCell>จัดการ</TableCell>
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <TableContainer style={{ minHeight: "24rem" }}>
+            <Table>
+              <TableHead>
+                <TableRow className="bg-gray-200">
+                  <TableCell align="center">#</TableCell>
+                  <TableCell align="center">ชื่อ-นามสกุล</TableCell>
+                  <TableCell align="center">อีเมล</TableCell>
+                  <TableCell align="center">เบอร์โทร</TableCell>
+                  <TableCell align="center">วัน/เดือน/ปีเกิด</TableCell>
+                  <TableCell align="center">เพศ</TableCell>
+                  <TableCell align="center">ที่อยู่</TableCell>
+                  <TableCell>จัดการ</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                  <TableRow key={item.customer_id} hover >
+                    <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
+                    <TableCell align="center">{item.customer_prefix} {item.customer_firstname} {item.customer_lastname}</TableCell>
+                    <TableCell align="center">{item.customer_email}</TableCell>
+                    <TableCell align="center">{item.customer_phone}</TableCell>
+                    <TableCell align="center">{item.customer_birthday}</TableCell>
+                    <TableCell align="center">{item.customer_gender}</TableCell>
+                    <TableCell align="center">{item.customer_address}</TableCell>
+                    <TableCell>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleClickMenu(e, item)}
+                      >
+                        <MoreVert />
+                      </IconButton>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleCloseMenu}
+                      >
+                        <MenuItem onClick={() => {
+                          setIsUpdateDialogOpen(true);
+                          customer_id.current = selected?.customer_id!;
+                          handleCloseMenu();
+                        }}>
+                          <ModeEdit className="mr-2" /> แก้ไข
+                        </MenuItem>
+                        <MenuItem onClick={() => {
+                          onDelete(selected?.customer_id!);
+                          handleCloseMenu();
+                        }}>
+                          <Delete className="mr-2" /> ลบ
+                        </MenuItem>
+                      </Menu>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-                    <TableRow key={item.customer_id} hover >
-                      <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
-                      <TableCell align="center">{item.customer_prefix} {item.customer_firstname} {item.customer_lastname}</TableCell>
-                      <TableCell align="center">{item.customer_email}</TableCell>
-                      <TableCell align="center">{item.customer_phone}</TableCell>
-                      <TableCell align="center">{item.customer_birthday}</TableCell>
-                      <TableCell align="center">{item.customer_gender}</TableCell>
-                      <TableCell align="center">{item.customer_address}</TableCell>
-                      <TableCell>
-                        <IconButton
-                          size="small"
-                          onClick={(e) => handleClickMenu(e, item)}
-                        >
-                          <MoreVert />
-                        </IconButton>
-                        <Menu
-                          anchorEl={anchorEl}
-                          open={Boolean(anchorEl)}
-                          onClose={handleCloseMenu}
-                        >
-                          <MenuItem onClick={() => {
-                            setIsUpdateDialogOpen(true);
-                            customer_id.current = selected?.customer_id!;
-                            handleCloseMenu();
-                          }}>
-                            <ModeEdit className="mr-2" /> แก้ไข
-                          </MenuItem>
-                          <MenuItem onClick={() => {
-                            onDelete(selected?.customer_id!);
-                            handleCloseMenu();
-                          }}>
-                            <Delete className="mr-2" /> ลบ
-                          </MenuItem>
-                        </Menu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            < TablePagination
-              rowsPerPageOptions={[5, 10, 15]}
-              component="div"
-              count={customers.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onChangePage}
-              onRowsPerPageChange={onChangeRowsPerPage}
-            />
-          </>
-        )}
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          < TablePagination
+            rowsPerPageOptions={[5, 10, 15]}
+            component="div"
+            count={customers.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+          />
+        </>
+      )}
 
       <AddCustomer open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
       <UpdateCustomer open={isUpdateDialogOpen} customer_id={customer_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />

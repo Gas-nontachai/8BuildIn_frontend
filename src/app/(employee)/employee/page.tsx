@@ -100,7 +100,7 @@ const EmployeePage = () => {
           </Stack>
         </Breadcrumbs>
         <div className="flex gap-2">
-          <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
+          <Button variant="contained" color="success" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มพนักงาน
           </Button>
           <Button variant="contained" color="primary" href="/license">
@@ -139,7 +139,7 @@ const EmployeePage = () => {
               <TableHead>
                 <TableRow className="bg-gray-200" >
                   <TableCell>#</TableCell>
-                  <TableCell>รูปภาพ</TableCell>
+                  {/* <TableCell>รูปภาพ</TableCell> */}
                   < TableCell >ชื่อ-นามสกุล</TableCell>
                   < TableCell >บทบาท</TableCell>
                   < TableCell >เบอร์โทรศัพท์</TableCell>
@@ -151,13 +151,13 @@ const EmployeePage = () => {
                 {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                   <TableRow key={item.employee_id} hover >
                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <img
                         className="w-8 h-8 rounded-full "
                         src={item.employee_img ? `${API_URL}${item.employee_img}` : 'default-emp.jpg'}
                         alt="Employee"
                       />
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>{item.employee_prefix} {item.employee_firstname} {item.employee_lastname} </TableCell>
                     <TableCell>
                       {license.find((l) => l.license_id === item.license_id)?.license_name ||

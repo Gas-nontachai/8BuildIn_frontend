@@ -63,20 +63,14 @@ const StockInPage = () => {
     };
 
     useEffect(() => {
-        setLoading(true);
-        try {
-            fetchData();
-            fetchUnit()
-        } catch (error) {
-            console.error("Error fetching StockIn:", error);
-        } finally {
-            setLoading(false);
-        }
+        fetchData();
+        fetchUnit()
     }, []);
 
     const fetchData = async () => {
 
         try {
+            setLoading(true);
             const { docs: res } = await getStockInBy({
                 sorter: { key: "adddate", order: sortDate },
                 search: {
@@ -85,7 +79,6 @@ const StockInPage = () => {
                     condition: "LIKE",
                 },
             });
-
             const supplier_list_arr = res.map(item => item.supplier_id);
             const employee_id = res.map(item => item.addby);
 
@@ -102,6 +95,8 @@ const StockInPage = () => {
             setEmployee(employee_list);
         } catch (error) {
             console.error("Error fetching StockIn:", error);
+        } finally {
+            setLoading(false);
         }
 
     };

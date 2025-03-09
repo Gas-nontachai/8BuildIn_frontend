@@ -1,20 +1,33 @@
 "use client";
 import { API_URL } from "@/utils/config"
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Swal from 'sweetalert2';
-import { Delete, Add, Home, Gavel, Search } from "@mui/icons-material";
+import { Delete, Add, Home, Gavel, Search, ModeEdit, MoreVert } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Button,
+  Breadcrumbs,
+  Checkbox,
+  Typography,
+  Stack,
+  Link,
   FormControl,
   Autocomplete,
   InputAdornment,
   TextField,
+  MenuItem,
+  IconButton,
+  Menu
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
 
 import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
+import UpdateMaterial from "@/app/components/Material/Update";
 import Loading from "@/app/components/Loading";
 
 import { useUnit } from "@/hooks/hooks";
@@ -25,7 +38,10 @@ const { getUnitBy } = useUnit()
 
 import useMaterial from "@/hooks/useMaterial";
 import useMaterialCategory from "@/hooks/useMaterialCategory";
-import { Material, MaterialCategory } from '@/misc/types';
+import { Material } from '@/misc/types';
+
+const { getMaterialCategoryBy } = useMaterialCategory();
+
 const MaterialPage = () => {
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
@@ -34,8 +50,21 @@ const MaterialPage = () => {
   const [selectedMaterial, setSelectedMaterialCategory] = useState<string>("");
   const [unit, setUnit] = useState<Unit[]>([]);
   const [materialCategory, setMaterialCategory] = useState<{ material_category_name: string, value: string }[]>([]);
-  const { getMaterialCategoryBy } = useMaterialCategory();
   const [search, setSearch] = useState<string>("");
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selected, setSelected] = useState<Material | null>(null);
+  const [isUpdateDialog, setIsUpdateDialog] = useState(false);
+  const material_id = useRef("");
+
+  const handleClickMenu = (event: React.MouseEvent<HTMLElement>, material: Material) => {
+    setAnchorEl(event.currentTarget);
+    setSelected(material);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setSelected(null);
+  };
+
 
   const [sort, setSort] = useState<{ name: string; order: "ASC" | "DESC" }>({
     name: "adddate",
@@ -216,20 +245,39 @@ const MaterialPage = () => {
                       <img
                         src={material.material_img ? `${API_URL}${material.material_img.split(",")[0]}` : "/default-cart.png"}
                         alt="Product"
-                        style={{ width: "50px", height: "50px", margin: "5px" }}
+                        className="w-10 h-10 object-cover rounded-lg"
                       />
                     </TableCell>
                     <TableCell align="center">{decimalFix(material.material_price)} ฿ / {unit.find((s) => s.unit_id === material.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">{material.material_quantity} {unit.find((s) => s.unit_id === material.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="error"
-                        startIcon={<Delete />}
-                        onClick={() => onDelete(material.material_id)}>
-                        ลบ
-                      </Button>
+                      <>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleClickMenu(e, material)}
+                        >
+                          <MoreVert />
+                        </IconButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleCloseMenu}
+                        >
+                          <MenuItem onClick={() => {
+                            setIsUpdateDialog(true);
+                            material_id.current = selected?.material_id!;
+                            handleCloseMenu();
+                          }}>
+                            <ModeEdit className="mr-2" /> แก้ไข
+                          </MenuItem>
+                          <MenuItem onClick={() => {
+                            onDelete(selected?.material_id!);
+                            handleCloseMenu();
+                          }}>
+                            <Delete className="mr-2" /> ลบ
+                          </MenuItem>
+                        </Menu>
+                      </>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -249,6 +297,7 @@ const MaterialPage = () => {
       )}
 
       <ManageMaterialCategory open={isManageCategoryDialog} onRefresh={() => fetchMaterials()} onClose={() => setIsManageCategoryDialog(false)} />
+      <UpdateMaterial open={isUpdateDialog} material_id={material_id.current} onRefresh={() => fetchMaterials()} onClose={() => setIsUpdateDialog(false)} />
     </>
   );
 };
