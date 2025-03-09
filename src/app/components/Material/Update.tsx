@@ -22,7 +22,7 @@ import Swal from 'sweetalert2';
 import Loading from "../Loading";
 
 import { useMaterial, useMaterialCategory } from "@/hooks/hooks";
-import { Material } from '@/misc/types';
+import { Material, MaterialCategory } from '@/misc/types';
 
 const { getMaterialByID, updateMaterialBy } = useMaterial();
 const { getMaterialCategoryBy } = useMaterialCategory();
@@ -46,6 +46,7 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
         material_img: '',
         stock_in_id: ''
     })
+    const [materialCategory, setMaterialCategory] = useState<MaterialCategory[]>([]);
     const [file, setFile] = useState<File>();
 
     useEffect(() => {
@@ -55,9 +56,17 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
     }, [material_id]);
 
     const fetchData = async () => {
-        setLoading(true);
-        const data = await getMaterialByID({ material_id: material_id });
-        setMaterial(data);
+        try {
+            setLoading(true);
+            const res = await getMaterialByID({ material_id: material_id });
+            setMaterial(res);
+
+            const { docs: materialCategory } = await getMaterialCategoryBy();
+            setMaterialCategory(materialCategory)
+        } catch (error) {
+            console.log(error);
+
+        }
         setLoading(false);
     }
 
@@ -79,13 +88,13 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                             <Grid size={6}>
                                 <FormControl fullWidth>
                                     <Select
-                                        value={contact.type}
-                                        onChange={(e) => handleTypeChange(index, e.target.value)}
+                                        value={material.material_category_id}
+                                        // onChange={(e) => handleTypeChange(index, e.target.value)}
                                         displayEmpty
                                     >
                                         <MenuItem value="" disabled>ประเภทวัสดุ</MenuItem>
-                                        {option_contact.map((option) => (
-                                            <MenuItem key={option} value={option}>{option}</MenuItem>
+                                        {materialCategory.map((item) => (
+                                            <MenuItem key={item.material_category_id} value={item.material_category_id}>{item.material_category_name}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
@@ -94,19 +103,19 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                 <TextField
                                     label="ชื่อวัสดุ"
                                     fullWidth
-                                    value={contact.value}
-                                    onChange={(e) => handleContactChange(index, e.target.value)}
+                                    value={material.material_name}
+                                // onChange={(e) => handleContactChange(index, e.target.value)}
                                 />
                             </Grid>
                             <Grid size={4}>
                                 <TextField
                                     label="ราคา"
                                     fullWidth
-                                    value={contact.value}
-                                    onChange={(e) => handleContactChange(index, e.target.value)}
+                                    value={material.material_price}
+                                    // onChange={(e) => handleContactChange(index, e.target.value)}
                                 />
                             </Grid>
-                            <Grid size={2} >
+                            {/* <Grid size={2} >
                                 <TextField
                                     label="บาท"
                                     fullWidth
@@ -114,13 +123,13 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                     disabled
                                     variant="outlined"
                                 />
-                            </Grid>
+                            </Grid> */}
                             <Grid size={4}>
                                 <TextField
                                     label="จำนวน"
                                     fullWidth
-                                    value={contact.value}
-                                    onChange={(e) => handleContactChange(index, e.target.value)}
+                                    value={material.material_quantity}
+                                    // onChange={(e) => handleContactChange(index, e.target.value)}
                                 />
                             </Grid>
                             <Grid size={2}>
