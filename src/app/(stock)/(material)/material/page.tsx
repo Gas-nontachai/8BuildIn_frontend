@@ -77,7 +77,6 @@ const MaterialPage = () => {
   useEffect(() => {
     try {
       setLoading(true);
-      fetchData();
       fetchUnit();
       fetchMaterials();
       fetchMaterialCategory();
@@ -88,24 +87,16 @@ const MaterialPage = () => {
     }
   }, []);
 
-  const fetchData = async () => {
+  useEffect(() => {
     try {
-      const [materialsRes, categoriesRes] = await Promise.all([
-        getMaterialBy(),
-        getMaterialCategoryBy(),
-      ]);
-
-      setMaterials(materialsRes.docs);
-      setMaterialCategory(
-        categoriesRes.docs.map((category) => ({
-          material_category_name: category.material_category_name,
-          value: category.material_category_id,
-        }))
-      );
+      setLoading(true);
+      fetchMaterials();
     } catch (error) {
       console.error("Error fetching materials:", error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [selectedMaterial]);
 
   const fetchUnit = async () => {
     try {
@@ -130,7 +121,7 @@ const MaterialPage = () => {
     if (result.isConfirmed) {
       try {
         Swal.fire("ลบแล้ว!", "ข้อมูลผู้จัดจำหน่ายถูกลบเรียบร้อยแล้ว", "success");
-        await fetchData();
+        await fetchMaterials();
       } catch (error) {
         console.error("Error deleting material:", error);
       }
@@ -257,7 +248,7 @@ const MaterialPage = () => {
         </>
       )}
 
-      <ManageMaterialCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
+      <ManageMaterialCategory open={isManageCategoryDialog} onRefresh={() => fetchMaterials()} onClose={() => setIsManageCategoryDialog(false)} />
     </>
   );
 };
