@@ -6,7 +6,7 @@ const CardStock = () => {
         <div className="grid md:grid-cols-4 mb-10 gap-10 sm:grid-cols-2">
             <div className="w-4/4 h-auto bg-white rounded-xl shadow-md px-12 py-5">
                 <div className="flex flex-col">
-                    <span className="text-[20px] font-[500]">จำนวนครั้งที่ทำรายการ</span>
+                    <span className="text-[20px] font-[500]">ทำรายการ</span>
                     <div className="flex justify-between">
                         <span className="text-[30px] font-[500]">0</span>
                         <div className="bg-blue-200 w-16 h-16 rounded-2xl flex justify-center items-center">
