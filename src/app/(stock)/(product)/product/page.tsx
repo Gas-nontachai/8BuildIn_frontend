@@ -121,9 +121,6 @@ const ProductPage = () => {
           <Button variant="contained" color="primary" onClick={() => setAddProductDialog(true)} startIcon={<Add />}>
             เพิ่มสินค้า
           </Button>
-          <Button href="/unit" variant="contained" color="primary">
-            จัดการหน่วยสินค้า
-          </Button>
         </div>
       </div>
 

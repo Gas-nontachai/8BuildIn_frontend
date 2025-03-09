@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { API_URL } from '@/utils/config';
 import { formatDate } from "@/utils/date-helper"
+import { decimalFix, toInt } from "@/utils/number-helper"
 
 import {
     ModeEdit, Delete, Add, Inventory2, Home, MoreVert, Store,
@@ -13,19 +14,19 @@ import {
     TableContainer, TableHead, TableRow, Menu, TablePagination, InputAdornment, Button,
     Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField, Collapse, Box, Chip, Avatar, FormControl
 } from "@mui/material";
+
 import { usePagination } from "@/context/PaginationContext";
 
 import AddStockin from "@/app/components/StockIn/Add";
 import UpdateStockin from "@/app/components/StockIn/Update";
 import Loading from "@/app/components/Loading";
 
-import useStockIn from "@/hooks/useStockIn";
-import useSupplier from "@/hooks/useSupplier";
+import { useSupplier, useStockIn, useUnit } from "@/hooks/hooks";
 import { StockIn, Supplier } from '@/misc/types';
-import React from "react";
 
 const { getStockInBy, deleteStockInBy } = useStockIn();
 const { getSupplierBy } = useSupplier();
+const { getUnitBy } = useUnit();
 
 const StockInPage = () => {
     const [search, setSearch] = useState("");
@@ -39,6 +40,7 @@ const StockInPage = () => {
     const stock_in_id = useRef('')
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selected, setSelected] = useState<StockIn | null>(null);
+    const [unit, setUnit] = useState<{ id: string; name: string }[]>([]);
 
     const handleClickMenu = (event: React.MouseEvent<HTMLElement>, stockin: StockIn) => {
         setAnchorEl(event.currentTarget);
@@ -59,11 +61,19 @@ const StockInPage = () => {
     };
 
     useEffect(() => {
-        fetchData();
+        setLoading(true);
+        try {
+            fetchData();
+            fetchUnit()
+        } catch (error) {
+            console.error("Error fetching StockIn:", error);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     const fetchData = async () => {
-        setLoading(true);
+
         try {
             const { docs: res } = await getStockInBy({
                 sorter: { key: "adddate", order: sortDate },
@@ -85,7 +95,17 @@ const StockInPage = () => {
         } catch (error) {
             console.error("Error fetching StockIn:", error);
         }
-        setLoading(false);
+
+    };
+
+    const fetchUnit = async () => {
+        try {
+            const { docs: res } = await getUnitBy();
+            setUnit(res.map(item => ({ id: item.unit_id, name: `${item.unit_name_th}(${item.unit_name_en})` })))
+        } catch (error) {
+            console.error("Error fetching supplier data:", error);
+            Swal.fire("Error", "ไม่สามารถดึงข้อมูลผู้จำหน่ายได้", "error");
+        }
     };
 
     const onDelete = async (stock_in_id: string) => {
@@ -172,6 +192,14 @@ const StockInPage = () => {
                         startIcon={<Add />}
                     >
                         เพิ่มสต็อกเข้า
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<Add />}
+                        href="/unit"
+                    >
+                        จัดการหน่วยสินค้า
                     </Button>
                 </div>
             </div>
@@ -264,16 +292,16 @@ const StockInPage = () => {
                                                                     <TableHead className="bg-gray-200">
                                                                         <TableRow>
                                                                             <TableCell sx={{ width: '33%' }}>ชื่อสินค้า</TableCell>
-                                                                            <TableCell sx={{ width: '33%' }}>จำนวน</TableCell>
+                                                                            <TableCell sx={{ width: '33%' }}>จำนวน </TableCell>
                                                                             <TableCell sx={{ width: '33%' }}>ราคารวม (บาท)</TableCell>
                                                                         </TableRow>
                                                                     </TableHead>
                                                                     <TableBody>
-                                                                        {JSON.parse(stock.product).map((product: { product_name: string; product_quantity: string; product_price: string }) => (
+                                                                        {JSON.parse(stock.product).map((product: { product_name: string; product_quantity: string; unit_id: string, product_price: string }) => (
                                                                             <TableRow key={product.product_name}>
                                                                                 <TableCell>{product.product_name}</TableCell>
-                                                                                <TableCell>{product.product_quantity}</TableCell>
-                                                                                <TableCell>{product.product_price} ฿</TableCell>
+                                                                                <TableCell>{decimalFix(product.product_quantity, 0)} {unit.find((s) => s.id === product.unit_id)?.name || "ชิ้น(items)"}</TableCell>
+                                                                                <TableCell>{decimalFix(product.product_price)} ฿</TableCell>
                                                                             </TableRow>
                                                                         ))}
                                                                     </TableBody>
@@ -299,11 +327,11 @@ const StockInPage = () => {
                                                                         </TableRow>
                                                                     </TableHead>
                                                                     <TableBody>
-                                                                        {JSON.parse(stock.material).map((material: { material_name: string; material_quantity: string; material_price: string }) => (
+                                                                        {JSON.parse(stock.material).map((material: { material_name: string; material_quantity: string; unit_id: string, material_price: string }) => (
                                                                             <TableRow key={material.material_name}>
                                                                                 <TableCell>{material.material_name}</TableCell>
-                                                                                <TableCell>{material.material_quantity}</TableCell>
-                                                                                <TableCell>{material.material_price} ฿</TableCell>
+                                                                                <TableCell>{decimalFix(material.material_quantity, 0)} {unit.find((s) => s.id === material.unit_id)?.name || "ชิ้น(items)"}</TableCell>
+                                                                                <TableCell>{decimalFix(material.material_price)} ฿</TableCell>
                                                                             </TableRow>
                                                                         ))}
                                                                     </TableBody>

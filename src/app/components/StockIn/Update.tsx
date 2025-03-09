@@ -14,19 +14,19 @@ import {
     Select,
     MenuItem,
     FormLabel,
-    CircularProgress
+    InputLabel
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 import Swal from 'sweetalert2';
 
-import useSupplier from "@/hooks/useSupplier";
-import useStockIn from "@/hooks/useStockIn";
-import Loading from "../Loading";
+import { useSupplier, useStockIn, useUnit } from "@/hooks/hooks";
 import { StockIn } from '@/misc/types';
+import Loading from "../Loading";
 
 const { getSupplierBy } = useSupplier();
 const { getStockInByID, updateStockInBy } = useStockIn();
+const { getUnitBy } = useUnit();
 
 interface UpdateStockInProps {
     onClose: () => void;
@@ -43,14 +43,14 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
         stock_in_price: 0,
         stock_in_note: '',
         supplier_id: '',
-        supplier_note: '',
     });
 
     const [loading, setLoading] = useState(false)
     const [note, setNote] = useState('');
     const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([]);
-    const [product, setProduct] = useState<{ product_name: string, product_quantity: number, product_price: number }[]>([]);
-    const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, material_price: number }[]>([]);
+    const [unit, setUnit] = useState<{ id: string; name: string }[]>([]);
+    const [product, setProduct] = useState<{ product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
+    const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
 
     const handleChange = (e: any) => {
         setFormData({
@@ -84,14 +84,13 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                 stock_in_price: 0,
                 stock_in_note: '',
                 supplier_id: '',
-                supplier_note: '',
             });
             setMaterial([]);
             setProduct([]);
             onRefresh();
             Swal.fire({
                 title: 'สำเร็จ!',
-                text: 'เพิ่มสินค้าเข้าสต็อกเรียบร้อยแล้ว',
+                text: 'อับเดตสินค้าเข้าสต็อกเรียบร้อยแล้ว',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
@@ -118,15 +117,15 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
         }
     };
 
-    const handleAddContact = (type: "product" | "material") => {
+    const handleAddData = (type: "product" | "material") => {
         if (type === "product") {
-            setProduct([...product, { product_name: "", product_quantity: 0, product_price: 0 }]);
+            setProduct([...product, { product_name: "", product_quantity: 0, unit_id: '', product_price: 0 }]);
         } else {
-            setMaterial([...material, { material_name: "", material_quantity: 0, material_price: 0 }]);
+            setMaterial([...material, { material_name: "", material_quantity: 0, unit_id: '', material_price: 0 }]);
         }
     };
 
-    const handleRemoveContact = (index: number, type: "product" | "material") => {
+    const handleRemoveData = (index: number, type: "product" | "material") => {
         if (type === "product") {
             setProduct(product.filter((_, i) => i !== index));
         } else {
@@ -138,6 +137,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
         if (open) {
             fetchSupplier();
             fetchData();
+            fetchUnit()
         }
     }, [open]);
 
@@ -159,12 +159,34 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
             setFormData(res)
             setMaterial(JSON.parse(res.material))
             setProduct(JSON.parse(res.product))
+            setNote(res.stock_in_note)
         } catch (error) {
             console.error("Error fetching supplier data:", error);
             Swal.fire("Error", "ไม่สามารถดึงข้อมูลผู้จำหน่ายได้", "error");
         }
     };
 
+    const fetchUnit = async () => {
+        try {
+            const { docs: res } = await getUnitBy();
+            setUnit(res.map(item => ({ id: item.unit_id, name: `${item.unit_name_th}(${item.unit_name_en})` })))
+        } catch (error) {
+            console.error("Error fetching supplier data:", error);
+            Swal.fire("Error", "ไม่สามารถดึงข้อมูลผู้จำหน่ายได้", "error");
+        }
+    };
+
+    useEffect(() => {
+        const calculate_price = () => {
+            const totalProductPrice = product.reduce((sum, item) => sum + (Number(item.product_price) || 0), 0);
+            const totalMaterialPrice = material.reduce((sum, item) => sum + (Number(item.material_price) || 0), 0);
+            const totalPrice = totalProductPrice + totalMaterialPrice;
+
+            setFormData(prev => ({ ...prev, stock_in_price: totalPrice }));
+        };
+
+        calculate_price();
+    }, [product, material]);
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <DialogTitle>
@@ -196,7 +218,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                             </FormControl>
                         </Grid>
                         <Grid size={4}>
-                            <FormLabel component="legend">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
+                            <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
                             <TextField
                                 fullWidth
                                 type="number"
@@ -211,7 +233,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                         <Grid size={12}>
                             <FormLabel component="legend">หมายเหตุ (ไม่บังคับ) </FormLabel>
                             <textarea
-                                value={note}
+                                value={note || ''}
                                 onChange={(e) =>
                                     setNote(e.target.value)
                                 }
@@ -221,10 +243,10 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                             />
                         </Grid>
                         <Grid size={12}>
-                            <Button onClick={() => handleAddContact("product")} startIcon={<Add />} color="primary">
+                            <Button onClick={() => handleAddData("product")} startIcon={<Add />} color="primary">
                                 เพิ่มสินค้า
                             </Button>
-                            <Button onClick={() => handleAddContact("material")} startIcon={<Add />} color="primary">
+                            <Button onClick={() => handleAddData("material")} startIcon={<Add />} color="primary">
                                 เพิ่มวัสดุ
                             </Button>
                         </Grid>
@@ -234,16 +256,16 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                             </>
                         )}
                         <Grid size={12}>
-                            {product.map((contact, index) => (
+                            {product.map((product, index) => (
                                 <Grid container spacing={2} key={index} sx={{
-                                    mb: 1.5
+                                    mb: 1
                                 }}>
-                                    <Grid size={5}>
+                                    <Grid size={3}>
                                         <TextField
                                             label="ชื่อสินค้า"
                                             size="small"
                                             fullWidth
-                                            value={contact.product_name}
+                                            value={product.product_name}
                                             onChange={(e) => handleDataChange(index, "product_name", e.target.value, "product")}
                                         />
                                     </Grid>
@@ -252,27 +274,44 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                             label="จำนวน"
                                             size="small"
                                             fullWidth
-                                            value={contact.product_quantity}
+                                            value={product.product_quantity}
                                             type="number"
                                             onChange={(e) => handleDataChange(index, "product_quantity", e.target.value, "product")}
                                         />
+                                    </Grid>
+                                    <Grid size={2}>
+                                        <FormControl size="small" fullWidth>
+                                            <InputLabel>หน่วย</InputLabel>
+                                            <Select
+                                                name="unit_id"
+                                                value={product.unit_id}
+                                                onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "product")}
+                                            >
+                                                {unit.map((unit) => (
+                                                    <MenuItem key={unit.id} value={unit.id}>
+                                                        {unit.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
                                     </Grid>
                                     <Grid size={3}>
                                         <TextField
                                             label="ราคาทั้งหมด"
                                             size="small"
                                             fullWidth
-                                            value={contact.product_price}
+                                            value={product.product_price}
                                             type="number"
                                             onChange={(e) => handleDataChange(index, "product_price", e.target.value, "product")}
                                         />
                                     </Grid>
                                     <Grid size={1}>
-                                        <IconButton onClick={() => handleRemoveContact(index, "product")} color="error">
+                                        <IconButton onClick={() => handleRemoveData(index, "product")} color="error">
                                             <DeleteForeverRounded />
                                         </IconButton>
                                     </Grid>
                                 </Grid>
+
                             ))}
                         </Grid>
                         {material.length > 0 && (
@@ -281,16 +320,16 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                             </>
                         )}
                         <Grid size={12}>
-                            {material.map((contact, index) => (
+                            {material.map((material, index) => (
                                 <Grid container spacing={2} key={index} sx={{
-                                    mb: 1.5
+                                    mb: 1
                                 }}>
-                                    <Grid size={5}>
+                                    <Grid size={3}>
                                         <TextField
                                             label="ชื่อวัสดุ"
                                             size="small"
                                             fullWidth
-                                            value={contact.material_name}
+                                            value={material.material_name}
                                             onChange={(e) => handleDataChange(index, "material_name", e.target.value, "material")}
                                         />
                                     </Grid>
@@ -299,27 +338,44 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                             label="จำนวน"
                                             size="small"
                                             fullWidth
-                                            value={contact.material_quantity}
+                                            value={material.material_quantity}
                                             type="number"
                                             onChange={(e) => handleDataChange(index, "material_quantity", e.target.value, "material")}
                                         />
+                                    </Grid>
+                                    <Grid size={2}>
+                                        <FormControl size="small" fullWidth>
+                                            <InputLabel>หน่วย</InputLabel>
+                                            <Select
+                                                name="unit_id"
+                                                value={material.unit_id}
+                                                onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "material")}
+                                            >
+                                                {unit.map((unit) => (
+                                                    <MenuItem key={unit.id} value={unit.id}>
+                                                        {unit.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
                                     </Grid>
                                     <Grid size={3}>
                                         <TextField
                                             label="ราคาทั้งหมด"
                                             size="small"
                                             fullWidth
-                                            value={contact.material_price}
+                                            value={material.material_price}
                                             type="number"
                                             onChange={(e) => handleDataChange(index, "material_price", e.target.value, "material")}
                                         />
                                     </Grid>
                                     <Grid size={1}>
-                                        <IconButton onClick={() => handleRemoveContact(index, "material")} color="error">
+                                        <IconButton onClick={() => handleRemoveData(index, "material")} color="error">
                                             <DeleteForeverRounded />
                                         </IconButton>
                                     </Grid>
                                 </Grid>
+
                             ))}
                         </Grid>
                     </Grid>
