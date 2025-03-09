@@ -21,12 +21,13 @@ import AddStockin from "@/app/components/StockIn/Add";
 import UpdateStockin from "@/app/components/StockIn/Update";
 import Loading from "@/app/components/Loading";
 
-import { useSupplier, useStockIn, useUnit } from "@/hooks/hooks";
-import { StockIn, Supplier } from '@/misc/types';
+import { useSupplier, useStockIn, useUnit, useEmployee } from "@/hooks/hooks";
+import { StockIn, Supplier, Employee } from '@/misc/types';
 
 const { getStockInBy, deleteStockInBy } = useStockIn();
 const { getSupplierBy } = useSupplier();
 const { getUnitBy } = useUnit();
+const { getEmployeeBy } = useEmployee();
 
 const StockInPage = () => {
     const [search, setSearch] = useState("");
@@ -36,6 +37,7 @@ const StockInPage = () => {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
     const [supplier, setSupplier] = useState<Supplier[]>([]);
+    const [employee, setEmployee] = useState<Employee[]>([]);
     const [stockIn, setStockIn] = useState<StockIn[]>([]);
     const stock_in_id = useRef('')
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -85,13 +87,19 @@ const StockInPage = () => {
             });
 
             const supplier_list_arr = res.map(item => item.supplier_id);
+            const employee_id = res.map(item => item.addby);
 
             const { docs: supplier_list } = await getSupplierBy({
                 supplier_id: { $in: supplier_list_arr },
             });
 
+            const { docs: employee_list } = await getEmployeeBy({
+                employee_id: { $in: employee_id },
+            });
+
             setStockIn(res);
             setSupplier(supplier_list);
+            setEmployee(employee_list);
         } catch (error) {
             console.error("Error fetching StockIn:", error);
         }
@@ -275,8 +283,14 @@ const StockInPage = () => {
                                             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
                                                 <Collapse in={openRows[stock.stock_in_id]} timeout="auto" unmountOnExit>
                                                     <Box sx={{ marginTop: 3, marginBottom: 3 }}>
-                                                        <div className="mb-2">
+                                                        <div className="mb-2 flex flex-col">
                                                             <h2 className="text-lg font-semibold">รายละเอียดสินค้าและวัสดุ</h2>
+                                                            <h2 className="text-[14px] font-[400]">
+                                                                เพิ่มสต็อกเข้าโดย {(() => {
+                                                                    const emp = employee.find((e) => e.employee_id === stock.addby);
+                                                                    return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "";
+                                                                })()}
+                                                            </h2>
                                                         </div>
                                                         {JSON.parse(stock.product).length > 0 && (
                                                             <Box>
@@ -315,7 +329,7 @@ const StockInPage = () => {
                                                                         sx={{ fontSize: 14, fontWeight: 600 }}
                                                                         avatar={<Avatar><Gavel /></Avatar>}
                                                                         label={`วัสดุ ${JSON.parse(stock.material).length} ชิ้น`}
-                                                                        color="primary"
+                                                                        color="secondary"
                                                                     />
                                                                 </div>
                                                                 <Table size="small" aria-label="materials">
@@ -340,17 +354,13 @@ const StockInPage = () => {
                                                         )}
                                                         {stock.stock_in_note && (
                                                             <div className="my-2">
-                                                                <p className="text-[20px] font-[300]"> หมายเหตุ <span className="text-red-500">*</span></p>
-                                                                <textarea
-                                                                    value={stock.stock_in_note}
-                                                                    disabled
-                                                                    rows={3}
-                                                                    className="w-full p-2 mt-2 border border-gray-400 text-[16px] font-[300] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                                />
+                                                                <p className="text-[16px] font-[300]"> หมายเหตุ <span className="text-red-500">*</span></p>
+                                                                <p className="w-full p-2 mt-2 border border-gray-400 text-[14px] bg-[#f3f3f3] text-[#333] font-[300] rounded-md">
+                                                                    {stock.stock_in_note}
+                                                                </p>
                                                             </div>
                                                         )}
                                                     </Box>
-
                                                 </Collapse>
                                             </TableCell>
                                         </TableRow>

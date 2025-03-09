@@ -316,7 +316,7 @@ const SalesPage = () => {
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        className="rounded-xl w-1/3"
+                                        className="rounded-xl w-2/3"
                                         size="small"
                                         onClick={() => addToCart(product.product_id)}
                                         startIcon={<AddShoppingCart />}

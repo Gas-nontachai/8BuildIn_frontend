@@ -170,66 +170,62 @@ const CartDetailPage = () => {
                 </div>
                 {loading ? (
                     <Typography variant="body1">กำลังโหลดข้อมูล...</Typography>
+                ) : cart.length === 0 ? (
+                    <span className='text-gray-700 font-4000 text-[20px] mb-t'>ไม่มีสินค้าในตะกร้า ....</span>
                 ) : (
                     <Box>
-                        {cart.length === 0 ? (
-                            <span className='text-gray-700 font-4000 text-[20px] mb-t'>ไม่มีสินค้าในตะกร้า ....</span>
-                        ) : (
-                            editedCart.map((item, index) => {
-                                const productDetail = product.find(p => p.product_id === item.product_id);
-                                return (
-                                    <Box key={item.cart_id} sx={{ mb: 2 }}>
-                                        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                                            <img
-                                                src={productDetail?.product_img ? `${API_URL}${productDetail.product_img.split(",").pop()}` : "/default-cart.png"}
-                                                alt="Product"
-                                                className="w-16 h-16 object-cover mr-5"
-                                            />
-                                            <Box sx={{ flexGrow: 1 }}>
-                                                <Typography variant="body1">{productDetail?.product_name || "Unknown"}</Typography>
-                                                <Typography variant="body2" color="textSecondary">x {item.cart_amount}</Typography>
-                                            </Box>
-                                            <Box sx={{ textAlign: "right" }}>
-                                                <p className="text-gray-600 font-[400] mr-10">
-                                                    ฿ {decimalFix(productDetail?.product_price || 0)}
-                                                </p>
-                                            </Box>
-                                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                                                <IconButton onClick={() => onUpdateCartAmount(index, 'decrease')} disabled={Number(item.cart_amount) <= 1}>
-                                                    <Remove fontSize="small" />
-                                                </IconButton>
-                                                <Typography variant="body2">{item.cart_amount}</Typography>
-                                                <IconButton onClick={() => onUpdateCartAmount(index, 'increase')}>
-                                                    <Add fontSize="small" />
-                                                </IconButton>
-                                            </Box>
-                                            <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error">
-                                                <HighlightOff />
+                        {editedCart.map((item, index) => {
+                            const productDetail = product.find(p => p.product_id === item.product_id);
+                            return (
+                                <Box key={item.cart_id} sx={{ mb: 2 }}>
+                                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                                        <img
+                                            src={productDetail?.product_img ? `${API_URL}${productDetail.product_img.split(",").pop()}` : "/default-cart.png"}
+                                            alt="Product"
+                                            className="w-16 h-16 object-cover mr-5"
+                                        />
+                                        <Box sx={{ flexGrow: 1 }}>
+                                            <Typography variant="body1">{productDetail?.product_name || "Unknown"}</Typography>
+                                            <Typography variant="body2" color="textSecondary">x {item.cart_amount}</Typography>
+                                        </Box>
+                                        <Box sx={{ textAlign: "right" }}>
+                                            <p className="text-gray-600 font-[400] mr-10">
+                                                ฿ {decimalFix(productDetail?.product_price || 0)}
+                                            </p>
+                                        </Box>
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                                            <IconButton onClick={() => onUpdateCartAmount(index, 'decrease')} disabled={Number(item.cart_amount) <= 1}>
+                                                <Remove fontSize="small" />
+                                            </IconButton>
+                                            <Typography variant="body2">{item.cart_amount}</Typography>
+                                            <IconButton onClick={() => onUpdateCartAmount(index, 'increase')}>
+                                                <Add fontSize="small" />
                                             </IconButton>
                                         </Box>
-                                        <Divider />
+                                        <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error">
+                                            <HighlightOff />
+                                        </IconButton>
                                     </Box>
-                                );
-                            })
-                        )}
-                        {cart.length > 0 && (
-                            <div className='flex justify-between items-center'>
-                                <div className="flex flex-col justify-start gap-2">
-                                    <span className="font-[400] text-[17px]">สินค้าในตะกร้า {cart.length} สินค้า</span>
-                                    <p className="font-[500] text-blue-600  text-[20px]">฿ {decimalFix(totalPrice)}</p>
-                                </div>
-                                <div className='flex gap-2'>
-                                    {isEdited && (
-                                        <Button variant="contained" size='small' color="primary" onClick={onSaveChanges} startIcon={<ShoppingCart />}>
-                                            อัพเดตตะกร้า
-                                        </Button>
-                                    )}
-                                    <Button onClick={() => openPdfInNewTab(editedCart)} size='small' variant="contained" color="secondary" startIcon={<ReceiptLong />}>
-                                        ออกใบเสนอราคา
-                                    </Button>
-                                </div>
+                                    <Divider />
+                                </Box>
+                            );
+                        })}
+                        <div className='flex justify-between items-center'>
+                            <div className="flex flex-col justify-start gap-2">
+                                <span className="font-[400] text-[17px]">สินค้าในตะกร้า {cart.length} สินค้า</span>
+                                <p className="font-[500] text-blue-600  text-[20px]">฿ {decimalFix(totalPrice)}</p>
                             </div>
-                        )}
+                            <div className='flex gap-2'>
+                                {isEdited && (
+                                    <Button variant="contained" size='small' color="primary" onClick={onSaveChanges} startIcon={<ShoppingCart />}>
+                                        อัพเดตตะกร้า
+                                    </Button>
+                                )}
+                                <Button onClick={() => openPdfInNewTab(editedCart)} size='small' variant="contained" color="secondary" startIcon={<ReceiptLong />}>
+                                    ออกใบเสนอราคา
+                                </Button>
+                            </div>
+                        </div>
                     </Box>
                 )}
             </Box>
