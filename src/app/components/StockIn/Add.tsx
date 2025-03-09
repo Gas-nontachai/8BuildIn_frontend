@@ -264,12 +264,14 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                         onChange={(e) => handleDataChange(index, "product_quantity", e.target.value, "product")}
                                     />
                                 </Grid>
-                                <Grid size={2}>
+                                <Grid size={3}>
                                     <FormControl size="small" fullWidth>
-                                        <InputLabel>หน่วย</InputLabel>
+                                        <InputLabel id={`unit-label-${index}`}>หน่วย</InputLabel>
                                         <Select
+                                            labelId={`unit-label-${index}`}
                                             name="unit_id"
                                             value={product.unit_id}
+                                            label="หน่วย"
                                             onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "product")}
                                         >
                                             {unit.map((unit) => (
@@ -279,8 +281,9 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                             ))}
                                         </Select>
                                     </FormControl>
+
                                 </Grid>
-                                <Grid size={3}>
+                                <Grid size={2}>
                                     <TextField
                                         label="ราคาทั้งหมด"
                                         size="small"
@@ -328,12 +331,14 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                         onChange={(e) => handleDataChange(index, "material_quantity", e.target.value, "material")}
                                     />
                                 </Grid>
-                                <Grid size={2}>
+                                <Grid size={3}>
                                     <FormControl size="small" fullWidth>
-                                        <InputLabel>หน่วย</InputLabel>
+                                        <InputLabel id={`unit-label-${index}`}>หน่วย</InputLabel>
                                         <Select
+                                            labelId={`unit-label-${index}`}
                                             name="unit_id"
                                             value={material.unit_id}
+                                            label="หน่วย"
                                             onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "material")}
                                         >
                                             {unit.map((unit) => (
@@ -344,7 +349,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid size={3}>
+                                <Grid size={2}>
                                     <TextField
                                         label="ราคาทั้งหมด"
                                         size="small"

@@ -30,14 +30,13 @@ import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
 import UpdateMaterial from "@/app/components/Material/Update";
 import Loading from "@/app/components/Loading";
 
-import { useUnit } from "@/hooks/hooks";
+import { useUnit, useMaterialCategory } from "@/hooks/hooks";
 import { Unit } from '@/misc/types';
 
 const { getMaterialBy } = useMaterial()
 const { getUnitBy } = useUnit()
 
 import useMaterial from "@/hooks/useMaterial";
-import useMaterialCategory from "@/hooks/useMaterialCategory";
 import { Material } from '@/misc/types';
 
 const { getMaterialCategoryBy } = useMaterialCategory();
@@ -226,10 +225,10 @@ const MaterialPage = () => {
             <Table>
               <TableHead>
                 <TableRow className="bg-gray-200">
-                  <TableCell padding="checkbox" align="center"><Checkbox /></TableCell>
+                  <TableCell padding="checkbox" align="center">#</TableCell>
+                  <TableCell >รูปภาพ</TableCell>
                   <TableCell align="center">ประเภท</TableCell>
                   <TableCell align="center">ชื่อวัสดุ</TableCell>
-                  <TableCell align="center">รูปภาพ</TableCell>
                   <TableCell align="center">ราคา</TableCell>
                   <TableCell align="center">จำนวน</TableCell>
                   <TableCell align="center">จัดการ</TableCell>
@@ -239,8 +238,6 @@ const MaterialPage = () => {
                 {materials.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((material, index) => (
                   <TableRow key={material.material_id} hover>
                     <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
-                    <TableCell align="center">{material.material_category_id || "ไม่ทราบประเภท"}</TableCell>
-                    <TableCell align="center">{material.material_name}</TableCell>
                     <TableCell align="center">
                       <img
                         src={material.material_img ? `${API_URL}${material.material_img.split(",")[0]}` : "/default-cart.png"}
@@ -248,6 +245,8 @@ const MaterialPage = () => {
                         className="w-10 h-10 object-cover rounded-lg"
                       />
                     </TableCell>
+                    <TableCell align="center">{material.material_category_id || "ไม่ทราบประเภท"}</TableCell>
+                    <TableCell align="center">{material.material_name}</TableCell>
                     <TableCell align="center">{decimalFix(material.material_price)} ฿ / {unit.find((s) => s.unit_id === material.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">{material.material_quantity} {unit.find((s) => s.unit_id === material.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">

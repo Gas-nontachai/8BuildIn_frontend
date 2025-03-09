@@ -12,7 +12,7 @@ import {
 import {
     Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Menu, TablePagination, InputAdornment, Button,
-    Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField, Collapse, Box, Chip, Avatar, FormControl
+    Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField, Collapse, Box, Chip, Avatar, FormControl, Card, CardContent
 } from "@mui/material";
 
 import { usePagination } from "@/context/PaginationContext";
@@ -191,18 +191,18 @@ const StockInPage = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => setIsAddDialogOpen(true)}
-                        startIcon={<Add />}
-                    >
-                        เพิ่มสต็อกเข้า
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
                         startIcon={<Add />}
                         href="/unit"
                     >
                         จัดการหน่วยสินค้า
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => setIsAddDialogOpen(true)}
+                        startIcon={<Add />}
+                    >
+                        เพิ่มสต็อกเข้า
                     </Button>
                 </div>
             </div>
@@ -277,18 +277,30 @@ const StockInPage = () => {
                                         <TableRow>
                                             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
                                                 <Collapse in={openRows[stock.stock_in_id]} timeout="auto" unmountOnExit>
-                                                    <Box sx={{ marginTop: 3, marginBottom: 3 }}>
-                                                        <div className="mb-2 flex flex-col">
-                                                            <h2 className="text-lg font-semibold">รายละเอียดสินค้าและวัสดุ</h2>
-                                                            <h2 className="text-[14px] font-[400]">
-                                                                เพิ่มสต็อกเข้าโดย {(() => {
+                                                    <Card sx={{ marginTop: 3, marginBottom: 3 }}>
+                                                        <CardContent>
+                                                            <h2 className="text-xl font-bold mb-4 text-gray-800">รายละเอียดสินค้าและวัสดุ</h2>
+
+                                                            <div className="text-sm font-medium text-gray-600 mb-2">
+                                                                เพิ่มสต็อกเข้าโดย : {(() => {
                                                                     const emp = employee.find((e) => e.employee_id === stock.addby);
                                                                     return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "";
                                                                 })()}
-                                                            </h2>
-                                                        </div>
+                                                            </div>
+                                                            <div className="text-sm font-medium text-gray-600 mb-4">
+                                                                วันที่เพิ่ม : {formatDate(stock.adddate, "dd/MM/yyyy HH:mm:ss")}
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[16px] font-medium text-gray-800 mb-1">หมายเหตุ <span className="text-red-500">*</span></p>
+                                                                {stock.stock_in_note && (
+                                                                    <div className="w-full p-3 mt-2 border border-gray-300 text-[14px] bg-[#eee] rounded-md">
+                                                                        {stock.stock_in_note}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </CardContent>
                                                         {JSON.parse(stock.product).length > 0 && (
-                                                            <Box>
+                                                            <CardContent>
                                                                 <div className="my-2">
                                                                     <Chip
                                                                         sx={{ fontSize: 14, fontWeight: 600 }}
@@ -300,9 +312,10 @@ const StockInPage = () => {
                                                                 <Table size="small" aria-label="products">
                                                                     <TableHead className="bg-gray-200">
                                                                         <TableRow>
-                                                                            <TableCell sx={{ width: '33%' }}>ชื่อสินค้า</TableCell>
-                                                                            <TableCell sx={{ width: '33%' }}>จำนวน </TableCell>
-                                                                            <TableCell sx={{ width: '33%' }}>ราคารวม (บาท)</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>ชื่อสินค้า</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>จำนวน</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>ราคาต่อชิ้น (บาท)</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>ราคารวม (บาท)</TableCell>
                                                                         </TableRow>
                                                                     </TableHead>
                                                                     <TableBody>
@@ -310,15 +323,17 @@ const StockInPage = () => {
                                                                             <TableRow key={product.product_name}>
                                                                                 <TableCell>{product.product_name}</TableCell>
                                                                                 <TableCell>{decimalFix(product.product_quantity, 0)} {unit.find((s) => s.id === product.unit_id)?.name || "ชิ้น(items)"}</TableCell>
+                                                                                <TableCell>{decimalFix(Number(product.product_price) / Number(product.product_quantity))} ฿</TableCell>
                                                                                 <TableCell>{decimalFix(product.product_price)} ฿</TableCell>
                                                                             </TableRow>
                                                                         ))}
                                                                     </TableBody>
                                                                 </Table>
-                                                            </Box>
+                                                            </CardContent>
                                                         )}
+
                                                         {JSON.parse(stock.material).length > 0 && (
-                                                            <Box>
+                                                            <CardContent>
                                                                 <div className="my-2">
                                                                     <Chip
                                                                         sx={{ fontSize: 14, fontWeight: 600 }}
@@ -330,9 +345,10 @@ const StockInPage = () => {
                                                                 <Table size="small" aria-label="materials">
                                                                     <TableHead className="bg-gray-200">
                                                                         <TableRow>
-                                                                            <TableCell sx={{ width: '33%' }}>ชื่อวัสดุ</TableCell>
-                                                                            <TableCell sx={{ width: '33%' }}>จำนวน</TableCell>
-                                                                            <TableCell sx={{ width: '33%' }}>ราคารวม (บาท)</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>ชื่อวัสดุ</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>จำนวน</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>ราคาต่อชิ้น (บาท)</TableCell>
+                                                                            <TableCell sx={{ width: '22%' }}>ราคารวม (บาท)</TableCell>
                                                                         </TableRow>
                                                                     </TableHead>
                                                                     <TableBody>
@@ -340,22 +356,15 @@ const StockInPage = () => {
                                                                             <TableRow key={material.material_name}>
                                                                                 <TableCell>{material.material_name}</TableCell>
                                                                                 <TableCell>{decimalFix(material.material_quantity, 0)} {unit.find((s) => s.id === material.unit_id)?.name || "ชิ้น(items)"}</TableCell>
+                                                                                <TableCell>{decimalFix(Number(material.material_price) / Number(material.material_quantity))} ฿</TableCell>
                                                                                 <TableCell>{decimalFix(material.material_price)} ฿</TableCell>
                                                                             </TableRow>
                                                                         ))}
                                                                     </TableBody>
                                                                 </Table>
-                                                            </Box>
+                                                            </CardContent>
                                                         )}
-                                                        {stock.stock_in_note && (
-                                                            <div className="my-2">
-                                                                <p className="text-[16px] font-[300]"> หมายเหตุ <span className="text-red-500">*</span></p>
-                                                                <p className="w-full p-2 mt-2 border border-gray-400 text-[14px] bg-[#f3f3f3] text-[#333] font-[300] rounded-md">
-                                                                    {stock.stock_in_note}
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                    </Box>
+                                                    </Card>
                                                 </Collapse>
                                             </TableCell >
                                         </TableRow >
