@@ -16,8 +16,12 @@ const insertStockIn = async (data: StockIn): Promise<StockIn> => {
     return await SecureFetch.post(`${API_URL}${prefix}/insertStockIn`, data);
 };
 
-const updateStockInBy = async (data: StockIn): Promise<StockIn> => {
-    return await SecureFetch.post(`${API_URL}${prefix}/updateStockInBy`, data);
+const updateStockInBy = async (data: StockIn, del_pd_arr?: string[], del_mt_arr?: string[]): Promise<StockIn> => {
+    return await SecureFetch.post(`${API_URL}${prefix}/updateStockInBy`, {
+        ...data,
+        del_pd_arr,
+        del_mt_arr
+    });
 };
 
 const deleteStockInBy = (data: { stock_in_id: string }): Promise<StockIn> => {
