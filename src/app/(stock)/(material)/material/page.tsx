@@ -1,11 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
 import { API_URL } from "@/utils/config"
+import { useEffect, useMemo, useState } from "react";
 import Swal from 'sweetalert2';
-import { Delete, Add, Home, Gavel } from "@mui/icons-material";
+import { Delete, Add, Home, Gavel, Search } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Autocomplete,
+  InputAdornment,
+  TextField,
+  List,
+  ListItem,
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
@@ -13,18 +22,36 @@ import { decimalFix } from "@/utils/number-helper"
 import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
 import Loading from "@/app/components/Loading";
 
-import { useMaterial, useUnit } from "@/hooks/hooks";
-import { Material, Unit } from '@/misc/types';
+import { useUnit } from "@/hooks/hooks";
+import { Unit } from '@/misc/types';
 
 const { getMaterialBy } = useMaterial()
 const { getUnitBy } = useUnit()
 
+import useMaterial from "@/hooks/useMaterial";
+import useMaterialCategory from "@/hooks/useMaterialCategory";
+import { Material, MaterialCategory } from '@/misc/types';
 const MaterialPage = () => {
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [unit, setUnit] = useState<Unit[]>([]);
+  const [materialCategory, setMaterialCategory] = useState<MaterialCategory[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { getMaterialCategoryBy } = useMaterialCategory();
+
+  const filterNameMaterial = useMemo(() => {
+    return materials.filter((item) =>
+      item.material_name?.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    );
+  }, [materials, searchTerm]);
+
+  const filterMaterialCategory = useMemo(() => {
+    return materialCategory.filter((item) =>
+      item.material_category_name?.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    );
+  }, [materialCategory, searchTerm]);
 
   useEffect(() => {
     try {
@@ -40,8 +67,13 @@ const MaterialPage = () => {
 
   const fetchData = async () => {
     try {
-      const { docs: res } = await getMaterialBy();
-      setMaterials(res);
+      const [materialsRes, categoriesRes] = await Promise.all([
+        getMaterialBy(),
+        getMaterialCategoryBy(),
+      ]);
+
+      setMaterials(materialsRes.docs);
+      setMaterialCategory(categoriesRes.docs);
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
@@ -92,12 +124,53 @@ const MaterialPage = () => {
             <Typography variant="body1" color="text.secondary">ข้อมูลวัสดุ</Typography>
           </Stack>
         </Breadcrumbs>
+
         <div className="flex gap-2">
           <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทวัสดุ
           </Button>
         </div>
       </div>
+
+      <div className="flex gap-2 mb-5">
+        <Autocomplete
+          className="w-64"
+          options={filterNameMaterial}
+          getOptionLabel={(option) => option.material_name ?? "ไม่มีชื่อ"}
+          noOptionsText="ไม่มีวัสดุ"
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              size="small"
+              placeholder="ค้นหาชื่อวัสดุ..."
+              className="w-64"
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
+        />
+
+        <FormControl sx={{ minWidth: 200 }}>
+          <Autocomplete
+            options={filterMaterialCategory}
+            getOptionLabel={(option) => option.material_category_name ?? "ไม่มีชื่อ"}
+            renderInput={(params) => (
+              <TextField {...params} label="ค้นหาตามประเภทวัสดุ" size="small" />
+            )}
+            isOptionEqualToValue={(option, value) => option.material_category_name === value?.material_category_name} // Correct comparison
+            disableClearable
+            noOptionsText="ไม่มีประเภทวัสดุ"
+          />
+        </FormControl>
+      </div>
+
       {loading ? (
         <Loading />
       ) : (
