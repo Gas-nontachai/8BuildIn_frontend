@@ -301,10 +301,12 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                     </Grid>
                                     <Grid size={2}>
                                         <FormControl size="small" fullWidth>
-                                            <InputLabel>หน่วย</InputLabel>
+                                            <InputLabel id={`unit-label-${index}`}>หน่วย</InputLabel>
                                             <Select
+                                                labelId={`unit-label-${index}`}
                                                 name="unit_id"
                                                 value={product.unit_id}
+                                                label="หน่วย"
                                                 onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "product")}
                                             >
                                                 {unit.map((unit) => (
@@ -395,10 +397,12 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                     </Grid>
                                     <Grid size={2}>
                                         <FormControl size="small" fullWidth>
-                                            <InputLabel>หน่วย</InputLabel>
+                                            <InputLabel id={`unit-label-${index}`}>หน่วย</InputLabel>
                                             <Select
+                                                labelId={`unit-label-${index}`}
                                                 name="unit_id"
                                                 value={material.unit_id}
+                                                label="หน่วย"
                                                 onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "material")}
                                             >
                                                 {unit.map((unit) => (
@@ -407,7 +411,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                                     </MenuItem>
                                                 ))}
                                             </Select>
-                                        </FormControl>
+                                        </FormControl> 
                                     </Grid>
                                     <Grid size={3}>
                                         <TextField
