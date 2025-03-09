@@ -296,7 +296,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                             </>
                         )}
                         <Grid size={12}>
-                            {material.map((contact, index) => (
+                            {material.map((mt, index) => (
                                 <Grid container spacing={2} key={index} sx={{ mb: 1 }}>
                                     <Grid size={5}>
                                         <Autocomplete
@@ -308,7 +308,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                             getOptionLabel={(option) => option.material_name}
                                             renderInput={(params) => <TextField {...params} label="วัสดุ" />}
                                             isOptionEqualToValue={(option, value) => option.material_id === value.material_id}
-                                            value={contact.material_id ? option_material.find(option => option.material_id === contact.material_id) || null : null}
+                                            value={mt.material_id ? option_material.find(option => option.material_id === mt.material_id) || null : null}
                                             onChange={(e, newValue) => {
                                                 if (newValue) {
                                                     handleDataChange(index, 'material_id', newValue.material_id);
@@ -321,7 +321,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                             label="จำนวน"
                                             size="small"
                                             fullWidth
-                                            value={contact.material_quantity}
+                                            value={mt.material_quantity}
                                             type="number"
                                             onChange={(e) => handleDataChange(index, 'material_quantity', e.target.value)}
                                         />
@@ -331,7 +331,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                             label="ราคาทั้งหมด"
                                             size="small"
                                             fullWidth
-                                            value={contact.material_price * contact.material_quantity}
+                                            value={mt.material_price * mt.material_quantity}
                                             type="number"
                                             InputProps={{ readOnly: true }}
                                         />
@@ -361,7 +361,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                 !isUpdateImg && (
                                     <Grid size={12}>
                                         <Button onClick={() => setIsupdateImg(true)} startIcon={<Edit />} color="primary">
-                                            แก้ไขวัสดุ
+                                            แก้ไขรูปวัสดุ
                                         </Button>
                                     </Grid>
                                 )

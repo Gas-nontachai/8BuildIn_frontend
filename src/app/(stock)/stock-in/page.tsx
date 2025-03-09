@@ -21,12 +21,13 @@ import AddStockin from "@/app/components/StockIn/Add";
 import UpdateStockin from "@/app/components/StockIn/Update";
 import Loading from "@/app/components/Loading";
 
-import { useSupplier, useStockIn, useUnit } from "@/hooks/hooks";
-import { StockIn, Supplier } from '@/misc/types';
+import { useSupplier, useStockIn, useUnit, useEmployee } from "@/hooks/hooks";
+import { StockIn, Supplier, Employee } from '@/misc/types';
 
 const { getStockInBy, deleteStockInBy } = useStockIn();
 const { getSupplierBy } = useSupplier();
 const { getUnitBy } = useUnit();
+const { getEmployeeBy } = useEmployee();
 
 const StockInPage = () => {
     const [search, setSearch] = useState("");
@@ -36,6 +37,7 @@ const StockInPage = () => {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
     const [supplier, setSupplier] = useState<Supplier[]>([]);
+    const [employee, setEmployee] = useState<Employee[]>([]);
     const [stockIn, setStockIn] = useState<StockIn[]>([]);
     const stock_in_id = useRef('')
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -85,13 +87,18 @@ const StockInPage = () => {
             });
 
             const supplier_list_arr = res.map(item => item.supplier_id);
+            const emp_list_arr = res.map(item => item.addby);
 
             const { docs: supplier_list } = await getSupplierBy({
                 supplier_id: { $in: supplier_list_arr },
             });
+            const { docs: emp_list } = await getEmployeeBy({
+                supplier_id: { $in: emp_list_arr },
+            });
 
             setStockIn(res);
             setSupplier(supplier_list);
+            setEmployee(emp_list);
         } catch (error) {
             console.error("Error fetching StockIn:", error);
         }
@@ -275,8 +282,11 @@ const StockInPage = () => {
                                             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
                                                 <Collapse in={openRows[stock.stock_in_id]} timeout="auto" unmountOnExit>
                                                     <Box sx={{ marginTop: 3, marginBottom: 3 }}>
-                                                        <div className="mb-2">
+                                                        <div className="mb-2 flex flex-col justify-between">
                                                             <h2 className="text-lg font-semibold">รายละเอียดสินค้าและวัสดุ</h2>
+                                                            <h2 className="text-lg font-semibold">
+                                                                ดำเนินการโดย {employee.find((s) => s.employee_id === stock.addby)?.employee_firstname} {employee.find((s) => s.employee_id === stock.addby)?.employee_lastname || "ไม่พบข้อมูล"}
+                                                            </h2>
                                                         </div>
                                                         {JSON.parse(stock.product).length > 0 && (
                                                             <Box>

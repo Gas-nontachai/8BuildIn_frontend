@@ -49,8 +49,8 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
     const [note, setNote] = useState('');
     const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([]);
     const [unit, setUnit] = useState<{ id: string; name: string }[]>([]);
-    const [product, setProduct] = useState<{ product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
-    const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
+    const [product, setProduct] = useState<{ product_id: string, product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
+    const [material, setMaterial] = useState<{ material_id: string, material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
 
     const handleChange = (e: any) => {
         setFormData({
@@ -119,9 +119,9 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
 
     const handleAddData = (type: "product" | "material") => {
         if (type === "product") {
-            setProduct([...product, { product_name: "", product_quantity: 0, unit_id: '', product_price: 0 }]);
+            setProduct([...product, { product_id: "", product_name: "", product_quantity: 0, unit_id: '', product_price: 0 }]);
         } else {
-            setMaterial([...material, { material_name: "", material_quantity: 0, unit_id: '', material_price: 0 }]);
+            setMaterial([...material, { material_id: "", material_name: "", material_quantity: 0, unit_id: '', material_price: 0 }]);
         }
     };
 

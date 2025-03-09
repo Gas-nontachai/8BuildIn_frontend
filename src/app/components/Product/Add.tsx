@@ -78,14 +78,6 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
             title: `${item.unit_name_th}(${item.unit_name_en})`,
             value: item.unit_id
         })));
-
-        const defaultUnit = res.find((item: any) => item.unit_name_th === 'ชิ้น');
-        if (defaultUnit) {
-            setSelectedUnit({
-                title: `${defaultUnit.unit_name_th}(${defaultUnit.unit_name_en})`,
-                value: defaultUnit.unit_id
-            });
-        }
     };
 
     const fetchMaterial = async () => {
@@ -250,7 +242,6 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                             getOptionLabel={(option) => option.title}
                             renderInput={(params) => <TextField {...params} label="หน่วย" />}
                             isOptionEqualToValue={(option, value) => option.value === value.value}
-                            value={selectedUnit}
                             onChange={(event, newValue) => setProduct((prevProduct) => ({
                                 ...prevProduct,
                                 unit_id: newValue ? newValue.value : '',
@@ -262,7 +253,6 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                             เพิ่มวัสดุ
                         </Button>
                     </Grid>
-
                     {material.length > 0 && (
                         <>
                             <FormLabel component="legend">วัสดุ <span className="text-red-500">*</span></FormLabel>
