@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { API_URL } from "@/utils/config"
 import Swal from 'sweetalert2';
 import { Delete, Add, Home, Gavel } from "@mui/icons-material";
 import {
@@ -12,29 +13,47 @@ import { decimalFix } from "@/utils/number-helper"
 import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
 import Loading from "@/app/components/Loading";
 
-import useMaterial from "@/hooks/useMaterial";
-import { Material } from '@/misc/types';
+import { useMaterial, useUnit } from "@/hooks/hooks";
+import { Material, Unit } from '@/misc/types';
+
+const { getMaterialBy } = useMaterial()
+const { getUnitBy } = useUnit()
 
 const MaterialPage = () => {
-  const { getMaterialBy } = useMaterial()
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [unit, setUnit] = useState<Unit[]>([]);
 
   useEffect(() => {
-    fetchData();
+    try {
+      setLoading(true);
+      fetchData();
+      fetchUnit()
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const fetchData = async () => {
-    setLoading(true);
     try {
       const { docs: res } = await getMaterialBy();
       setMaterials(res);
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
-    setLoading(false);
+  };
+
+  const fetchUnit = async () => {
+    try {
+      const { docs: res_unit } = await getUnitBy();
+      setUnit(res_unit);
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+    }
   };
 
   const onDelete = async (materialId: string) => {
@@ -100,11 +119,17 @@ const MaterialPage = () => {
                 {materials.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((material, index) => (
                   <TableRow key={material.material_id} hover>
                     <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
-                    <TableCell align="center">{material.material_category_id}</TableCell>
+                    <TableCell align="center">{material.material_category_id || "ไม่ทราบประเภท"}</TableCell>
                     <TableCell align="center">{material.material_name}</TableCell>
-                    <TableCell align="center">{material.material_img}</TableCell>
-                    <TableCell align="center">{decimalFix(material.material_price)} ฿ / {material.unit_id || 'ชิ้น'}</TableCell>
-                    <TableCell align="center">{material.material_quantity} {material.unit_id || 'ชิ้น'} </TableCell>
+                    <TableCell align="center">
+                      <img
+                        src={material.material_img ? `${API_URL}${material.material_img.split(",")[0]}` : "/default-cart.png"}
+                        alt="Product"
+                        style={{ width: "50px", height: "50px", margin: "5px" }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">{decimalFix(material.material_price)} ฿ / {unit.find((s) => s.unit_id === material.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
+                    <TableCell align="center">{material.material_quantity} {unit.find((s) => s.unit_id === material.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">
                       <Button
                         variant="contained"

@@ -150,15 +150,11 @@ const ProductPage = () => {
                     <TableCell align="center">{product.product_id}</TableCell>
                     <TableCell align="center">{product.product_name}</TableCell>
                     <TableCell align="center">
-                      {product.product_img &&
-                        product.product_img.split(",").map((img, index) => (
-                          <img
-                            key={index}
-                            src={`${API_URL}${img}`}
-                            alt={`Product ${index}`}
-                            style={{ width: "50px", height: "50px", margin: "5px" }}
-                          />
-                        ))}
+                      <img
+                        src={product.product_img ? `${API_URL}${product.product_img.split(",")[0]}` : "/default-cart.png"}
+                        alt="Product"
+                        style={{ width: "50px", height: "50px", margin: "5px" }}
+                      />
                     </TableCell>
                     <TableCell align="center">{decimalFix(product.product_price)} ฿ / {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">{product.product_quantity} {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'} </TableCell>
