@@ -25,9 +25,10 @@ const insertProduct = async (data: { product: Product, product_img?: File[] }): 
     return await formData.post(`${API_URL}${prefix}/insertProduct`, formDataInstance);
 };
 
-const updateProductBy = async (data: { product: Product, product_img?: File[] }): Promise<Product> => {
+const updateProductBy = async (data: { product: Product, product_img?: File[], del_img_arr?: string[] }): Promise<Product> => {
     const formDataInstance = new FormData();
     formDataInstance.append("product", JSON.stringify(data.product));
+    formDataInstance.append("del_img_arr", JSON.stringify(data.del_img_arr));
 
     if (data.product_img && data.product_img.length > 0) {
         data.product_img.forEach((file, index) => {
