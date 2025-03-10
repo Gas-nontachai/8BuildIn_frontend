@@ -24,6 +24,7 @@ import Loading from "../Loading";
 
 import { useMaterial, useMaterialCategory, useEmployee, useUnit } from "@/hooks/hooks";
 import { Material, MaterialCategory, Employee, Unit } from '@/misc/types';
+import { decimalFix } from "@/utils/number-helper";
 
 const { getMaterialByID, updateMaterialBy } = useMaterial();
 const { getMaterialCategoryBy } = useMaterialCategory();
@@ -142,30 +143,14 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                         <Grid size={12} key={material.material_id}>
                             <Grid container spacing={2}>
                                 <Grid size={4}>
-                                    <FormLabel component="legend" className="mb-2">ประเภทวัสดุ <span className="text-red-500">*</span></FormLabel>
-                                    <FormControl fullWidth>
-                                        <Select
-                                            value={material.material_category_id || "ไม่มีประเภทวัสดุ"}
-                                            size="small"
-                                            name="material_category_id"
-                                            onChange={handleChange}
-                                            displayEmpty
-                                        >
-                                            <MenuItem value="" disabled>ประเภทวัสดุ</MenuItem>
-                                            {materialCategory.map((item) => (
-                                                <MenuItem key={item.material_category_id} value={item.material_category_id}>{item.material_category_name}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                                <Grid size={4}>
-                                    <FormLabel component="legend" className="mb-2">ชื่อวัสดุ <span className="text-red-500">*</span></FormLabel>
+                                    <FormLabel component="legend" className="mb-2">ชื่อวัสดุ</FormLabel>
                                     <TextField
                                         size="small"
                                         fullWidth
                                         value={material.material_name}
                                         name="material_name"
                                         onChange={handleChange}
+                                        InputProps={{ readOnly: true }}
                                     />
                                 </Grid>
                                 <Grid size={4}>
@@ -183,21 +168,27 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                                 <MenuItem key={item.unit_id} value={item.unit_id}>{item.unit_name_th}({item.unit_name_en})</MenuItem>
                                             ))}
                                         </Select>
+                                    </FormControl >
+                                </Grid>
+                                <Grid size={4}>
+                                    <FormLabel component="legend" className="mb-2">ประเภทวัสดุ <span className="text-red-500">*</span></FormLabel>
+                                    <FormControl fullWidth>
+                                        <Select
+                                            value={material.material_category_id || "ไม่มีประเภทวัสดุ"}
+                                            size="small"
+                                            name="material_category_id"
+                                            onChange={handleChange}
+                                            displayEmpty
+                                        >
+                                            <MenuItem value="" disabled>ประเภทวัสดุ</MenuItem>
+                                            {materialCategory.map((item) => (
+                                                <MenuItem key={item.material_category_id} value={item.material_category_id}>{item.material_category_name}</MenuItem>
+                                            ))}
+                                        </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid size={6}>
-                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด <span className="text-red-500">*</span></FormLabel>
-                                    <TextField
-                                        size="small"
-                                        fullWidth
-                                        type="number"
-                                        value={material.material_price}
-                                        name="material_price"
-                                        onChange={handleChange}
-                                    />
-                                </Grid>
-                                <Grid size={6}>
-                                    <FormLabel component="legend" className="mb-2">จำนวน <span className="text-red-500">*</span></FormLabel>
+                                <Grid size={4}>
+                                    <FormLabel component="legend" className="mb-2">จำนวน</FormLabel>
                                     <TextField
                                         size="small"
                                         fullWidth
@@ -205,6 +196,30 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                         value={material.material_quantity}
                                         name="material_quantity"
                                         onChange={handleChange}
+                                        InputProps={{ readOnly: true }}
+                                    />
+                                </Grid>
+                                <Grid size={4}>
+                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด</FormLabel>
+                                    <TextField
+                                        size="small"
+                                        fullWidth
+                                        type="number"
+                                        value={material.material_price}
+                                        name="material_price"
+                                        onChange={handleChange}
+                                        InputProps={{ readOnly: true }}
+                                    />
+                                </Grid>
+                                <Grid size={4}>
+                                    <FormLabel component="legend" className="mb-2">ราคา / 1 ชิ้น</FormLabel>
+                                    <TextField
+                                        size="small"
+                                        fullWidth
+                                        type="number"
+                                        value={decimalFix(Number(material.material_price) / Number(material.material_quantity)) || ""}
+                                        name="material_price"
+                                        InputProps={{ readOnly: true }}
                                     />
                                 </Grid>
                                 <Grid size={12}>

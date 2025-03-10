@@ -88,7 +88,7 @@ const SupplierPage = () => {
           </Stack>
         </Breadcrumbs>
         < div className="flex gap-2" >
-          <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
+          <Button variant="contained" color="success" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
             เพิ่มผู้จัดจำหน่าย
           </Button>
         </div>

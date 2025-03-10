@@ -123,7 +123,6 @@ const ProductPage = () => {
           </Button>
         </div>
       </div>
-
       {loading ? (
         <Loading />
       ) : (
