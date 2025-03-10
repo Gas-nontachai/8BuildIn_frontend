@@ -159,49 +159,44 @@ const ProductPage = () => {
                     <TableCell align="center">{decimalFix(product.product_price)} ฿ / {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">{product.product_quantity} {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'} </TableCell>
                     <TableCell align="center">
-                      {!product.stock_in_id ? (
-                        <>
-                          <IconButton
-                            color="inherit"
-                            id="demo-positioned-button"
-                            aria-controls={open ? 'demo-positioned-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={(event) => handleClick(event, product.product_id)}
-                            sx={{ fontSize: 24 }}
-                          >
-                            <MoreVert fontSize="inherit" />
-                          </IconButton>
-                          <Menu
-                            id="demo-positioned-menu"
-                            aria-labelledby="demo-positioned-button"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                          >
-                            <MenuItem sx={{ padding: '4px 8px' }}>
-                              <Button startIcon={<Visibility />} onClick={() => { }} size="small">
-                                View
-                              </Button>
-                            </MenuItem>
-                            <MenuItem sx={{ padding: '4px 8px' }}>
-                              <Button startIcon={<Edit />} onClick={() => setUpdateProductDialog(true)} size="small">
-                                Edit
-                              </Button>
-                            </MenuItem>
-                            <MenuItem sx={{ padding: '4px 8px' }}>
-                              <Button startIcon={<Delete />} onClick={() => onDelete(selectedProductId)} size="small">
-                                Delete
-                              </Button>
-                            </MenuItem>
-                          </Menu>
-                        </>
-                      ) : (
-                        <IconButton color="inherit" onClick={() => { }}>
-                          <Visibility sx={{ fontSize: 20, color: '#1565c0' }} />
-                        </IconButton>
-                      )}
+                      <IconButton
+                        color="inherit"
+                        id={`menu-button-${product.product_id}`}
+                        aria-controls={anchorEl?.id === `menu-button-${product.product_id}` ? 'demo-positioned-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={anchorEl?.id === `menu-button-${product.product_id}` ? 'true' : undefined}
+                        onClick={(event) => handleClick(event, product.product_id)}
+                        sx={{ fontSize: 24 }}
+                      >
+                        <MoreVert fontSize="inherit" />
+                      </IconButton>
+                      <Menu
+                        id="demo-positioned-menu"
+                        aria-labelledby={`menu-button-${product.product_id}`}
+                        anchorEl={anchorEl?.id === `menu-button-${product.product_id}` ? anchorEl : null}
+                        open={anchorEl?.id === `menu-button-${product.product_id}`}
+                        onClose={handleClose}
+                      >
+                        <MenuItem sx={{ padding: '4px 8px' }}>
+                          <Button startIcon={<Visibility />} onClick={() => { }} size="small">
+                            View
+                          </Button>
+                        </MenuItem>
+                        <MenuItem sx={{ padding: '4px 8px' }}>
+                          <Button startIcon={<Edit />} onClick={() => setUpdateProductDialog(true)} size="small">
+                            Edit
+                          </Button>
+                        </MenuItem>
+                        {!product.stock_in_id && (
+                          <MenuItem sx={{ padding: '4px 8px' }}>
+                            <Button startIcon={<Delete />} onClick={() => onDelete(product.product_id)} size="small">
+                              Delete
+                            </Button>
+                          </MenuItem>
+                        )}
+                      </Menu>
                     </TableCell>
+
                   </TableRow>
                 ))}
               </TableBody>
