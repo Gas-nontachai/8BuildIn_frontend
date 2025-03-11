@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { formatDate } from "@/utils/date-helper"
 import Swal from 'sweetalert2';
 import { MoreVert, Store, Delete, Add, Home, Edit, Visibility, Search, ArrowUpward, ArrowDownward, Clear, Sort } from "@mui/icons-material";
 import {
@@ -186,10 +187,10 @@ const ProductPage = () => {
           </Stack>
         </Breadcrumbs>
         <div className="flex gap-2">
-          <Button variant="contained" color="primary" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
+          <Button variant="contained" color="success" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทสินค้า
           </Button>
-          <Button variant="contained" color="primary" onClick={() => setAddProductDialog(true)} startIcon={<Add />}>
+          <Button variant="contained" color="success" onClick={() => setAddProductDialog(true)} startIcon={<Add />}>
             เพิ่มสินค้า
           </Button>
         </div>
@@ -274,13 +275,14 @@ const ProductPage = () => {
             <Table>
               <TableHead>
                 <TableRow className="bg-gray-200">
-                  <TableCell padding="checkbox" align="center"><Checkbox /></TableCell>
+                  <TableCell padding="checkbox" align="center">#</TableCell>
                   <TableCell align="center">ประเภท</TableCell>
-                  <TableCell align="center">รหัสสินค้า</TableCell>
+                  {/* <TableCell align="center">รหัสสินค้า</TableCell> */}
                   <TableCell align="center">ชื่อสินค้า</TableCell>
                   <TableCell align="center">รูปภาพ</TableCell>
                   <TableCell align="center">ราคา</TableCell>
-                  <TableCell align="center">จำนวน</TableCell>
+                  <TableCell align="center">จำนวนที่มีในสต็อก</TableCell>
+                  <TableCell align="center">วันเวลาที่รับสต็อก</TableCell>
                   <TableCell align="center">จัดการ</TableCell>
                 </TableRow>
               </TableHead>
@@ -289,17 +291,20 @@ const ProductPage = () => {
                   <TableRow key={product.product_id} hover>
                     <TableCell align="center">{page * rowsPerPage + index + 1}</TableCell>
                     <TableCell align="center">{productCategory.find((s) => s.product_category_id === product.product_category_id)?.product_category_name || 'ไม่ทราบประเภท'}</TableCell>
-                    <TableCell align="center">{product.product_id}</TableCell>
+                    {/* <TableCell align="center">{product.product_id}</TableCell> */}
                     <TableCell align="center">{product.product_name}</TableCell>
-                    <TableCell align="center">
-                      <img
-                        src={product.product_img ? `${API_URL}${product.product_img.split(",")[0]}` : "/default-cart.png"}
-                        alt="Product"
-                        style={{ width: "50px", height: "50px", margin: "5px" }}
-                      />
+                    <TableCell>
+                      <div className="flex justify-center">
+                        <img
+                          src={product.product_img ? `${API_URL}${product.product_img.split(",")[0]}` : "/no-img.jpg"}
+                          alt="Product"
+                          style={{ width: "50px", height: "50px", margin: "5px" }}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell align="center">{decimalFix(product.product_price)} ฿ / {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'}</TableCell>
                     <TableCell align="center">{product.product_quantity} {unit.find((s) => s.unit_id === product.unit_id)?.unit_name_th || 'ชิ้น'} </TableCell>
+                    <TableCell align="center">{formatDate(product.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                     <TableCell align="center">
                       <IconButton
                         color="inherit"

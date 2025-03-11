@@ -10,7 +10,8 @@ import {
     IconButton,
     FormLabel,
     Typography,
-    Autocomplete
+    Autocomplete,
+    Divider
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
@@ -264,12 +265,14 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                     <Loading />
                 ) : (
                     <Grid container spacing={2}>
-                        <Grid size={4}>
+                        <Grid size={3}>
+                            <FormLabel component="legend">ปะรเภท <span className="text-red-500">*</span></FormLabel>
                             <Autocomplete
                                 disablePortal
+                                size="small"
                                 options={option_category}
                                 getOptionLabel={(option) => option.title}
-                                renderInput={(params) => <TextField {...params} label="ประเภท" />}
+                                renderInput={(params) => <TextField {...params} />}
                                 isOptionEqualToValue={(option, value) => option.value === value.value}
                                 value={option_category.find(option => option.value === product.product_category_id) || null}
                                 onChange={(event, newValue) => setProduct((prevProduct) => ({
@@ -278,38 +281,35 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                 }))}
                             />
                         </Grid>
-                        <Grid size={8}>
+                        <Grid size={3}>
+                            <FormLabel component="legend">ชื่อสินค้า <span className="text-red-500">*</span></FormLabel>
                             <TextField
                                 fullWidth
-                                label="ชื่อสินค้า"
                                 type="text"
-                                size="medium"
+                                size="small"
                                 value={product.product_name}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, 'product_name')}
                             />
                         </Grid>
-                        <Grid size={4}>
+                        <Grid size={3}>
+                            <FormLabel component="legend">จำนวนสินค้า <span className="text-red-500">*</span></FormLabel>
                             <TextField
                                 fullWidth
-                                label="จำนวนสินค้า"
                                 type="number"
                                 inputProps={{ min: 0 }}
-                                size="medium"
+                                size="small"
                                 value={product.product_quantity || ''}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, 'product_quantity')}
                             />
                         </Grid>
-                        <Grid size={4}>
-                            <Typography variant="body1">
-                                ราคาต้นทุนสินค้า {decimalFix(product.product_price || 0)} บาท
-                            </Typography>
-                        </Grid>
-                        <Grid size={4}>
+                        <Grid size={3}>
+                            <FormLabel component="legend">หน่วย <span className="text-red-500">*</span></FormLabel>
                             <Autocomplete
                                 disablePortal
+                                size="small"
                                 options={option_unit}
                                 getOptionLabel={(option) => option.title}
-                                renderInput={(params) => <TextField {...params} label="หน่วย" />}
+                                renderInput={(params) => <TextField {...params} />}
                                 isOptionEqualToValue={(option, value) => option.value === value.value}
                                 value={selectedUnit}
                                 onChange={(event, newValue) => setProduct((prevProduct) => ({
@@ -317,6 +317,11 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                     unit_id: newValue ? newValue.value : '',
                                 }))}
                             />
+                        </Grid>
+                        <Grid size={12}>
+                            <Typography variant="body1">
+                                ราคาต้นทุนสินค้า {decimalFix(product.product_price || 0)} บาท
+                            </Typography>
                         </Grid>
                         <Grid size={12}>
                             <Button onClick={() => handleAddMaterial()} startIcon={<Add />} color="primary">
@@ -379,55 +384,6 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                     </Grid>
                                 </Grid>
                             ))}
-                            <Grid container spacing={2}>
-                                <Grid size={12}>
-                                    <span>รูปภาพเดิม:</span>
-                                    <div className="flex flex-row flex-wrap items-center gap-4 p-2">
-                                        {existingImages.map((image, index) => {
-                                            return (
-                                                <div key={index} className="relative">
-                                                    <img
-                                                        src={`${API_URL}${image}`}
-                                                        alt={`Image ${index + 1}`}
-                                                        className="w-24 h-24 object-cover rounded-lg border"
-                                                    />
-                                                    <button
-                                                        onClick={() => handleRemoveExistingImage(index)}
-                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </Grid>
-                            </Grid>
-                            <Grid size={12}>
-                                {deletedImages.length > 0 && (
-                                    <Grid size={12}>
-                                        <span className="text-red-500">รูปภาพที่จะถูกลบ:</span>
-                                        <div className="flex flex-row flex-wrap items-center gap-4 p-2 bg-red-50 rounded-lg">
-                                            {deletedImages.map((image, index) => (
-                                                <div key={index} className="relative">
-                                                    <img
-                                                        src={`${API_URL}${image}`}
-                                                        alt={`Deleted Image ${index + 1}`}
-                                                        className="w-24 h-24 object-cover rounded-lg border opacity-50"
-                                                    />
-                                                    <button
-                                                        onClick={() => handleReverseImage(index)}
-                                                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600"
-                                                        title="คืนค่ารูปภาพ"
-                                                    >
-                                                        <UndoRounded />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Grid>
-                                )}
-                            </Grid>
                             <Grid size={12}>
                                 <div className="grid grid-cols-12">
                                     <div className="relative flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
@@ -466,6 +422,54 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                         )}
                                     </div>
                                 </div>
+                                <Grid container spacing={2}>
+                                    <Grid size={12} sx={{ mt: 2 }}> 
+                                        <div className="flex flex-row flex-wrap items-center gap-4 p-2">
+                                            {existingImages.map((image, index) => {
+                                                return (
+                                                    <div key={index} className="relative">
+                                                        <img
+                                                            src={`${API_URL}${image}`}
+                                                            alt={`Image ${index + 1}`}
+                                                            className="w-24 h-24 object-cover rounded-lg border"
+                                                        />
+                                                        <button
+                                                            onClick={() => handleRemoveExistingImage(index)}
+                                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </Grid>
+                                </Grid>
+                                <Grid size={12}>
+                                    {deletedImages.length > 0 && (
+                                        <Grid size={12}>
+                                            <span className="text-red-500">รูปภาพที่จะถูกลบ:</span>
+                                            <div className="flex flex-row flex-wrap items-center gap-4 p-2 bg-red-50 rounded-lg">
+                                                {deletedImages.map((image, index) => (
+                                                    <div key={index} className="relative">
+                                                        <img
+                                                            src={`${API_URL}${image}`}
+                                                            alt={`Deleted Image ${index + 1}`}
+                                                            className="w-24 h-24 object-cover rounded-lg border opacity-50"
+                                                        />
+                                                        <button
+                                                            onClick={() => handleReverseImage(index)}
+                                                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600"
+                                                            title="คืนค่ารูปภาพ"
+                                                        >
+                                                            <UndoRounded />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </Grid>
+                                    )}
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>

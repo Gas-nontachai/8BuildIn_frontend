@@ -264,7 +264,7 @@ const MaterialPage = () => {
                   <TableCell align="center">ชื่อวัสดุ</TableCell>
                   <TableCell align="center">ประเภท</TableCell>
                   <TableCell align="center">ราคาต่อชิ้น</TableCell>
-                  <TableCell align="center">จำนวนสต็อก</TableCell>
+                  <TableCell align="center">จำนวนที่มีในสต็อก</TableCell>
                   <TableCell align="center">วันเวลาที่รับสต็อก</TableCell>
                   <TableCell align="center">จัดการ</TableCell>
                 </TableRow>

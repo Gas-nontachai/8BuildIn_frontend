@@ -207,7 +207,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                     <Grid size={4}>
                         <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
                         <Typography variant="body1">
-                            ราคานำเข้าทั้งหมด {decimalFix(formData.stock_in_price || "0")} บาท
+                            {decimalFix(formData.stock_in_price || "0.00")} บาท
                         </Typography>
                     </Grid>
                     <Grid size={12}>

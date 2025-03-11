@@ -89,7 +89,7 @@ const UnitPage = () => {
                         <Typography variant="body1" color="text.secondary">หน่วยสินค้า</Typography>
                     </Stack>
                 </Breadcrumbs>
-                <Button variant="contained" color="primary" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
+                <Button variant="contained" color="success" onClick={() => setIsAddDialogOpen(true)} startIcon={<Add />}>
                     เพิ่มสต็อกเข้า
                 </Button>
             </div>
