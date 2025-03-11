@@ -19,7 +19,7 @@ const Page = () => {
   return (
     <>
       <div className="flex justify-between">
-        <h1 className="text-xl font-bold mb-4">Hello World !!</h1>
+        <h1 className="text-xl font-bold mb-4">Hello 8Built-In !!</h1>
       </div>
     </>
   );

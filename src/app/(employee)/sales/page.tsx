@@ -265,15 +265,15 @@ const SalesPage = () => {
                         onClose={closeMenu}
                     >
                         <MenuItem onClick={() => toggleSort("name", "adddate")}>
-                            Sort by Date
+                            จัดเรียงตามวันที่
                             {sort.name === "adddate" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
                         </MenuItem>
                         <MenuItem onClick={() => toggleSort("name", "product_price")}>
-                            Sort by Price
+                            จัดเรียงตามราคา
                             {sort.name === "product_price" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
                         </MenuItem>
                         <MenuItem onClick={() => toggleSort("name", "product_name")}>
-                            Sort by Product Name
+                            จัดเรียงตามชื่อสินค้า
                             {sort.name === "product_name" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
                         </MenuItem>
                     </Menu>
@@ -308,21 +308,18 @@ const SalesPage = () => {
                                     <Typography variant="body2" color="text.secondary" className="mb-2">
                                         จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} ชิ้น</span>
                                     </Typography>
-                                    <p className=" text-blue-600 mt-3 text-[18px] font-[400]">
+                                    <p className="text-[#d59d35] mt-3 text-[18px] font-[400]">
                                         ฿ {decimalFix(product.product_price)}
                                     </p>
                                 </CardContent>
-                                <CardActions sx={{ display: 'flex', justifyContent: 'end' }}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        className="rounded-xl w-2/3"
-                                        size="small"
+                                <CardActions className="justify-center">
+                                    <button
+                                        className="flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-[#e6ba78] rounded-2xl w-full py-2 px-3 transition-all duration-200 shadow-lg"
                                         onClick={() => addToCart(product.product_id)}
-                                        startIcon={<AddShoppingCart />}
                                     >
+                                        <AddShoppingCart className="mr-2" />
                                         เพิ่มลงตะกร้า
-                                    </Button>
+                                    </button>
                                 </CardActions>
                             </Card>
                         </Grid>
