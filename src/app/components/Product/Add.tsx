@@ -8,13 +8,14 @@ import {
     Button,
     TextField,
     IconButton,
-    FormLabel
+    FormLabel,
+    Typography,
+    Autocomplete
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { Autocomplete } from '@mui/material';
 import Swal from 'sweetalert2';
-import { decimalFix } from "@/utils/number-helper"
 
+import { decimalFix } from "@/utils/number-helper"
 import { useProductCategory, useUnit, useMaterial, useProduct } from "@/hooks/hooks";
 
 import { Product, Material } from '@/misc/types';
@@ -220,19 +221,16 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                             fullWidth
                             label="จำนวนสินค้า"
                             size="small"
-                            type="text"
+                            type="number"
+                            inputProps={{ min: 0 }}
                             value={product.product_quantity}
                             onChange={(e) => handleInputChange(e, 'product_quantity')}
                         />
                     </Grid>
                     <Grid size={4}>
-                        <TextField
-                            fullWidth
-                            label="ราคาสินค้า"
-                            type="text"
-                            size="small"
-                            value={product.product_price}
-                        />
+                        <Typography variant="body1">
+                            ราคาต้นทุนสินค้า {decimalFix(product.product_price || 0)} บาท
+                        </Typography>
                     </Grid>
                     <Grid size={4}>
                         <Autocomplete
@@ -283,6 +281,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                                         fullWidth
                                         value={contact.material_quantity}
                                         type="number"
+                                        inputProps={{ min: 0 }}
                                         onChange={(e) => handleDataChange(index, 'material_quantity', e.target.value)}
                                     />
                                 </Grid>
@@ -293,6 +292,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                                         fullWidth
                                         value={contact.material_price * contact.material_quantity}
                                         type="number"
+                                        inputProps={{ min: 0 }}
                                     />
                                 </Grid>
                                 <Grid size={1}>

@@ -14,12 +14,14 @@ import {
     Select,
     MenuItem,
     FormLabel,
-    InputLabel
+    InputLabel,
+    Typography
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 import Swal from 'sweetalert2';
 
+import { decimalFix } from "@/utils/number-helper"
 import { useSupplier, useStockIn, useUnit } from "@/hooks/hooks";
 import { StockIn } from '@/misc/types';
 import Loading from "../Loading";
@@ -239,16 +241,9 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                         </Grid>
                         <Grid size={4}>
                             <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
-                            <TextField
-                                fullWidth
-                                type="number"
-                                size="small"
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                                value={formData.stock_in_price}
-                                onChange={(e) => setFormData({ ...formData, stock_in_price: Number(e.target.value) })}
-                            />
+                            <Typography variant="body1">
+                                ราคานำเข้าทั้งหมด {decimalFix(formData.stock_in_price || "0")} บาท
+                            </Typography>
                         </Grid>
                         <Grid size={12}>
                             <FormLabel component="legend">หมายเหตุ (ไม่บังคับ) </FormLabel>
@@ -296,6 +291,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                             fullWidth
                                             value={product.product_quantity}
                                             type="number"
+                                            inputProps={{ min: 0 }}
                                             onChange={(e) => handleDataChange(index, "product_quantity", e.target.value, "product")}
                                         />
                                     </Grid>
@@ -324,6 +320,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                             fullWidth
                                             value={product.product_price}
                                             type="number"
+                                            inputProps={{ min: 0 }}
                                             onChange={(e) => handleDataChange(index, "product_price", e.target.value, "product")}
                                         />
                                     </Grid>
@@ -347,13 +344,15 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                                 <TextField label="ชื่อสินค้า" size="small" fullWidth value={product.product_name} disabled />
                                             </Grid>
                                             <Grid size={3}>
-                                                <TextField label="จำนวน" size="small" fullWidth value={product.product_quantity} type="number" disabled />
+                                                <TextField label="จำนวน" size="small" fullWidth value={product.product_quantity} type="number"
+                                                    inputProps={{ min: 0 }} disabled />
                                             </Grid>
                                             <Grid size={2}>
                                                 <TextField label="หน่วย" size="small" fullWidth value={unit.find(u => u.id === product.unit_id)?.name || "-"} disabled />
                                             </Grid>
                                             <Grid size={3}>
-                                                <TextField label="ราคาทั้งหมด" size="small" fullWidth value={product.product_price} type="number" disabled />
+                                                <TextField label="ราคาทั้งหมด" size="small" fullWidth value={product.product_price} type="number"
+                                                    inputProps={{ min: 0 }} disabled />
                                             </Grid>
                                             <Grid size={1}>
                                                 <IconButton onClick={() => handleReverseData(index, "product")} color="primary">
@@ -392,6 +391,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                             fullWidth
                                             value={material.material_quantity}
                                             type="number"
+                                            inputProps={{ min: 0 }}
                                             onChange={(e) => handleDataChange(index, "material_quantity", e.target.value, "material")}
                                         />
                                     </Grid>
@@ -411,7 +411,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                                     </MenuItem>
                                                 ))}
                                             </Select>
-                                        </FormControl> 
+                                        </FormControl>
                                     </Grid>
                                     <Grid size={3}>
                                         <TextField
@@ -420,6 +420,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                             fullWidth
                                             value={material.material_price}
                                             type="number"
+                                            inputProps={{ min: 0 }}
                                             onChange={(e) => handleDataChange(index, "material_price", e.target.value, "material")}
                                         />
                                     </Grid>
@@ -442,13 +443,15 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                                 <TextField label="ชื่อวัสดุ" size="small" fullWidth value={material.material_name} disabled />
                                             </Grid>
                                             <Grid size={3}>
-                                                <TextField label="จำนวน" size="small" fullWidth value={material.material_quantity} type="number" disabled />
+                                                <TextField label="จำนวน" size="small" fullWidth value={material.material_quantity} type="number"
+                                                    inputProps={{ min: 0 }} disabled />
                                             </Grid>
                                             <Grid size={2}>
                                                 <TextField label="หน่วย" size="small" fullWidth value={unit.find(u => u.id === material.unit_id)?.name || "-"} disabled />
                                             </Grid>
                                             <Grid size={3}>
-                                                <TextField label="ราคาทั้งหมด" size="small" fullWidth value={material.material_price} type="number" disabled />
+                                                <TextField label="ราคาทั้งหมด" size="small" fullWidth value={material.material_price} type="number"
+                                                    inputProps={{ min: 0 }} disabled />
                                             </Grid>
                                             <Grid size={1}>
                                                 <IconButton onClick={() => handleReverseData(index, "material")} color="primary">

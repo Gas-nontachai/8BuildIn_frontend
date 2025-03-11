@@ -14,7 +14,8 @@ import {
     FormControl,
     Select,
     MenuItem,
-    FormLabel
+    FormLabel,
+    Typography
 } from "@mui/material";
 
 import Grid from "@mui/material/Grid2";
@@ -144,14 +145,9 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                             <Grid container spacing={2}>
                                 <Grid size={4}>
                                     <FormLabel component="legend" className="mb-2">ชื่อวัสดุ</FormLabel>
-                                    <TextField
-                                        size="small"
-                                        fullWidth
-                                        value={material.material_name}
-                                        name="material_name"
-                                        onChange={handleChange}
-                                        InputProps={{ readOnly: true }}
-                                    />
+                                    <Typography variant="body1">
+                                        {material.material_name || ""}
+                                    </Typography>
                                 </Grid>
                                 <Grid size={4}>
                                     <FormLabel component="legend" className="mb-2">หน่วย <span className="text-red-500">*</span></FormLabel>
@@ -189,38 +185,21 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                 </Grid>
                                 <Grid size={4}>
                                     <FormLabel component="legend" className="mb-2">จำนวน</FormLabel>
-                                    <TextField
-                                        size="small"
-                                        fullWidth
-                                        type="number"
-                                        value={material.material_quantity}
-                                        name="material_quantity"
-                                        onChange={handleChange}
-                                        InputProps={{ readOnly: true }}
-                                    />
+                                    <Typography variant="body1">
+                                        {material.material_quantity || ""} ชิื้น
+                                    </Typography>
                                 </Grid>
                                 <Grid size={4}>
                                     <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด</FormLabel>
-                                    <TextField
-                                        size="small"
-                                        fullWidth
-                                        type="number"
-                                        value={material.material_price}
-                                        name="material_price"
-                                        onChange={handleChange}
-                                        InputProps={{ readOnly: true }}
-                                    />
+                                    <Typography variant="body1">
+                                        {decimalFix(material.material_price) || ""} บาท
+                                    </Typography>
                                 </Grid>
                                 <Grid size={4}>
                                     <FormLabel component="legend" className="mb-2">ราคา / 1 ชิ้น</FormLabel>
-                                    <TextField
-                                        size="small"
-                                        fullWidth
-                                        type="number"
-                                        value={decimalFix(Number(material.material_price) / Number(material.material_quantity)) || ""}
-                                        name="material_price"
-                                        InputProps={{ readOnly: true }}
-                                    />
+                                    <Typography variant="body1">
+                                        {decimalFix(Number(material.material_price) / Number(material.material_quantity)) || ""} บาท
+                                    </Typography>
                                 </Grid>
                                 <Grid size={12}>
                                     <div className="grid grid-cols-12">

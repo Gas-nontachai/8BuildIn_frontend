@@ -15,12 +15,14 @@ import {
     MenuItem,
     InputLabel,
     Divider,
-    FormLabel
+    FormLabel,
+    Typography
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 import Swal from 'sweetalert2';
 
+import { decimalFix } from "@/utils/number-helper"
 import { useSupplier, useStockIn, useUnit } from "@/hooks/hooks";
 import { StockIn } from '@/misc/types';
 
@@ -204,16 +206,9 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                     </Grid>
                     <Grid size={4}>
                         <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
-                        <TextField
-                            fullWidth
-                            type="number"
-                            size="small"
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            value={formData.stock_in_price}
-                            onChange={(e) => setFormData({ ...formData, stock_in_price: Number(e.target.value) })}
-                        />
+                        <Typography variant="body1">
+                            ราคานำเข้าทั้งหมด {decimalFix(formData.stock_in_price || "0")} บาท
+                        </Typography>
                     </Grid>
                     <Grid size={12}>
                         <FormLabel component="legend">หมายเหตุ (ไม่บังคับ) </FormLabel>
@@ -261,6 +256,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                         fullWidth
                                         value={product.product_quantity}
                                         type="number"
+                                        inputProps={{ min: 0 }}
                                         onChange={(e) => handleDataChange(index, "product_quantity", e.target.value, "product")}
                                     />
                                 </Grid>
@@ -290,6 +286,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                         fullWidth
                                         value={product.product_price}
                                         type="number"
+                                        inputProps={{ min: 0 }}
                                         onChange={(e) => handleDataChange(index, "product_price", e.target.value, "product")}
                                     />
                                 </Grid>
@@ -328,6 +325,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                         fullWidth
                                         value={material.material_quantity}
                                         type="number"
+                                        inputProps={{ min: 0 }}
                                         onChange={(e) => handleDataChange(index, "material_quantity", e.target.value, "material")}
                                     />
                                 </Grid>
@@ -356,6 +354,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                         fullWidth
                                         value={material.material_price}
                                         type="number"
+                                        inputProps={{ min: 0 }}
                                         onChange={(e) => handleDataChange(index, "material_price", e.target.value, "material")}
                                     />
                                 </Grid>

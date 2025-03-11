@@ -78,7 +78,7 @@ const MaterialPage = () => {
           columns: ["material_name"],
           condition: "LIKE",
         },
-        match: selectedMaterial ? { material_id: selectedMaterial } : {},
+        match: selectedMaterial ? { material_category_id: selectedMaterial } : {},
         sorter: [{ key: sort.name, order: sort.order }],
       });
       setMaterials(docs);

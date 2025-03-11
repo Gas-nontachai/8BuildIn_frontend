@@ -8,14 +8,16 @@ import {
     Button,
     TextField,
     IconButton,
-    FormLabel
+    FormLabel,
+    Typography,
+    Autocomplete
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { Autocomplete } from '@mui/material';
 import Swal from 'sweetalert2';
-import { API_URL } from "@/utils/config"
-
 import Loading from "../Loading";
+
+import { decimalFix } from "@/utils/number-helper"
+import { API_URL } from "@/utils/config"
 
 import { useProductCategory, useUnit, useMaterial, useProduct } from "@/hooks/hooks";
 
@@ -290,21 +292,17 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                             <TextField
                                 fullWidth
                                 label="จำนวนสินค้า"
-                                type="text"
+                                type="number"
+                                inputProps={{ min: 0 }}
                                 size="medium"
                                 value={product.product_quantity || ''}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, 'product_quantity')}
                             />
                         </Grid>
                         <Grid size={4}>
-                            <TextField
-                                fullWidth
-                                label="ราคาสินค้า"
-                                type="text"
-                                size="medium"
-                                value={product.product_price || 0}
-                                InputProps={{ readOnly: true }}
-                            />
+                            <Typography variant="body1">
+                                ราคาต้นทุนสินค้า {decimalFix(product.product_price || 0)} บาท
+                            </Typography>
                         </Grid>
                         <Grid size={4}>
                             <Autocomplete
@@ -359,6 +357,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                             fullWidth
                                             value={mt.material_quantity || 0}
                                             type="number"
+                                            inputProps={{ min: 0 }}
                                             onChange={(e) => handleDataChange(index, 'material_quantity', e.target.value)}
                                         />
                                     </Grid>
@@ -369,6 +368,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                             fullWidth
                                             value={mt.material_price * (mt.material_quantity || 0)}
                                             type="number"
+                                            inputProps={{ min: 0 }}
                                             InputProps={{ readOnly: true }}
                                         />
                                     </Grid>
