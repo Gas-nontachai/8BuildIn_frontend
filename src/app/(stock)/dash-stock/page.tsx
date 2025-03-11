@@ -41,7 +41,7 @@ const ProductTable = () => {
       <Card>
         <CardContent>
           <Typography variant="h6">📊  </Typography>
-          <Box sx={{ bgcolor: "background.paper", width: "100%" }}>
+          {/* <Box sx={{ bgcolor: "background.paper", width: "100%" }}>
             <AppBar position="static">
               <Tabs
                 value={value}
@@ -62,7 +62,7 @@ const ProductTable = () => {
               <MaterialTableData />
               <Typography> ข้อมูลวัตถุดิบ</Typography>
             </TabPanel>
-          </Box>
+          </Box> */}
         </CardContent>
       </Card >
     </>
