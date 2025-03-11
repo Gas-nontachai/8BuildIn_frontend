@@ -55,6 +55,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
     const [material, setMaterial] = useState<{ material_id: string, material_quantity: number, material_price: number }[]>([]);
     const [selectedUnit, setSelectedUnit] = useState<{ title: string, value: string } | null>(null);
     const [files, setFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [existingImages, setExistingImages] = useState<string[]>([]);
     const [deletedImages, setDeletedImages] = useState<string[]>([]);
 
@@ -157,18 +158,13 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const newFiles = Array.from(event.target.files);
-            setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+        const selectedFiles = event.target.files;
+        if (selectedFiles) {
+            const fileArray = Array.from(selectedFiles);
+            setFiles(fileArray);
+            const previewArray = fileArray.map(file => URL.createObjectURL(file));
+            setPreviewUrls(previewArray);
         }
-    };
-
-    const handleUploadClick = () => {
-        document.getElementById("file-input")?.click();
-    };
-
-    const handleRemoveFile = (index: number) => {
-        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Product) => {
@@ -193,6 +189,15 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
 
     const handleSubmit = async (e: React.FormEvent) => {
         try {
+            Swal.fire({
+                icon: 'info',
+                title: 'กำลังเพิ่มข้อมูล...',
+                text: 'โปรดรอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
             const data = { ...product };
             const cleanedMaterial = material.map(item => ({
                 ...item,
@@ -204,14 +209,11 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
             data.product_price = Number(String(data.product_price));
             data.product_quantity = data.product_quantity ? data.product_quantity : '1';
 
-            // อัพเดทข้อมูลสินค้า
             await updateProductBy({
                 product: data,
                 product_img: files,
                 del_img_arr: deletedImages
             });
-
-            console.log("ข้อมูลที่ส่งไป API:", data);
 
             setProduct({
                 product_id: '',
@@ -266,7 +268,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                 ) : (
                     <Grid container spacing={2}>
                         <Grid size={3}>
-                            <FormLabel component="legend">ปะรเภท <span className="text-red-500">*</span></FormLabel>
+                            <FormLabel component="legend">ประเภท <span className="text-red-500">*</span></FormLabel>
                             <Autocomplete
                                 disablePortal
                                 size="small"
@@ -283,40 +285,58 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                         </Grid>
                         <Grid size={3}>
                             <FormLabel component="legend">ชื่อสินค้า <span className="text-red-500">*</span></FormLabel>
-                            <TextField
-                                fullWidth
-                                type="text"
-                                size="small"
-                                value={product.product_name}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, 'product_name')}
-                            />
+                            {
+                                product.stock_in_id ? (
+                                    <Typography className="mt-3" variant="body1" color="primary">{product.product_name}</Typography>
+                                ) : (
+                                    <TextField
+                                        fullWidth
+                                        type="text"
+                                        size="small"
+                                        value={product.product_name}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, 'product_name')}
+                                    />
+                                )
+                            }
                         </Grid>
                         <Grid size={3}>
                             <FormLabel component="legend">จำนวนสินค้า <span className="text-red-500">*</span></FormLabel>
-                            <TextField
-                                fullWidth
-                                type="number"
-                                inputProps={{ min: 0 }}
-                                size="small"
-                                value={product.product_quantity || ''}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, 'product_quantity')}
-                            />
+                            {
+                                product.stock_in_id ? (
+                                    <Typography className="mt-3" variant="body1" color="primary">{product.product_quantity || ''}</Typography>
+                                ) : (
+                                    <TextField
+                                        fullWidth
+                                        type="number"
+                                        inputProps={{ min: 0 }}
+                                        size="small"
+                                        value={product.product_quantity || ''}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, 'product_quantity')}
+                                    />
+                                )
+                            }
                         </Grid>
                         <Grid size={3}>
                             <FormLabel component="legend">หน่วย <span className="text-red-500">*</span></FormLabel>
-                            <Autocomplete
-                                disablePortal
-                                size="small"
-                                options={option_unit}
-                                getOptionLabel={(option) => option.title}
-                                renderInput={(params) => <TextField {...params} />}
-                                isOptionEqualToValue={(option, value) => option.value === value.value}
-                                value={selectedUnit}
-                                onChange={(event, newValue) => setProduct((prevProduct) => ({
-                                    ...prevProduct,
-                                    unit_id: newValue ? newValue.value : '',
-                                }))}
-                            />
+                            {
+                                product.stock_in_id ? (
+                                    <Typography className="mt-3" variant="body1" color="primary">{selectedUnit?.title || ''}</Typography>
+                                ) : (
+                                    <Autocomplete
+                                        disablePortal
+                                        size="small"
+                                        options={option_unit}
+                                        getOptionLabel={(option) => option.title}
+                                        renderInput={(params) => <TextField {...params} />}
+                                        isOptionEqualToValue={(option, value) => option.value === value.value}
+                                        value={selectedUnit}
+                                        onChange={(event, newValue) => setProduct((prevProduct) => ({
+                                            ...prevProduct,
+                                            unit_id: newValue ? newValue.value : '',
+                                        }))}
+                                    />
+                                )
+                            }
                         </Grid>
                         <Grid size={12}>
                             <p className="text-[15px] font-[400] text-gray-800 mb-2">
@@ -330,9 +350,14 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                             <Divider />
                         </Grid>
                         <Grid size={12}>
-                            <Button onClick={() => handleAddMaterial()} startIcon={<Add />} color="primary">
-                                เพิ่มวัสดุ
-                            </Button>
+                            {
+                                !product.stock_in_id && (
+
+                                    <Button onClick={() => handleAddMaterial()} startIcon={<Add />} color="primary">
+                                        เพิ่มวัสดุ
+                                    </Button>
+                                )
+                            }
                         </Grid>
                         {material.length > 0 && (
                             <>
@@ -390,38 +415,6 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                 </Grid>
                             ))}
                             <Grid size={12}>
-                                <div className="grid grid-cols-12">
-                                    <div className="relative flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
-                                        <label className="flex flex-col items-center w-full cursor-pointer">
-                                            <div className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-400 rounded-lg bg-white hover:border-gray-600 transition">
-                                                <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 12a8 8 0 0116 0c0 4.418-3.582 8-8 8s-8-3.582-8-8z" />
-                                                </svg>
-                                                <span className="mt-2 text-sm text-gray-600">คลิกเพื่ออัปโหลดไฟล์</span>
-                                            </div>
-                                            <input id="file-input" type="file" className="hidden" multiple onChange={handleFileChange} />
-                                        </label>
-                                        <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9] rounded-lg shadow-lg hover:opacity-70 transition" onClick={handleUploadClick}>
-                                            <CloudUpload className="mr-2" />
-                                            อัปโหลดไฟล์
-                                        </button>
-                                        {files.length > 0 && (
-                                            <div className="mt-4 text-sm text-gray-600 w-full">
-                                                <p>ไฟล์ที่เลือก:</p>
-                                                <ul className="mt-2">
-                                                    {files.map((file, index) => (
-                                                        <li key={index} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                                                            <span>{file.name}</span>
-                                                            <button onClick={() => handleRemoveFile(index)} className="text-red-500 hover:text-red-700">
-                                                                ลบ
-                                                            </button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
                                 <Grid container spacing={2}>
                                     <Grid size={12} sx={{ mt: 2 }}>
                                         <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
@@ -475,6 +468,45 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                         </Grid>
                                     )}
                                 </Grid>
+                                <div className="grid grid-cols-12">
+                                    <div className="relative flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
+                                        <label className="flex flex-col items-center w-full cursor-pointer">
+                                            <div className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-400 rounded-lg bg-white hover:border-gray-600 transition">
+                                                <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 12a8 8 0 0116 0c0 4.418-3.582 8-8 8s-8-3.582-8-8z" />
+                                                </svg>
+                                                <span className="mt-2 text-sm text-gray-600">คลิกเพื่ออัปโหลดไฟล์</span>
+                                            </div>
+                                            <input id="file-input" type="file" className="hidden" multiple accept="image/*" onChange={handleFileChange} />
+                                        </label>
+                                        <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9] rounded-lg shadow-lg hover:opacity-70 transition">
+                                            <CloudUpload className="mr-2" />
+                                            อัปโหลดไฟล์
+                                        </button>
+                                        {files.length > 0 && (
+                                            <div className="mt-4 w-full">
+                                                <p className="text-sm text-gray-600">ไฟล์ที่เลือก:</p>
+                                                <div className="flex flex-row flex-wrap items-center gap-4 p-2  rounded-lg">
+                                                    {previewUrls.map((url, index) => (
+                                                        <div key={index} className="relative">
+                                                            <img
+                                                                src={url}
+                                                                alt={`Image ${index + 1}`}
+                                                                className="w-24 h-24 object-cover rounded-lg border"
+                                                            />
+                                                            <button
+                                                                onClick={() => handleRemoveExistingImage(index)}
+                                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </Grid>
                         </Grid>
                     </Grid>

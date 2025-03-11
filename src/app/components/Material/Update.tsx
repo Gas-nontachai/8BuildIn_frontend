@@ -55,6 +55,9 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
     const [unit, setUnit] = useState<Unit[]>([]);
     const [employee, setEmployee] = useState<Employee[]>([]);
     const [files, setFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [existingImages, setExistingImages] = useState<string[]>([]);
+    const [deletedImages, setDeletedImages] = useState<string[]>([]);
 
     useEffect(() => {
         if (material_id) {
@@ -93,9 +96,12 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const newFiles = Array.from(event.target.files);
-            setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+        const selectedFiles = event.target.files;
+        if (selectedFiles) {
+            const fileArray = Array.from(selectedFiles);
+            setFiles(fileArray);
+            const previewArray = fileArray.map(file => URL.createObjectURL(file));
+            setPreviewUrls(previewArray);
         }
     };
 
@@ -109,6 +115,15 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
 
     const handleSubmit = async () => {
         try {
+            Swal.fire({
+                icon: 'info',
+                title: 'กำลังแก้ไขข้อมูล...',
+                text: 'โปรดรอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
             await updateMaterialBy({ material: material, material_img: files });
             Swal.fire({
                 icon: 'success',
@@ -116,11 +131,22 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                 showConfirmButton: false,
                 timer: 1500
             });
-            onRefresh();
-            onClose();
+            close()
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const close = () => {
+        setDeletedImages([])
+        setFiles([])
+        onRefresh();
+        onClose();
+    }
+    const handleRemoveExistingImage = (indexToRemove: number) => {
+        const imageToDelete = existingImages[indexToRemove];
+        setDeletedImages(prev => [...prev, imageToDelete]);
+        setExistingImages(prev => prev.filter((_, index) => index !== indexToRemove));
     };
 
     const getEmployeeName = (id: any) => {
@@ -129,10 +155,10 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <Dialog open={open} onClose={() => close()} fullWidth maxWidth="md">
             <DialogTitle>
                 แก้ไขวัสดุ
-                <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
+                <IconButton onClick={() => close()} style={{ position: "absolute", right: 10, top: 10 }}>
                     <Close />
                 </IconButton>
             </DialogTitle>
@@ -192,7 +218,7 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                 </Grid>
                                 <Grid size={12}>
                                     <div className="grid grid-cols-12">
-                                        <div className="flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
+                                        <div className="relative flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
                                             <label className="flex flex-col items-center w-full cursor-pointer">
                                                 <div className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-400 rounded-lg bg-white hover:border-gray-600 transition">
                                                     <svg className="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -200,25 +226,32 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                                     </svg>
                                                     <span className="mt-2 text-sm text-gray-600">คลิกเพื่ออัปโหลดไฟล์</span>
                                                 </div>
-                                                <input id="file-input" type="file" className="hidden" multiple onChange={handleFileChange} />
+                                                <input id="file-input" type="file" className="hidden" multiple accept="image/*" onChange={handleFileChange} />
                                             </label>
-                                            <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9] rounded-lg shadow-lg hover:opacity-70 transition" onClick={handleUploadClick}>
+                                            <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9] rounded-lg shadow-lg hover:opacity-70 transition">
                                                 <CloudUpload className="mr-2" />
                                                 อัปโหลดไฟล์
                                             </button>
                                             {files.length > 0 && (
-                                                <div className="mt-4 text-sm text-gray-600 w-full">
-                                                    <p>ไฟล์ที่เลือก:</p>
-                                                    <ul className="mt-2">
-                                                        {files.map((file, index) => (
-                                                            <li key={index} className="flex justify-between items-center bg-white p-2 rounded shadow-sm">
-                                                                <span>{file.name}</span>
-                                                                <button onClick={() => handleRemoveFile(index)} className="text-red-500 hover:text-red-700">
-                                                                    <DeleteForeverRounded />
+                                                <div className="mt-4 w-full">
+                                                    <p className="text-sm text-gray-600">ไฟล์ที่เลือก:</p>
+                                                    <div className="flex flex-row flex-wrap items-center gap-4 p-2  rounded-lg">
+                                                        {previewUrls.map((url, index) => (
+                                                            <div key={index} className="relative">
+                                                                <img
+                                                                    src={url}
+                                                                    alt={`Image ${index + 1}`}
+                                                                    className="w-24 h-24 object-cover rounded-lg border"
+                                                                />
+                                                                <button
+                                                                    onClick={() => handleRemoveExistingImage(index)}
+                                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                                                                >
+                                                                    ×
                                                                 </button>
-                                                            </li>
+                                                            </div>
                                                         ))}
-                                                    </ul>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>

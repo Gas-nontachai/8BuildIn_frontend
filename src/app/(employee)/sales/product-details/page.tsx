@@ -10,23 +10,36 @@ import {
     Stack,
     Breadcrumbs,
     Button,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody
 } from "@mui/material";
-import { useProduct, useCart } from "@/hooks/hooks";
-import { Product } from "@/misc/types"
+import { useProduct, useCart, useEmployee, useUnit, useMaterial } from "@/hooks/hooks";
+import { Product, Employee, Unit, Material } from "@/misc/types"
 import { formatDate } from "@/utils/date-helper"
 import { decimalFix } from "@/utils/number-helper"
 import { API_URL } from "@/utils/config";
 import Loading from "@/app/components/Loading";
 import { useCartContext } from "@/context/CartContext";
 
+const { getProductByID } = useProduct();
+const { insertCart } = useCart();
+const { getEmployeeBy } = useEmployee();
+const { getUnitBy } = useUnit();
+const { getMaterialBy } = useMaterial();
+
 const ProductDetails = () => {
     const searchParams = useSearchParams();
     const productId = searchParams.get('id');
     const [product, setProduct] = useState<Product | null>(null);
+    const [employee, setEmployee] = useState<Employee[]>([]);
+    const [unit, setUnit] = useState<Unit[]>([]);
+    const [material, setMaterial] = useState<Material[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<string>('');
-    const { getProductByID } = useProduct();
-    const { getCartBy, insertCart, updateCartBy } = useCart();
+
     const { refreshCart } = useCartContext();
     useEffect(() => {
         fetchProductDetails();
@@ -57,14 +70,31 @@ const ProductDetails = () => {
     const fetchProductDetails = async () => {
         if (!productId) return;
         try {
-            const response = await getProductByID({
+            const res_pd = await getProductByID({
                 product_id: productId
             });
-            setProduct(response);
+            const sub_emp = [res_pd.addby, res_pd.updateby].flat();
+            const sub_unit = [res_pd.unit_id].flat();
+
+            const { docs: res_emp } = await getEmployeeBy({
+                match: {
+                    employee_id: { $in: sub_emp }
+                }
+            });
+            const { docs: res_unit } = await getUnitBy({
+                match: {
+                    unit_id: { $in: sub_unit }
+                }
+            });
+            const { docs: res_mat } = await getMaterialBy();
+            setProduct(res_pd);
+            setEmployee(res_emp);
+            setUnit(res_unit);
+            setMaterial(res_mat);
         } catch (error) {
             console.error("Error fetching product details:", error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
@@ -81,7 +111,6 @@ const ProductDetails = () => {
         const images = productImg.split(",");
         return (
             <div className="space-y-4">
-                {/* รูปใหญ่ที่เลือก */}
                 <div className="h-96 w-full border rounded-lg overflow-hidden">
                     <img
                         src={`${API_URL}${selectedImage}`}
@@ -89,7 +118,6 @@ const ProductDetails = () => {
                         className="w-full h-full object-contain"
                     />
                 </div>
-                {/* รูปเล็กด้านล่างที่สามารถเลือกได้ */}
                 <div className="grid grid-cols-5 gap-2">
                     {images.map((img, index) => (
                         <div
@@ -108,10 +136,7 @@ const ProductDetails = () => {
                 </div>
             </div>
         );
-    };
-    // if (loading) {
-    //     return <Loading />;
-    // }
+    }
     if (!product) {
         return (
             <Box p={4}>
@@ -144,53 +169,108 @@ const ProductDetails = () => {
                     </Grid>
                     <Grid item xs={12} md={5}>
                         <div className="space-y-4">
-                            <Typography variant="h4">
-                                {product.product_name}
-                            </Typography>
+                            <Typography variant="h4" className="font-semibold">{product.product_name}</Typography>
                             <Typography variant="h5" className="text-[#e6ba78]">
-                                ราคา: {decimalFix(product.product_price)} บาท
+                                ราคา: {decimalFix(product.product_price)} บาท / {(() => {
+                                    const un = unit.find((e) => e.unit_id === product.unit_id);
+                                    return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                })()}
                             </Typography>
                             <div className="space-y-2">
                                 <Typography variant="body1" color="text.secondary">
                                     รหัสสินค้า: {product.product_id}
                                 </Typography>
                                 <Typography variant="body1" color="text.secondary">
-                                    จำนวนคงเหลือ: {product.product_quantity} ชิ้น
+                                    จำนวนคงเหลือ: {product.product_quantity} {(() => {
+                                        const un = unit.find((e) => e.unit_id === product.unit_id);
+                                        return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                    })()}
                                 </Typography>
                             </div>
                             <Button
                                 sx={{ color: '#e6ba78' }}
                                 className="flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black rounded-2xl w-full py-2 px-3 transition-all duration-200 shadow-lg"
                                 disabled={!product.product_quantity || parseInt(product.product_quantity) <= 0}
+                                onClick={() => addToCart(product.product_id)}
                             >
                                 เพิ่มลงตะกร้า
                             </Button>
-
                             <div className="pt-4 border-t space-y-2">
                                 <Typography variant="body2" color="text.secondary">
-                                    เพิ่มโดย: {product.addby}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    วันที่เพิ่ม: {formatDate(product.adddate)}
+                                    วันที่เพิ่ม: {formatDate(product.adddate, 'dd/MM/yyyy HH:mm:ss')} โดย: {(() => {
+                                        const emp = employee.find((e) => e.employee_id === product.updateby);
+                                        return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "";
+                                    })()}
                                 </Typography>
                                 {product.updateby && (
-                                    <>
-                                        <Typography variant="body2" color="text.secondary">
-                                            แก้ไขโดย: {product.updateby}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            วันที่แก้ไข: {new Date(product.lastupdate!).toLocaleDateString('th-TH')}
-                                        </Typography>
-                                    </>
+                                    <Typography variant="body2" color="text.secondary">
+                                        แก้ไขล่าสุด: {formatDate(product.lastupdate, 'dd/MM/yyyy HH:mm:ss')} โดย: {(() => {
+                                            const emp = employee.find((e) => e.employee_id === product.updateby);
+                                            return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "";
+                                        })()}
+                                    </Typography>
+                                )}
+                                {product.stock_in_id ? (
+                                    <Typography variant="body2" color="text.secondary">
+                                        สินค้าจากสต็อค: {product.stock_in_id}
+                                    </Typography>
+                                ) : (
+                                    <Typography variant="body2" color="text.secondary">
+                                        สินค้าคัสตอมจาก 8Built-In
+                                    </Typography>
                                 )}
                             </div>
+                        </div>
+                    </Grid>
+                    {product.material && (
+                        <Grid item xs={12}>
+                            <div className="space-y-4">
+                                <Typography variant="body1">
+                                    รายการต้นทุนถอดละเอียด
+                                </Typography>
 
-                        </div >
-
-                    </Grid >
-
-                </Grid >
-
+                                <Table size="small" aria-label="materials">
+                                    <TableHead className="bg-gray-200">
+                                        <TableRow>
+                                            <TableCell sx={{ width: '25%' }}>ชื่อวัสดุ</TableCell>
+                                            <TableCell sx={{ width: '25%' }}>จำนวน</TableCell>
+                                            <TableCell sx={{ width: '25%' }}>ราคา (บาท)</TableCell>
+                                            <TableCell sx={{ width: '25%' }}>ราคารวม (บาท)</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {JSON.parse(product.material).map((item: any, index: number) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{material.find((e) => e.material_id === item.material_id)?.material_name}</TableCell>
+                                                <TableCell>{item.material_quantity}
+                                                    {(() => {
+                                                        const un = unit.find((e) => e.unit_id === item.unit_id);
+                                                        return un ? `${un.unit_name_th} (${un.unit_name_en})` : "";
+                                                    })()}
+                                                </TableCell>
+                                                <TableCell>{decimalFix(item.material_price)} ฿</TableCell>
+                                                <TableCell>{decimalFix(item.material_price * item.material_quantity)} ฿</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                <div className="mt-4">
+                                    <Typography variant="body2" className="font-semibold">
+                                        สรุป:
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        จำนวนวัสดุทั้งหมด: {JSON.parse(product.material).reduce((acc: any, item: any) => acc + item.material_quantity, 0)} ชิ้น
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        ราคารวมทั้งหมด: {decimalFix(
+                                            JSON.parse(product.material).reduce((acc: any, item: any) => acc + item.material_price * item.material_quantity, 0)
+                                        )} ฿
+                                    </Typography>
+                                </div>
+                            </div>
+                        </Grid>
+                    )}
+                </Grid>
             )}
         </>
     );

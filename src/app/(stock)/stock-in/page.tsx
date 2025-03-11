@@ -32,7 +32,7 @@ const { getEmployeeBy } = useEmployee();
 const StockInPage = () => {
     const [search, setSearch] = useState("");
     const [sortDate, setSortDate] = useState<"ASC" | "DESC">("DESC");
-    const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+    const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [loading, setLoading] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -68,7 +68,6 @@ const StockInPage = () => {
     }, []);
 
     const fetchData = async () => {
-
         try {
             setLoading(true);
             const { docs: res } = await getStockInBy({
@@ -83,13 +82,17 @@ const StockInPage = () => {
             const employee_id = res.map(item => item.addby);
 
             const { docs: supplier_list } = await getSupplierBy({
-                supplier_id: { $in: supplier_list_arr },
+                match: {
+                    supplier_id: { $in: supplier_list_arr },
+                }
             });
 
             const { docs: employee_list } = await getEmployeeBy({
-                employee_id: { $in: employee_id },
+                match: {
+                    employee_id: { $in: employee_id },
+                }
             });
-
+            setPage(0)
             setStockIn(res);
             setSupplier(supplier_list);
             setEmployee(employee_list);
@@ -123,8 +126,17 @@ const StockInPage = () => {
         });
         if (result.isConfirmed) {
             try {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'กำลังลบข้อมูล...',
+                    text: 'โปรดรอสักครู่',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
                 await deleteStockInBy({ stock_in_id: stock_in_id })
-                Swal.fire("ลบแล้ว!", "ข้อมูลผู้จัดจำหน่ายถูกลบเรียบร้อยแล้ว", "success");
+                Swal.fire("ลบแล้ว!", "ข้อมูลสต็อกถูกลบเรียบร้อยแล้ว", "success");
                 await fetchData();
             } catch (error) {
                 console.error("Error deleting supplier:", error);

@@ -16,25 +16,28 @@ import {
     TextField,
     InputAdornment,
     MenuItem,
-    Menu
+    Menu,
+    Box
 } from "@mui/material";
 import { Home, Store, Search, AddShoppingCart, Clear, Sort, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { API_URL } from "@/utils/config"
 import { decimalFix } from "@/utils/number-helper"
 import { useRouter } from 'next/navigation';
-import { useProduct, useCart, useProductCategory } from "@/hooks/hooks";
-import { Product, Cart, ProductCategory } from "@/misc/types"
+import { useProduct, useCart, useProductCategory, useUnit } from "@/hooks/hooks";
+import { Product, Unit } from "@/misc/types"
 import { useCartContext } from "@/context/CartContext";
 import Loading from "@/app/components/Loading";
 
 const { getProductBy } = useProduct();
 const { insertCart } = useCart();
 const { getProductCategoryBy } = useProductCategory();
+const { getUnitBy } = useUnit();
 
 const SalesPage = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const [products, setProducts] = useState<Product[]>([]);
+    const [unit, setUnit] = useState<Unit[]>([]);
     const [productCategory, setProductCategory] = useState<{ title: string, value: string }[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -49,6 +52,7 @@ const SalesPage = () => {
     useEffect(() => {
         fetchProducts();
         fetchProductCategory()
+        fetchUnit()
     }, []);
 
     useEffect(() => {
@@ -61,7 +65,7 @@ const SalesPage = () => {
             const { docs } = await getProductBy({
                 search: {
                     text: search,
-                    columns: ["product_name"],
+                    columns: ["product_name", "product_id"],
                     condition: "LIKE",
                 },
                 match: selectedCategory ? { product_category_id: selectedCategory } : {},
@@ -87,6 +91,17 @@ const SalesPage = () => {
         setLoading(false);
     };
 
+    const fetchUnit = async () => {
+        setLoading(true);
+        try {
+            const { docs } = await getUnitBy();
+            setUnit(docs);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+        setLoading(false);
+    };
+
     const addToCart = async (product_id: string) => {
         try {
             await insertCart({
@@ -100,66 +115,6 @@ const SalesPage = () => {
             console.error("Error adding to cart:", error);
             alert('เกิดข้อผิดพลาดในการเพิ่มสินค้าลงตะกร้า');
         }
-    };
-
-    const renderProductImages = (productImg: string | null) => {
-        if (!productImg) {
-            return (
-                <div className="h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">ไม่มีรูปภาพ</span>
-                </div>
-            );
-        }
-        const images = productImg.split(",");
-        const totalImages = images.length;
-
-        const getGridClass = (total: number) => {
-            switch (total) {
-                case 1:
-                    return 'grid-cols-1';
-                case 2:
-                    return 'grid-cols-2';
-                case 3:
-                    return 'grid-cols-3';
-                case 4:
-                    return 'grid-cols-2 grid-rows-2';
-                default:
-                    return 'grid-cols-3';
-            }
-        };
-        const getDisplayImages = () => {
-            if (totalImages <= 5) {
-                return images;
-            }
-            return images.slice(0, 5);
-        };
-
-        const displayImages = getDisplayImages();
-
-        return (
-            <div className={`h-48 grid ${getGridClass(totalImages)} gap-0.5`}>
-                {displayImages.map((img, index) => (
-                    <div
-                        key={index}
-                        className={`relative ${totalImages > 5 && index === 4 ? 'last-image' : ''
-                            }`}
-                    >
-                        <img
-                            src={`${API_URL}${img}`}
-                            alt={`Product ${index + 1}`}
-                            className="w-full h-full object-cover"
-                        />
-                        {totalImages > 5 && index === 4 && (
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <span className="text-white text-lg font-medium">
-                                    +{totalImages - 5}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        );
     };
 
     const handleViewDetails = (productId: string) => {
@@ -285,7 +240,49 @@ const SalesPage = () => {
                     {products.map((product) => (
                         <Grid item xs={12} sm={6} md={4} lg={3} key={product.product_id}>
                             <Card className="flex flex-col h-full shadow-lg rounded-lg overflow-hidden">
-                                {renderProductImages(product.product_img)}
+                                <Box className="relative w-full h-48 overflow-hidden">
+                                    {(!product.product_img || product.product_img === "") ? (
+                                        <div className="h-full bg-gray-200 flex items-center justify-center">
+                                            <span className="text-gray-500">ไม่มีรูปภาพ</span>
+                                        </div>
+                                    ) : (() => {
+                                        const images = product.product_img.split(",");
+                                        const totalImages = images.length;
+
+                                        const getGridClass = (total: number) => {
+                                            switch (total) {
+                                                case 1: return 'grid-cols-1';
+                                                case 2: return 'grid-cols-2';
+                                                case 3: return 'grid-cols-3';
+                                                case 4: return 'grid-cols-2 grid-rows-2';
+                                                default: return 'grid-cols-3';
+                                            }
+                                        };
+
+                                        const displayImages = totalImages <= 5 ? images : images.slice(0, 5);
+
+                                        return (
+                                            <div className={`h-full grid ${getGridClass(totalImages)} gap-0.5`}>
+                                                {displayImages.map((img, index) => (
+                                                    <div key={index} className={`relative ${totalImages > 5 && index === 4 ? 'last-image' : ''}`}>
+                                                        <img
+                                                            src={`${API_URL}${img}`}
+                                                            alt={`Product ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                        {totalImages > 5 && index === 4 && (
+                                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                                                <span className="text-white text-lg font-medium">
+                                                                    +{totalImages - 5}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        );
+                                    })()}
+                                </Box>
                                 <CardContent className="flex-grow p-4">
                                     <div className="flex justify-between items-center mb-3">
                                         <Typography gutterBottom variant="h6" component="div" className="font-semibold text-lg">
@@ -305,10 +302,16 @@ const SalesPage = () => {
                                         รหัสสินค้า: <span className="font-medium">{product.product_id}</span>
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" className="mb-2">
-                                        จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} ชิ้น</span>
+                                        จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} {(() => {
+                                            const un = unit.find((e) => e.unit_id === product.unit_id);
+                                            return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                        })()}</span>
                                     </Typography>
                                     <p className="text-[#d59d35] mt-3 text-[18px] font-[400]">
-                                        ฿ {decimalFix(product.product_price)}
+                                        ฿ {decimalFix(product.product_price)} / {(() => {
+                                            const un = unit.find((e) => e.unit_id === product.unit_id);
+                                            return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                        })()}
                                     </p>
                                 </CardContent>
                                 <CardActions className="justify-center">

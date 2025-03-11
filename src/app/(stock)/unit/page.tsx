@@ -19,7 +19,7 @@ import { Unit } from '@/misc/types';
 const { getUnitBy, deleteUnitBy } = useUnit();
 
 const UnitPage = () => {
-    const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+    const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [loading, setLoading] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -45,6 +45,7 @@ const UnitPage = () => {
         setLoading(true);
         try {
             const { docs: res } = await getUnitBy();
+            setPage(0)
             setUnit(res);
         } catch (error) {
             console.error("Error fetching Unit:", error);

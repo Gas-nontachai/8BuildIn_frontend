@@ -15,7 +15,7 @@ import { License } from '@/misc/types';
 const { getLicenseBy, deleteLicenseBy } = useLicense();
 
 const LicensePage = () => {
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -40,6 +40,7 @@ const LicensePage = () => {
   const fetchData = async () => {
     setLoading(true);
     const { docs: res } = await getLicenseBy();
+    setPage(0)
     setLicenses(res);
     setLoading(false);
   };

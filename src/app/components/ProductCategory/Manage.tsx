@@ -25,7 +25,7 @@ interface ManageProductCategoryProps {
 }
 
 const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, onRefresh, open }) => {
-    const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+    const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [loading, setLoading] = useState(false);
     const [productCategory, setProductCategory] = useState<ProductCategory>({
         product_category_id: '',
@@ -42,6 +42,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
         try {
             setLoading(true);
             const { docs: res } = await getProductCategoryBy();
+            setPage(0)
             setData(res);
         } catch (error) {
             console.log(error);

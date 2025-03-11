@@ -46,7 +46,7 @@ const ProductPage = () => {
   const { getProductBy, deleteProductBy } = useProduct()
   const { getUnitBy } = useUnit()
   const { getProductCategoryBy } = useProductCategory()
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [addProductDialog, setAddProductDialog] = useState(false);
@@ -82,6 +82,7 @@ const ProductPage = () => {
         match: selectedCategory ? { product_category_id: selectedCategory } : {},
         sorter: [{ key: sort.name, order: sort.order }],
       });
+      setPage(0)
       setProducts(docs);
     } catch (error) {
       console.error("Error fetching products:", error);

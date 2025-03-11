@@ -41,7 +41,7 @@ const { getMaterialBy, deleteMaterialBy } = useMaterial()
 const { getUnitBy } = useUnit()
 
 const MaterialPage = () => {
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -80,6 +80,7 @@ const MaterialPage = () => {
         match: selectedMaterialCategory ? { material_category_id: selectedMaterialCategory } : {},
         sorter: [{ key: sort.name, order: sort.order }],
       });
+      setPage(0)
       setMaterials(docs);
     } catch (error) {
       console.error("Error fetching materials:", error);

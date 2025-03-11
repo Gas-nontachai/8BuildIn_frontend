@@ -20,7 +20,7 @@ const { getEmployeeBy, deleteEmployeeBy } = useEmployee();
 const { getLicenseBy } = useLicense();
 
 const EmployeePage = () => {
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -55,8 +55,11 @@ const EmployeePage = () => {
     });
     const license_id = res.map(item => item.license_id)
     const { docs: license_list } = await getLicenseBy({
-      license_id: { $in: license_id }
+      match: {
+        license_id: { $in: license_id }
+      }
     })
+    setPage(0)
     setEmployees(res);
     setLicense(license_list)
     setLoading(false);

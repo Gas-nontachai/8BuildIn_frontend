@@ -25,7 +25,7 @@ interface ManageMaterialCategoryProps {
 }
 
 const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose, onRefresh, open }) => {
-    const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+    const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [loading, setLoading] = useState(false)
     const [materialCategory, setMaterialCategory] = useState<MaterialCategory>({
         material_category_id: '',
@@ -42,6 +42,7 @@ const ManageMaterialCategory: React.FC<ManageMaterialCategoryProps> = ({ onClose
         try {
             setLoading(true);
             const { docs: res } = await getMaterialCategoryBy();
+            setPage(0)
             setData(res);
         } catch (error) {
             console.log(error);

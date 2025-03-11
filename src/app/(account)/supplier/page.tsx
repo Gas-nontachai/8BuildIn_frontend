@@ -19,7 +19,7 @@ import { Supplier } from '@/misc/types';
 const { getSupplierBy, deleteSupplierBy } = useSupplier();
 
 const SupplierPage = () => {
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -43,6 +43,7 @@ const SupplierPage = () => {
     setLoading(true);
     try {
       const { docs: res } = await getSupplierBy();
+      setPage(0)
       setSuppliers(res);
     } catch (error) {
       console.error("Error fetching suppliers:", error);
