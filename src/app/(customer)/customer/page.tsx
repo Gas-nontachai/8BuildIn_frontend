@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
-import { MoreVert, ModeEdit, Delete, Add, Home, ManageAccounts } from "@mui/icons-material";
+import { MoreVert, ModeEdit, Delete, Add, Home, ManageAccounts, Search } from "@mui/icons-material";
 import {
   MenuItem, Menu, IconButton, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link,
+  InputAdornment,
+  TextField,
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
@@ -14,6 +16,9 @@ import Loading from "@/app/components/Loading";
 
 import { useCustomer } from "@/hooks/hooks";
 import { Customer } from '@/misc/types';
+import { formatDate } from "@/utils/date-helper"
+import { text } from "stream/consumers";
+import { match } from "assert";
 
 const { getCustomerBy, deleteCustomerBy } = useCustomer();
 
@@ -26,6 +31,8 @@ const CustomerPage = () => {
   const customer_id = useRef('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selected, setSelected] = useState<Customer | null>(null);
+  const [search, setSearch] = useState<string>("");
+  const [selectedCustomer] = useState<string>("");
 
   const handleClickMenu = (event: React.MouseEvent<HTMLElement>, customer: Customer) => {
     setAnchorEl(event.currentTarget);
@@ -35,6 +42,25 @@ const CustomerPage = () => {
     setAnchorEl(null);
     setSelected(null);
   };
+
+  const fatchCustomers = async () => {
+    setLoading(true);
+    try {
+      const { docs } = await getCustomerBy({
+        search: {
+          text: search,
+          columns: ["customer_firstname", "customer_lastname"],
+          condition: "LIKE",
+        },
+        match: selectedCustomer ? { customer_id: selectedCustomer } : {}
+      });
+      setCustomers(docs)
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     fetchData();
@@ -90,7 +116,28 @@ const CustomerPage = () => {
           </Button>
         </div>
       </div>
-
+      <div className="flex gap-2 mb-5">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="ค้นหาชื่อ..."
+          className="w-64"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" onClick={fatchCustomers} className="cursor-pointer">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              fatchCustomers();
+            }
+          }}
+        />
+      </div>
       {loading ? (
         <Loading />
       ) : (
@@ -116,7 +163,7 @@ const CustomerPage = () => {
                     <TableCell align="center">{item.customer_prefix} {item.customer_firstname} {item.customer_lastname}</TableCell>
                     <TableCell align="center">{item.customer_email}</TableCell>
                     <TableCell align="center">{item.customer_phone}</TableCell>
-                    <TableCell align="center">{item.customer_birthday}</TableCell>
+                    <TableCell align="center">{formatDate(item.customer_birthday)}</TableCell>
                     <TableCell align="center">{item.customer_gender}</TableCell>
                     <TableCell align="center">{item.customer_address}</TableCell>
                     <TableCell>

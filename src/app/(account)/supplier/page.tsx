@@ -2,10 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { API_URL } from '@/utils/config';
 import Swal from 'sweetalert2';
-import { MoreVert, ModeEdit, Delete, Add, Home, Store } from "@mui/icons-material";
+import { MoreVert, ModeEdit, Delete, Add, Home, Store, Search } from "@mui/icons-material";
 import {
   MenuItem, Menu, IconButton, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link,
+  InputAdornment,
+  TextField,
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
@@ -27,6 +29,9 @@ const SupplierPage = () => {
   const supplier_id = useRef('')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selected, setSelected] = useState<Supplier | null>(null);
+  const [search, setSearch] = useState<string>("");
+  const [selectedSupplier] = useState<string>("");
+
   const handleClickMenu = (event: React.MouseEvent<HTMLElement>, supplier: Supplier) => {
     setAnchorEl(event.currentTarget);
     setSelected(supplier);
@@ -35,6 +40,27 @@ const SupplierPage = () => {
     setAnchorEl(null);
     setSelected(null);
   };
+
+  const fatchSuppliers = async () => {
+    setLoading(true);
+    try {
+      const { docs } = await getSupplierBy({
+        search: {
+          text: search,
+          columns: ["supplier_name"],
+          condition: "LIKE",
+        },
+        match: selectedSupplier ? { supplier_id: selectedSupplier } : {}
+      });
+      setSuppliers(docs)
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -92,6 +118,28 @@ const SupplierPage = () => {
             เพิ่มผู้จัดจำหน่าย
           </Button>
         </div>
+      </div>
+      <div className="flex gap-2 mb-5">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="ค้นหาชื่อ..."
+          className="w-64"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" onClick={fatchSuppliers} className="cursor-pointer">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              fatchSuppliers();
+            }
+          }}
+        />
       </div>
       {
         loading ? (
