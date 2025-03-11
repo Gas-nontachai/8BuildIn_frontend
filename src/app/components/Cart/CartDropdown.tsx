@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Popover, Box, Button, List, ListItem, Divider, IconButton } from "@mui/material";
-import { ShoppingBag, HighlightOff } from "@mui/icons-material";
+import { Popover, Box, Button, List, ListItem, Divider, IconButton, CircularProgress } from "@mui/material";
+import { ShoppingBag, DeleteForever } from "@mui/icons-material";
 import { useProduct, useCart } from "@/hooks/hooks";
 import { Product } from '@/misc/types';
 import { decimalFix } from "@/utils/number-helper";
@@ -81,7 +81,11 @@ export default function CartDropdown() {
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
                 <Box sx={{ width: 400, p: 2 }}>
-                    {cartItems.length == 0 ? (
+                    {loading ? (
+                        <div className="flex justify-center py-4">
+                            <CircularProgress />
+                        </div>
+                    ) : cartItems.length == 0 ? (
                         <>
                             <div className="flex flex-col">
                                 <span className="text-gray-700 text-[17px] font-[400]">ตะกร้าสินค้า</span>
@@ -117,7 +121,7 @@ export default function CartDropdown() {
                                                     </p>
                                                 </div>
                                                 <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error">
-                                                    <HighlightOff fontSize="small" />
+                                                    <DeleteForever fontSize="small" />
                                                 </IconButton>
                                             </ListItem>
                                             <Divider />
@@ -126,7 +130,7 @@ export default function CartDropdown() {
                                 })}
                                 {cartItems.length > 0 && (
                                     <div className="flex justify-between items-center mt-2">
-                                        <span className="text-gray-700 text-[13px]">{cartItems.length} สินค้า</span>
+                                        <span className="text-gray-700 text-[13px]">{cartItems.length} สินค้าในตะกร้า</span>
                                         <Button variant="text" color="info" onClick={() => router.push(`/sales/cart-details?emp_id=${$profile.employee_id}`)}>
                                             ดูตะกร้าสินค้า
                                         </Button>

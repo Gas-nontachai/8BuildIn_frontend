@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { pdf } from '@react-pdf/renderer';
 import { Box, Button, Divider, IconButton, Typography, Breadcrumbs, Link, Stack, } from "@mui/material";
-import { HighlightOff, Add, Remove, ReceiptLong, ShoppingCart, FirstPage, ShoppingBag } from "@mui/icons-material";
+import { DeleteForever, Add, Remove, ReceiptLong, ShoppingCart, FirstPage, ShoppingBag } from "@mui/icons-material";
 import { useCart, useEmployee, useProduct } from "@/hooks/hooks";
 import { Cart, Product } from '@/misc/types';
 import { API_URL } from "@/utils/config";
@@ -203,7 +203,7 @@ const CartDetailPage = () => {
                                             </IconButton>
                                         </Box>
                                         <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error">
-                                            <HighlightOff />
+                                            <DeleteForever />
                                         </IconButton>
                                     </Box>
                                     <Divider />
@@ -212,18 +212,30 @@ const CartDetailPage = () => {
                         })}
                         <div className='flex justify-between items-center'>
                             <div className="flex flex-col justify-start gap-2">
-                                <span className="font-[400] text-[17px]">สินค้าในตะกร้า {cart.length} สินค้า</span>
-                                <p className="font-[500] text-blue-600  text-[20px]">฿ {decimalFix(totalPrice)}</p>
+                                <span className="font-[400] text-[14px]">สินค้าในตะกร้า {cart.length} สินค้า</span>
+                                <span className="font-[400] text-[17px]">ราคารวมทั้งหมด :&nbsp;
+                                    <span className="font-[500] text-[#d59d35] text-[20px]">
+                                        {decimalFix(totalPrice)} ฿</span>
+                                </span>
+
                             </div>
                             <div className='flex gap-2'>
                                 {isEdited && (
-                                    <Button variant="contained" size='small' color="primary" onClick={onSaveChanges} startIcon={<ShoppingCart />}>
+                                    <button
+                                        className="flex items-center gap-1 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-[#d4a34a] rounded-md py-2 px-3 transition-all duration-200 shadow-lg"
+                                        onClick={onSaveChanges}
+                                    >
+                                        <ShoppingCart className="w-4 h-4" />
                                         อัพเดตตะกร้า
-                                    </Button>
+                                    </button>
                                 )}
-                                <Button onClick={() => openPdfInNewTab(editedCart)} size='small' variant="contained" color="secondary" startIcon={<ReceiptLong />}>
+                                <button
+                                    className="flex items-center gap-1 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-[#d4a34a] rounded-md py-2 px-3 transition-all duration-200 shadow-lg"
+                                    onClick={() => openPdfInNewTab(editedCart)}
+                                >
+                                    <ReceiptLong className="w-4 h-4" />
                                     ออกใบเสนอราคา
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     </Box>
