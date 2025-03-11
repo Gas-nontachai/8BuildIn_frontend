@@ -16,8 +16,8 @@ import { Product } from "@/misc/types"
 import { formatDate } from "@/utils/date-helper"
 import { decimalFix } from "@/utils/number-helper"
 import { API_URL } from "@/utils/config";
-    import Loading from "@/app/components/Loading";
-    import { useCartContext } from "@/context/CartContext";
+import Loading from "@/app/components/Loading";
+import { useCartContext } from "@/context/CartContext";
 
 const ProductDetails = () => {
     const searchParams = useSearchParams();
@@ -147,7 +147,7 @@ const ProductDetails = () => {
                             <Typography variant="h4">
                                 {product.product_name}
                             </Typography>
-                            <Typography variant="h5" color="primary">
+                            <Typography variant="h5" className="text-[#e6ba78]">
                                 ราคา: {decimalFix(product.product_price)} บาท
                             </Typography>
                             <div className="space-y-2">
@@ -159,14 +159,13 @@ const ProductDetails = () => {
                                 </Typography>
                             </div>
                             <Button
-                                variant="contained"
-                                color="primary"
-                                fullWidth
-                                onClick={() => addToCart(product.product_id)}
+                                sx={{ color: '#e6ba78' }}
+                                className="flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black rounded-2xl w-full py-2 px-3 transition-all duration-200 shadow-lg"
                                 disabled={!product.product_quantity || parseInt(product.product_quantity) <= 0}
                             >
-                                เพิ่มเข้าตะกร้า
+                                เพิ่มลงตะกร้า
                             </Button>
+
                             <div className="pt-4 border-t space-y-2">
                                 <Typography variant="body2" color="text.secondary">
                                     เพิ่มโดย: {product.addby}
@@ -185,9 +184,13 @@ const ProductDetails = () => {
                                     </>
                                 )}
                             </div>
+
                         </div >
+
                     </Grid >
+
                 </Grid >
+
             )}
         </>
     );
