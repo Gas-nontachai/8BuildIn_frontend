@@ -15,7 +15,7 @@ import {
   TablePagination,
   Button,
   Breadcrumbs,
-  Checkbox,
+  Divider,
   Typography,
   Stack,
   Link,
@@ -186,7 +186,14 @@ const ProductPage = () => {
             <Typography variant="body1" color="text.secondary">ข้อมูลสินค้า</Typography>
           </Stack>
         </Breadcrumbs>
-        <div className="flex gap-2">
+        <div className="flex gap-2"> 
+          <Button
+            variant="contained"
+            color="primary"
+            href="/unit"
+          >
+            จัดการหน่วยสินค้า
+          </Button>
           <Button variant="contained" color="success" onClick={() => setIsManageCategoryDialog(true)} startIcon={<Add />}>
             เพิ่มประเภทสินค้า
           </Button>

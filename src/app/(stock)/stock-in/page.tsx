@@ -161,7 +161,7 @@ const StockInPage = () => {
                     <TextField
                         variant="outlined"
                         size="small"
-                        placeholder="ค้นหาชื่อพนักงาน..."
+                        placeholder="ค้นหาชื่อชื่อสต็อก..."
                         className="w-64"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -190,14 +190,6 @@ const StockInPage = () => {
                     </Button>
                     <Button
                         variant="contained"
-                        color="primary"
-                        startIcon={<Add />}
-                        href="/unit"
-                    >
-                        จัดการหน่วยสินค้า
-                    </Button>
-                    <Button
-                        variant="contained"
                         color="success"
                         onClick={() => setIsAddDialogOpen(true)}
                         startIcon={<Add />}
@@ -214,20 +206,20 @@ const StockInPage = () => {
                         <Table>
                             <TableHead>
                                 <TableRow className="bg-gray-200">
-                                    <TableCell># </TableCell>
-                                    <TableCell>รหัสสต็อก </TableCell>
+                                    <TableCell align="center"># </TableCell>
+                                    <TableCell align="center">รหัสสต็อก </TableCell>
                                     <TableCell align="center">ดูรายละเอียดสต็อกเข้า</TableCell>
-                                    <TableCell>ผู้จัดจำหน่าย</TableCell>
-                                    <TableCell>วันที่ถูกเพิ่ม</TableCell>
-                                    <TableCell> จัดการ </TableCell>
+                                    <TableCell align="center">ผู้จัดจำหน่าย</TableCell>
+                                    <TableCell align="center">วันที่ถูกเพิ่ม</TableCell>
+                                    <TableCell align="center"> จัดการ </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {stockIn.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((stock, index) => (
                                     <React.Fragment key={stock.stock_in_id}>
                                         <TableRow key={stock.stock_in_id} hover >
-                                            <TableCell>{page * rowsPerPage + index + 1} </TableCell>
-                                            <TableCell>{stock.stock_in_id} </TableCell>
+                                            <TableCell align="center">{page * rowsPerPage + index + 1} </TableCell>
+                                            <TableCell align="center">{stock.stock_in_id} </TableCell>
                                             <TableCell align="center">
                                                 <IconButton
                                                     aria-label="expand row"
@@ -237,16 +229,16 @@ const StockInPage = () => {
                                                     {openRows[stock.stock_in_id] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
                                                 </IconButton>
                                             </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center space-x-2">
+                                            <TableCell align="center">
+                                                <div className="flex justify-center  items-center space-x-2">
                                                     <img className="w-10 h-10 rounded-3xl border-2" src={`${API_URL}${supplier.find((s) => s.supplier_id === stock.supplier_id)?.supplier_img}` || "/default-emp"} />
                                                     <span className="text-[15px] font-[400]">{supplier.find((s) => s.supplier_id === stock.supplier_id)?.supplier_name || "Unknown"}</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell>
-                                                {formatDate(stock.adddate)}
+                                            <TableCell align="center">
+                                                {formatDate(stock.adddate, "dd/MM/yyyy HH:mm:ss")}
                                             </TableCell>
-                                            < TableCell >
+                                            < TableCell align="center">
                                                 <IconButton
                                                     size="small"
                                                     onClick={(e) => handleClickMenu(e, stock)}
@@ -280,7 +272,6 @@ const StockInPage = () => {
                                                     <Card sx={{ marginTop: 3, marginBottom: 3 }}>
                                                         <CardContent>
                                                             <h2 className="text-xl font-bold mb-4 text-gray-800">รายละเอียดสินค้าและวัสดุ</h2>
-
                                                             <div className="text-sm font-medium text-gray-600 mb-2">
                                                                 เพิ่มสต็อกเข้าโดย : {(() => {
                                                                     const emp = employee.find((e) => e.employee_id === stock.addby);
@@ -291,11 +282,14 @@ const StockInPage = () => {
                                                                 วันที่เพิ่ม : {formatDate(stock.adddate, "dd/MM/yyyy HH:mm:ss")}
                                                             </div>
                                                             <div>
-                                                                <p className="text-[16px] font-medium text-gray-800 mb-1">หมายเหตุ <span className="text-red-500">*</span></p>
                                                                 {stock.stock_in_note && (
-                                                                    <div className="w-full p-3 mt-2 border border-gray-300 text-[14px] bg-[#eee] rounded-md">
-                                                                        {stock.stock_in_note}
-                                                                    </div>
+                                                                    <>
+                                                                        <p className="text-[16px] font-medium text-gray-800 mb-1">หมายเหตุ <span className="text-red-500">*</span></p>
+
+                                                                        <div className="w-full p-3 mt-2 border border-gray-300 text-[14px] bg-[#eee] rounded-md">
+                                                                            {stock.stock_in_note}
+                                                                        </div>
+                                                                    </>
                                                                 )}
                                                             </div>
                                                         </CardContent>

@@ -143,13 +143,31 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                     <Grid container spacing={2}>
                         <Grid size={12} key={material.material_id}>
                             <Grid container spacing={2}>
-                                <Grid size={4}>
+                                <Grid size={3}>
                                     <FormLabel component="legend" className="mb-2">ชื่อวัสดุ</FormLabel>
                                     <Typography variant="body1">
                                         {material.material_name || ""}
                                     </Typography>
                                 </Grid>
-                                <Grid size={4}>
+                                <Grid size={3}>
+                                    <FormLabel component="legend" className="mb-2">จำนวน</FormLabel>
+                                    <Typography variant="body1">
+                                        {material.material_quantity || ""} ชิื้น
+                                    </Typography>
+                                </Grid>
+                                <Grid size={3}>
+                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด</FormLabel>
+                                    <Typography variant="body1">
+                                        {decimalFix(material.material_price) || ""} บาท
+                                    </Typography>
+                                </Grid>
+                                <Grid size={3}>
+                                    <FormLabel component="legend" className="mb-2">ราคา / 1 ชิ้น</FormLabel>
+                                    <Typography variant="body1">
+                                        {decimalFix(Number(material.material_price) / Number(material.material_quantity)) || ""} บาท
+                                    </Typography>
+                                </Grid>
+                                <Grid size={6}>
                                     <FormLabel component="legend" className="mb-2">หน่วย <span className="text-red-500">*</span></FormLabel>
                                     <FormControl fullWidth>
                                         <Select
@@ -166,7 +184,7 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                         </Select>
                                     </FormControl >
                                 </Grid>
-                                <Grid size={4}>
+                                <Grid size={6}>
                                     <FormLabel component="legend" className="mb-2">ประเภทวัสดุ <span className="text-red-500">*</span></FormLabel>
                                     <FormControl fullWidth>
                                         <Select
@@ -183,24 +201,6 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid size={4}>
-                                    <FormLabel component="legend" className="mb-2">จำนวน</FormLabel>
-                                    <Typography variant="body1">
-                                        {material.material_quantity || ""} ชิื้น
-                                    </Typography>
-                                </Grid>
-                                <Grid size={4}>
-                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด</FormLabel>
-                                    <Typography variant="body1">
-                                        {decimalFix(material.material_price) || ""} บาท
-                                    </Typography>
-                                </Grid>
-                                <Grid size={4}>
-                                    <FormLabel component="legend" className="mb-2">ราคา / 1 ชิ้น</FormLabel>
-                                    <Typography variant="body1">
-                                        {decimalFix(Number(material.material_price) / Number(material.material_quantity)) || ""} บาท
-                                    </Typography>
-                                </Grid>
                                 <Grid size={12}>
                                     <div className="grid grid-cols-12">
                                         <div className="flex flex-col items-center p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
@@ -213,10 +213,10 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                                 </div>
                                                 <input id="file-input" type="file" className="hidden" multiple onChange={handleFileChange} />
                                             </label>
-                                            <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-blue-500 to-orange-600 rounded-lg shadow-lg hover:opacity-90 transition" onClick={handleUploadClick}>
+                                            <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9] rounded-lg shadow-lg hover:opacity-70 transition" onClick={handleUploadClick}>
                                                 <CloudUpload className="mr-2" />
                                                 อัปโหลดไฟล์
-                                            </button>
+                                            </button> 
                                             {files.length > 0 && (
                                                 <div className="mt-4 text-sm text-gray-600 w-full">
                                                     <p>ไฟล์ที่เลือก:</p>

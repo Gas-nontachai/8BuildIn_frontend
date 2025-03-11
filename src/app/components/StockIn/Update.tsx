@@ -209,11 +209,20 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
 
         calculate_price();
     }, [product, material]);
+
+    const clearPreClose = () => {
+        setDelMaterial([]);
+        setDelProduct([]);
+        setMaterial([]);
+        setProduct([]);
+        setNote('');
+        onClose();
+    }
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <Dialog open={open} onClose={clearPreClose} fullWidth maxWidth="md">
             <DialogTitle>
                 เพิ่มข้อมูลการนำเข้าสต็อก
-                <IconButton onClick={onClose} style={{ position: "absolute", right: 10, top: 10 }}>
+                <IconButton onClick={clearPreClose} style={{ position: "absolute", right: 10, top: 10 }}>
                     <Close />
                 </IconButton>
             </DialogTitle>
@@ -222,7 +231,7 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
             ) : (
                 <DialogContent sx={{ p: 3 }}>
                     <Grid container spacing={2}>
-                        <Grid size={8}>
+                        <Grid size={12}>
                             <FormLabel component="legend">ผู้จัดจำหน่าย <span className="text-red-500">*</span></FormLabel>
                             <FormControl fullWidth>
                                 <Select
@@ -239,21 +248,25 @@ const UpdateStockIn: React.FC<UpdateStockInProps> = ({ onClose, onRefresh, open,
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid size={4}>
-                            <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
-                            <Typography variant="body1">
-                                ราคานำเข้าทั้งหมด {decimalFix(formData.stock_in_price || "0")} บาท
-                            </Typography>
+                        <Grid size={12}>
+                            <p className="text-[15px] font-[400] text-gray-800 mb-2">
+                                ราคานำเข้าทั้งหมด&nbsp;
+                                <span className="text-blue-500 font-[500]">
+                                    {decimalFix(formData.stock_in_price || 0)}
+                                </span> ฿
+                            </p>
                         </Grid>
                         <Grid size={12}>
-                            <FormLabel component="legend">หมายเหตุ (ไม่บังคับ) </FormLabel>
+                            <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
+                                หมายเหตุ (ไม่บังคับ)
+                            </FormLabel>
                             <textarea
                                 value={note || ''}
                                 onChange={(e) =>
                                     setNote(e.target.value)
                                 }
                                 placeholder="เพิ่มหมายเหตุ..."
-                                className="w-full p-2 mt-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 rows={3}
                             />
                         </Grid>

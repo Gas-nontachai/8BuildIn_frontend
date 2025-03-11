@@ -8,7 +8,7 @@ import {
     Button,
     TextField,
     IconButton,
-    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormHelperText
+    Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, CircularProgress, FormHelperText, FormLabel
 } from "@mui/material";
 
 import { usePagination } from "@/context/PaginationContext";
@@ -66,7 +66,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
     };
 
     const handleSubmit = async () => {
-        if (!validateForm()) return; 
+        if (!validateForm()) return;
         try {
             setLoading(true);
             await insertProductCategory(productCategory);
@@ -105,7 +105,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
             }
             setLoading(false);
         }
-    }; 
+    };
     return (
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -123,7 +123,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
                                 size="small"
                                 variant="outlined"
                                 name="product_category_name"
-                                placeholder="ชื่อประเภทสินค้า *"
+                                placeholder="ชื่อประเภทสินค้า"
                                 value={productCategory.product_category_name}
                                 onChange={handleChange}
                                 required
@@ -138,7 +138,7 @@ const ManageProductCategory: React.FC<ManageProductCategoryProps> = ({ onClose, 
                         </Grid>
                     </Grid>
                 </DialogContent>
-                <Paper className="shadow-md p-6">
+                <Paper className="shadow-md p-5">
                     <TableContainer style={{ minHeight: "24rem" }}>
                         <Table>
                             <TableHead>

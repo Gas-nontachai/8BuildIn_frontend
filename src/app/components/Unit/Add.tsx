@@ -10,6 +10,7 @@ import {
     Button,
     TextField,
     IconButton,
+    FormLabel
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
@@ -101,9 +102,10 @@ const AddUnit: React.FC<AddUnitProps> = ({ onClose, open, onRefresh }) => {
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
                     <Grid size={6}>
-                        <div className="mb-1 text-[15px] text-gray-600">หน่วย (th) <span className="text-red-500">*</span></div>
+                        <FormLabel component="legend" className="mb-2">หน่วย (th) <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             size="small"
+                            label="หน่วย (th)"
                             fullWidth
                             type="text"
                             value={formData.unit_name_th}
@@ -111,7 +113,7 @@ const AddUnit: React.FC<AddUnitProps> = ({ onClose, open, onRefresh }) => {
                         />
                     </Grid>
                     <Grid size={6}>
-                        <div className="mb-1 text-[15px] text-gray-600">หน่วย (en) <span className="text-red-500">*</span></div>
+                        <FormLabel component="legend" className="mb-2">หน่วย (en) <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             label="หน่วย (en)"
                             size="small"

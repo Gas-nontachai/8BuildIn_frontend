@@ -8,9 +8,9 @@ import {
     Button,
     TextField,
     IconButton,
-    FormLabel,
-    Typography,
-    Autocomplete
+    FormLabel, 
+    Autocomplete,
+    Divider
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
@@ -192,13 +192,14 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
-                    <Grid size={4}>
+                    <Grid size={3}>
+                        <FormLabel component="legend" className="mb-2">ประเภทสินค้า <span className="text-red-500">*</span></FormLabel>
                         <Autocomplete
                             disablePortal
                             size="small"
                             options={option_category}
                             getOptionLabel={(option) => option.title}
-                            renderInput={(params) => <TextField {...params} label="ประเภท" />}
+                            renderInput={(params) => <TextField {...params} placeholder="ประเภท" />}
                             isOptionEqualToValue={(option, value) => option.value === value.value}
                             onChange={(event, newValue) => setProduct((prevProduct) => ({
                                 ...prevProduct,
@@ -206,20 +207,37 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                             }))}
                         />
                     </Grid>
-                    <Grid size={8}>
+                    <Grid size={3}>
+                        <FormLabel component="legend" className="mb-2">ชื่อสินค้า <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             fullWidth
-                            label="ชื่อสินค้า"
+                            placeholder="ชื่อสินค้า"
                             size="small"
                             type="text"
                             value={product.product_name}
                             onChange={(e) => handleInputChange(e, 'product_name')}
                         />
                     </Grid>
-                    <Grid size={4}>
+                    <Grid size={3}>
+                        <FormLabel component="legend" className="mb-2">หน่วย <span className="text-red-500">*</span></FormLabel>
+                        <Autocomplete
+                            disablePortal
+                            size="small"
+                            options={option_unit}
+                            getOptionLabel={(option) => option.title}
+                            renderInput={(params) => <TextField {...params} placeholder="หน่วย" />}
+                            isOptionEqualToValue={(option, value) => option.value === value.value}
+                            onChange={(event, newValue) => setProduct((prevProduct) => ({
+                                ...prevProduct,
+                                unit_id: newValue ? newValue.value : '',
+                            }))}
+                        />
+                    </Grid>
+                    <Grid size={3}>
+                        <FormLabel component="legend" className="mb-2">จำนวนสินค้า <span className="text-red-500">*</span></FormLabel>
                         <TextField
                             fullWidth
-                            label="จำนวนสินค้า"
+                            placeholder="จำนวนสินค้า"
                             size="small"
                             type="number"
                             inputProps={{ min: 0 }}
@@ -227,24 +245,16 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                             onChange={(e) => handleInputChange(e, 'product_quantity')}
                         />
                     </Grid>
-                    <Grid size={4}>
-                        <Typography variant="body1">
-                            ราคาต้นทุนสินค้า {decimalFix(product.product_price || 0)} บาท
-                        </Typography>
+                    <Grid size={12}>
+                        <p className="text-[15px] font-[400] text-gray-800 mb-2">
+                            ราคาต้นทุนสินค้า&nbsp;
+                            <span className="text-blue-500 font-[500]">
+                                {decimalFix(product.product_price || 0)}
+                            </span> ฿
+                        </p>
                     </Grid>
-                    <Grid size={4}>
-                        <Autocomplete
-                            disablePortal
-                            size="small"
-                            options={option_unit}
-                            getOptionLabel={(option) => option.title}
-                            renderInput={(params) => <TextField {...params} label="หน่วย" />}
-                            isOptionEqualToValue={(option, value) => option.value === value.value}
-                            onChange={(event, newValue) => setProduct((prevProduct) => ({
-                                ...prevProduct,
-                                unit_id: newValue ? newValue.value : '',
-                            }))}
-                        />
+                    <Grid size={12}>
+                        <Divider />
                     </Grid>
                     <Grid size={12}>
                         <Button onClick={() => handleAddMaterial()} startIcon={<Add />} color="primary">
@@ -314,7 +324,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                                         </div>
                                         <input id="file-input" type="file" className="hidden" multiple onChange={handleFileChange} />
                                     </label>
-                                    <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-blue-500 to-orange-600 rounded-lg shadow-lg hover:opacity-90 transition" onClick={handleUploadClick}>
+                                    <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9] rounded-lg shadow-lg hover:opacity-70 transition" onClick={handleUploadClick}>
                                         <CloudUpload className="mr-2" />
                                         อัปโหลดไฟล์
                                     </button>
@@ -339,7 +349,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                     </Grid>
                 </Grid>
             </DialogContent>
-            <DialogActions sx={{ justifyContent: "center" }}>
+            <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
                 <Button onClick={handleSubmit} color="success" variant="contained">
                     บันทึก
                 </Button>

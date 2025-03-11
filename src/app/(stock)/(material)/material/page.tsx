@@ -183,7 +183,7 @@ const MaterialPage = () => {
         <TextField
           variant="outlined"
           size="small"
-          placeholder="ค้นหาชื่อสินค้า..."
+          placeholder="ค้นหาชื่อวัสดุ..."
           className="w-64"
           value={search}
           onChange={(e) => setSearch(e.target.value)}

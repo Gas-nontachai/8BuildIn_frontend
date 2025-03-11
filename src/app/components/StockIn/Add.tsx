@@ -187,7 +187,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
                 <Grid container spacing={2}>
-                    <Grid size={8}>
+                    <Grid size={12}>
                         <FormLabel component="legend" className="mb-2">ผู้จัดจำหน่าย <span className="text-red-500">*</span></FormLabel>
                         <FormControl fullWidth>
                             <Select
@@ -204,21 +204,25 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={4}>
-                        <FormLabel component="legend" className="mb-2">ราคานำเข้าทั้งหมด <span className="text-red-500">*</span></FormLabel>
-                        <Typography variant="body1">
-                            {decimalFix(formData.stock_in_price || "0.00")} บาท
-                        </Typography>
+                    <Grid size={12}>
+                        <p className="text-[15px] font-[400] text-gray-800 mb-2">
+                            ราคานำเข้าทั้งหมด&nbsp;
+                            <span className="text-blue-500 font-[500]">
+                                {decimalFix(formData.stock_in_price || 0)}
+                            </span> ฿
+                        </p>
                     </Grid>
                     <Grid size={12}>
-                        <FormLabel component="legend">หมายเหตุ (ไม่บังคับ) </FormLabel>
+                        <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
+                            หมายเหตุ (ไม่บังคับ)
+                        </FormLabel>
                         <textarea
                             value={formData.stock_in_note}
                             onChange={(e) =>
                                 setFormData({ ...formData, stock_in_note: e.target.value })
                             }
                             placeholder="เพิ่มหมายเหตุ..."
-                            className="w-full p-2 mt-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             rows={3}
                         />
                     </Grid>
