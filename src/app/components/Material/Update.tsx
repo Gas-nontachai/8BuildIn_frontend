@@ -144,16 +144,17 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                         <Grid size={12} key={material.material_id}>
                             <Grid container spacing={2}>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">ชื่อวัสดุ: {material.material_name || "ไม่มีข้อมูล"}</FormLabel>
+                                    <FormLabel component="legend" className="mb-2">ชื่อวัสดุ: <span className="text-gray-800 font-[500]">{material.material_name || "ไม่มีข้อมูล"}</span></FormLabel>
                                 </Grid>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">จำนวน: {material.material_quantity ? `${material.material_quantity} ชิ้น` : "ไม่มีข้อมูล"}</FormLabel>
+                                    <FormLabel component="legend" className="mb-2">จำนวน: <span className="text-gray-800 font-[500]">{material.material_quantity ? `${material.material_quantity} ชิ้น` : "ไม่มีข้อมูล"}</span>
+                                    </FormLabel>
                                 </Grid>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด: {decimalFix(material.material_price) ? `${decimalFix(material.material_price)} บาท` : "ไม่มีข้อมูล"}</FormLabel>
+                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด: <span className="text-blue-500 font-[500]">{decimalFix(material.material_price) ? `${decimalFix(material.material_price)} ฿` : "ไม่มีข้อมูล"}</span></FormLabel>
                                 </Grid>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">ราคา/ชิ้น: {material.material_quantity && material.material_price ? `${decimalFix(Number(material.material_price) / Number(material.material_quantity))} บาท` : "ไม่มีข้อมูล"}</FormLabel>
+                                    <FormLabel component="legend" className="mb-2">ราคา/ชิ้น: <span className="text-blue-500 font-[500]">{material.material_quantity && material.material_price ? `${decimalFix(Number(material.material_price) / Number(material.material_quantity))} ฿` : "ไม่มีข้อมูล"}</span></FormLabel>
                                 </Grid>
                                 <Grid size={6}>
                                     <FormLabel component="legend" className="mb-2">หน่วย <span className="text-red-500">*</span></FormLabel>
