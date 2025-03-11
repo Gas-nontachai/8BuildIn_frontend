@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font , Image } from '@react-pdf/renderer';
 import { Employee, Product } from '@/misc/types';
 
 
@@ -8,15 +8,16 @@ Font.register({
     family: 'Sarabun',
     fonts: [
         {
-            src: 'https://cdn.jsdelivr.net/npm/@fontsource/sarabun@4.5.0/files/sarabun-all-400-normal.woff',
-            fontWeight: 'normal'
+            src: '/fonts/Sarabun-Bold.ttf',
+            fontWeight: 'bold',
         },
         {
-            src: 'https://cdn.jsdelivr.net/npm/@fontsource/sarabun@4.5.0/files/sarabun-all-700-normal.woff',
-            fontWeight: 'bold'
+            src: '/fonts/Sarabun-Light.ttf',
+            fontWeight: 'normal',
         }
-    ]
+    ],
 });
+
 
 const styles = StyleSheet.create({
     page: {
@@ -25,12 +26,14 @@ const styles = StyleSheet.create({
         fontFamily: 'Sarabun',
     },
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 30,
     },
     brandName: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#2B3674',
+        color: '#text-[#d59d35]',
         marginBottom: 5,
     },
     documentTitle: {
@@ -38,16 +41,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 20,
         marginTop: 5,
-        color: '#2B3674',
+        color: '#text-[#d59d35]',
     },
     infoSection: {
         marginBottom: 20,
         padding: 10,
-        backgroundColor: '#F4F7FE',
+        // backgroundColor: '#F4F7FE',
     },
     infoText: {
         marginBottom: 5,
         color: '#4B4B4B',
+        paddingRight: 2,
+        fontSize: 10,
     },
     table: {
         marginTop: 5,
@@ -57,8 +62,9 @@ const styles = StyleSheet.create({
     tableHeader: {
         flexDirection: 'row',
         backgroundColor: '#fff',  // เปลี่ยนเป็นพื้นขาว
-        borderBottomWidth: 1,
+        borderBottomWidth: 0.5,
         borderBottomColor: '#000',
+        fontSize: 16,
     },
     tableRow: {
         flexDirection: 'row',
@@ -66,35 +72,42 @@ const styles = StyleSheet.create({
     },
     columnNo: {  // คอลัมน์ลำดับ
         width: '8%',
-        borderRightWidth: 1,
+        borderRightWidth: 0.5,
         borderRightColor: '#000',
         padding: 4,
         textAlign: 'center',
+        fontSize: 12,
     },
     columnItem: {  // คอลัมน์รายการ
         width: '52%',
-        borderRightWidth: 1,
+        borderRightWidth: 0.5,
         borderRightColor: '#000',
         padding: 4,
+        paddingRight: 6,
+        textAlign: 'center',
+        fontSize: 12,
     },
     columnPrice: {  // คอลัมน์ราคา/หน่วย
         width: '16%',
-        borderRightWidth: 1,
-        borderRightColor: '#000',
-        padding: 4,
-        textAlign: 'right',
-    },
-    columnQty: {  // คอลัมน์จำนวน
-        width: '12%',
-        borderRightWidth: 1,
+        borderRightWidth: 0.5,
         borderRightColor: '#000',
         padding: 4,
         textAlign: 'center',
+        fontSize: 12,
+    },
+    columnQty: {  // คอลัมน์จำนวน
+        width: '12%',
+        borderRightWidth: 0.5,
+        borderRightColor: '#000',
+        padding: 4,
+        textAlign: 'center',
+        fontSize: 12,
     },
     columnTotal: {  // คอลัมน์ยอดรวม
         width: '20%',
         padding: 4,
-        textAlign: 'right',
+        textAlign: 'center',
+        fontSize: 12,
     },
     totalSection: {
         marginTop: 4,
@@ -175,7 +188,8 @@ const styles = StyleSheet.create({
     },
     signatureTitle: {
         fontSize: 10,
-        marginBottom: 5, // ระยะห่างด้านล่าง
+        marginBottom: 5,
+        paddingRight: 2,
     },
     paymentBox: {
         width: '33%',
@@ -202,13 +216,22 @@ const styles = StyleSheet.create({
     checkbox: {
         width: 10,
         height: 10,
-        borderWidth: 1, 
+        borderWidth: 1,
         borderColor: '#000',
         marginRight: 5, // ระยะห่างด้านขวา
     },
     paymentDetail: {
-        marginTop: 5, // ระยะห่างด้านบน
+        marginTop: 2, // ระยะห่างด้านบน
         fontSize: 10,
+    },
+    paymentTitle: {
+        fontSize: 10,
+        marginBottom: 5,
+        paddingRight: 2,
+    },
+    textContainer: {
+        marginLeft: 10,
+        flex: 1,
     },
 });
 
@@ -228,38 +251,44 @@ const Quotation = ({ employee, products, totalAmount }: QuotationProps) => {
             <Page size="A4" style={styles.page}>
                 {/* Header */}
                 <View style={styles.header}>
-                    <Text style={styles.brandName}>8BUILT-IN</Text>
-                    <Text style={styles.documentTitle}>ใบเสนอราคา / Quotation</Text>
+                    <Image 
+                        src="/logo.jpg" // ใช้โลโก้จาก public
+                        style={{ width: 100, height: 'auto' }} // ปรับขนาดตามต้องการ
+                    />
+                    <View style={styles.textContainer}>
+                        <Text style={styles.brandName}>8BUILT-IN</Text>
+                        <Text style={styles.documentTitle}>ใบเสนอราคา / Quotation</Text>
+                    </View>
                 </View>
 
                 {/* Document Info */}
                 <View style={styles.infoSection}>
-                    <Text style={styles.infoText}>เลขที่ใบเสนอราคา: {quotationNumber}</Text>
+                    <Text style={styles.infoText}>เลขที่ใบเสนอราคา: {`${quotationNumber}\u00A0`}</Text>
                     <Text style={styles.infoText}>วันที่: {formattedDate}</Text>
-                    <Text style={styles.infoText}>
-                        ผู้ออกเอกสาร: {employee.employee_prefix}{employee.employee_firstname} {employee.employee_lastname}
+                    <Text style={[styles.infoText, { paddingRight: 6 }]}>
+                        ผู้ออกเอกสาร: {employee.employee_prefix}{employee.employee_firstname} {`${employee.employee_lastname}\u00A0`}
                     </Text>
                     {/* <Text style={styles.infoText}>ตำแหน่ง: {employee.license_name}</Text> */}
                 </View>
 
                 <View style={styles.table}>
                     <View style={styles.tableHeader}>
-                        <Text style={styles.columnNo}>ลำดับ</Text>
-                        <Text style={styles.columnItem}>รายการ</Text>
-                        <Text style={styles.columnPrice}>ราคา/ชิ้น</Text>
-                        <Text style={styles.columnQty}>จำนวน</Text>
-                        <Text style={styles.columnTotal}>ยอดรวม</Text>
+                        <Text style={styles.columnNo}>{`ลำดับ\u00A0`}</Text>
+                        <Text style={styles.columnItem}>{`รายการ\u00A0`}</Text>
+                        <Text style={styles.columnPrice}>{`ราคา/ชิ้น\u00A0`}</Text>
+                        <Text style={styles.columnQty}>{`จำนวน\u00A0`}</Text>
+                        <Text style={styles.columnTotal}>{`ยอดรวม\u00A0`}</Text>
                     </View>
 
                     {products.map((product, index) => (
                         <View key={index} style={styles.tableRow}>
-                            <Text style={styles.columnNo}>{index + 1}</Text>
-                            <Text style={styles.columnItem}>{product.product_name}</Text>
-                            <Text style={styles.columnPrice}>
+                            <Text style={[styles.columnNo, { textAlign: 'center' , fontSize: 10}]}>{index + 1}</Text>
+                            <Text style={[styles.columnItem, { textAlign: 'left' , fontSize: 10}]}>{product.product_name}</Text>
+                            <Text style={[styles.columnPrice, { textAlign: 'right' , fontSize: 10}]}>
                                 {Number(product.product_price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                             </Text>
-                            <Text style={styles.columnQty}>{product.quantity}</Text>
-                            <Text style={styles.columnTotal}>
+                            <Text style={[styles.columnQty, { textAlign: 'center' , fontSize: 10}]}>{product.quantity}</Text>
+                            <Text style={[styles.columnTotal, { textAlign: 'right' , fontSize: 10 }]}>
                                 {product.total.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                             </Text>
                         </View>
@@ -298,25 +327,24 @@ const Quotation = ({ employee, products, totalAmount }: QuotationProps) => {
 
                 {/* Signature Section */}
                 <View style={styles.signatureSection}>
-                    {/* กล่องที่ 1: ลงนามสำนักงาน */}
                     <View style={styles.signatureBox}>
-                        <Text style={styles.signatureTitle}>สำนักงานใหญ่</Text>
+                        <Text style={styles.signatureTitle}>{`สำนักงานใหญ่\u00A0`}</Text>
                         <View style={styles.signatureLine} />
-                        <Text style={styles.signatureLabel}>ผู้มีอำนาจลงนาม</Text>
+                        <Text style={styles.signatureLabel}>{`ผู้มีอำนาจลงนาม\u00A0`}</Text>
                     </View>
 
                     {/* กล่องที่ 2: จัดเตรียมและตรวจสอบ */}
                     <View style={styles.signatureBox}>
                         <Text style={styles.signatureTitle}>จัดเตรียมโดย</Text>
                         <View style={styles.signatureLine} />
-                        <Text style={[styles.signatureTitle, { marginTop: 20 }]}>ตรวจสอบโดย</Text>
+                        <Text style={[styles.signatureTitle, { marginTop: 10 }]}>ตรวจสอบโดย</Text>
                         <View style={styles.signatureLine} />
                     </View>
 
                     {/* กล่องที่ 3: การชำระเงิน */}
                     <View style={styles.paymentBox}>
                         <View style={styles.paymentHeader}>
-                            <Text style={styles.signatureTitle}>ชำระโดย</Text>
+                            <Text style={styles.paymentTitle}>{`ชำระโดย\u00A0`}</Text>
                             <View style={styles.checkboxRow}>
                                 <View style={styles.checkbox} />
                                 <Text style={{ fontSize: 10 }}>เงินสด</Text>
@@ -326,13 +354,13 @@ const Quotation = ({ employee, products, totalAmount }: QuotationProps) => {
                                 <Text style={{ fontSize: 10 }}>เช็ค</Text>
                             </View>
                         </View>
-                        
+
                         <Text style={{ fontSize: 10, marginTop: 10 }}>ธนาคาร: _________________</Text>
                         <View style={styles.paymentRow}>
                             <Text style={{ fontSize: 10 }}>เลขที่: _________</Text>
                             <Text style={{ fontSize: 10 }}>วันที่: _________</Text>
                         </View>
-                        
+
                         <Text style={[styles.signatureLabel, { marginTop: 15, textAlign: 'center' }]}>ผู้รับเงิน</Text>
                     </View>
                 </View>
