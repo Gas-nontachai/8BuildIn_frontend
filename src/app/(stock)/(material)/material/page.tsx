@@ -103,36 +103,18 @@ const MaterialPage = () => {
   };
 
   useEffect(() => {
-    try {
-      setLoading(true);
-      fetchUnit();
-      fetchMaterials();
-      fetchMaterialCategory();
-    } catch (error) {
-      console.error("Error fetching materials:", error);
-    } finally {
-      setLoading(false);
-    }
+    fetchUnit();
+    fetchMaterials();
+    fetchMaterialCategory();
   }, []);
 
   useEffect(() => {
-    try {
-      setLoading(true);
-      fetchMaterials();
-    } catch (error) {
-      console.error("Error fetching materials:", error);
-    } finally {
-      setLoading(false);
-    }
+    fetchMaterials();
   }, [selectedMaterialCategory, sort]);
 
   const fetchUnit = async () => {
-    try {
-      const { docs: res_unit } = await getUnitBy();
-      setUnit(res_unit);
-    } catch (error) {
-      console.error("Error fetching materials:", error);
-    }
+    const { docs: res_unit } = await getUnitBy();
+    setUnit(res_unit);
   };
 
   const toggleSort = (key: "name" | "order", value: string) => {

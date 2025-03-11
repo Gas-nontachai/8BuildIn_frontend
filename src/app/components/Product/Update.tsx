@@ -405,7 +405,6 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                             <CloudUpload className="mr-2" />
                                             อัปโหลดไฟล์
                                         </button>
-
                                         {files.length > 0 && (
                                             <div className="mt-4 text-sm text-gray-600 w-full">
                                                 <p>ไฟล์ที่เลือก:</p>
@@ -425,57 +424,53 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                                 </div>
                                 <Grid container spacing={2}>
                                     <Grid size={12} sx={{ mt: 2 }}>
-                                        <div className="relative flex flex-col items-start p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
-                                            <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
-                                                รูปปัจจุบัน
-                                            </FormLabel>
-                                            <div className="flex flex-row flex-wrap items-center gap-4 p-2">
-                                                {existingImages.map((image, index) => {
-                                                    return (
-                                                        <div key={index} className="relative">
-                                                            <img
-                                                                src={`${API_URL}${image}`}
-                                                                alt={`Image ${index + 1}`}
-                                                                className="w-24 h-24 object-cover rounded-lg border"
-                                                            />
-                                                            <button
-                                                                onClick={() => handleRemoveExistingImage(index)}
-                                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                                                            >
-                                                                ×
-                                                            </button>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
+                                        <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
+                                            รูปปัจจุบัน
+                                        </FormLabel>
+                                        <div className="flex flex-row flex-wrap items-center gap-4 p-2">
+                                            {existingImages.map((image, index) => {
+                                                return (
+                                                    <div key={index} className="relative">
+                                                        <img
+                                                            src={`${API_URL}${image}`}
+                                                            alt={`Image ${index + 1}`}
+                                                            className="w-24 h-24 object-cover rounded-lg border"
+                                                        />
+                                                        <button
+                                                            onClick={() => handleRemoveExistingImage(index)}
+                                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </Grid>
                                 </Grid>
                                 <Grid size={12}>
                                     {deletedImages.length > 0 && (
                                         <Grid size={12}>
-                                            <div className="relative flex flex-col items-start p-6 bg-gray-100 rounded-lg shadow-md col-span-12">
-                                                <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
-                                                    รูปภาพที่จะถูกลบ
-                                                </FormLabel>
-                                                <div className="flex flex-row flex-wrap items-center gap-4 p-2 bg-red-50 rounded-lg">
-                                                    {deletedImages.map((image, index) => (
-                                                        <div key={index} className="relative">
-                                                            <img
-                                                                src={`${API_URL}${image}`}
-                                                                alt={`Deleted Image ${index + 1}`}
-                                                                className="w-24 h-24 object-cover rounded-lg border opacity-50"
-                                                            />
-                                                            <button
-                                                                onClick={() => handleReverseImage(index)}
-                                                                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600"
-                                                                title="คืนค่ารูปภาพ"
-                                                            >
-                                                                <UndoRounded />
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
+                                            <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
+                                                รูปภาพที่จะถูกลบ
+                                            </FormLabel>
+                                            <div className="flex flex-row flex-wrap items-center gap-4 p-2 bg-red-50 rounded-lg">
+                                                {deletedImages.map((image, index) => (
+                                                    <div key={index} className="relative">
+                                                        <img
+                                                            src={`${API_URL}${image}`}
+                                                            alt={`Deleted Image ${index + 1}`}
+                                                            className="w-24 h-24 object-cover rounded-lg border opacity-50"
+                                                        />
+                                                        <button
+                                                            onClick={() => handleReverseImage(index)}
+                                                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600"
+                                                            title="คืนค่ารูปภาพ"
+                                                        >
+                                                            <UndoRounded />
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </Grid>
                                     )}
@@ -483,8 +478,7 @@ const UpdateProduct: React.FC<UpdateProductProps> = ({ onClose, open, onRefresh,
                             </Grid>
                         </Grid>
                     </Grid>
-                )
-                }
+                )}
             </DialogContent >
             <DialogActions sx={{ justifyContent: "center" }}>
                 <Button onClick={handleSubmit} color="success" variant="contained">

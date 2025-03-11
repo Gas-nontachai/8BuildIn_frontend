@@ -144,28 +144,16 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                         <Grid size={12} key={material.material_id}>
                             <Grid container spacing={2}>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">ชื่อวัสดุ</FormLabel>
-                                    <Typography variant="body1">
-                                        {material.material_name || ""}
-                                    </Typography>
+                                    <FormLabel component="legend" className="mb-2">ชื่อวัสดุ: {material.material_name || "ไม่มีข้อมูล"}</FormLabel>
                                 </Grid>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">จำนวน</FormLabel>
-                                    <Typography variant="body1">
-                                        {material.material_quantity || ""} ชิื้น
-                                    </Typography>
+                                    <FormLabel component="legend" className="mb-2">จำนวน: {material.material_quantity ? `${material.material_quantity} ชิ้น` : "ไม่มีข้อมูล"}</FormLabel>
                                 </Grid>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด</FormLabel>
-                                    <Typography variant="body1">
-                                        {decimalFix(material.material_price) || ""} บาท
-                                    </Typography>
+                                    <FormLabel component="legend" className="mb-2">ราคารวมทั้งหมด: {decimalFix(material.material_price) ? `${decimalFix(material.material_price)} บาท` : "ไม่มีข้อมูล"}</FormLabel>
                                 </Grid>
                                 <Grid size={3}>
-                                    <FormLabel component="legend" className="mb-2">ราคา / 1 ชิ้น</FormLabel>
-                                    <Typography variant="body1">
-                                        {decimalFix(Number(material.material_price) / Number(material.material_quantity)) || ""} บาท
-                                    </Typography>
+                                    <FormLabel component="legend" className="mb-2">ราคา/ชิ้น: {material.material_quantity && material.material_price ? `${decimalFix(Number(material.material_price) / Number(material.material_quantity))} บาท` : "ไม่มีข้อมูล"}</FormLabel>
                                 </Grid>
                                 <Grid size={6}>
                                     <FormLabel component="legend" className="mb-2">หน่วย <span className="text-red-500">*</span></FormLabel>
@@ -216,7 +204,7 @@ const UpdateMaterial: React.FC<UpdateMaterialProps> = ({ onRefresh, onClose, ope
                                             <button className="mt-4 px-6 py-2 text-white bg-gradient-to-r from-[#3b82f6] to-[#0ea5e9] rounded-lg shadow-lg hover:opacity-70 transition" onClick={handleUploadClick}>
                                                 <CloudUpload className="mr-2" />
                                                 อัปโหลดไฟล์
-                                            </button> 
+                                            </button>
                                             {files.length > 0 && (
                                                 <div className="mt-4 text-sm text-gray-600 w-full">
                                                     <p>ไฟล์ที่เลือก:</p>

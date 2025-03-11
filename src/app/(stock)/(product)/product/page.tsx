@@ -186,7 +186,7 @@ const ProductPage = () => {
             <Typography variant="body1" color="text.secondary">ข้อมูลสินค้า</Typography>
           </Stack>
         </Breadcrumbs>
-        <div className="flex gap-2"> 
+        <div className="flex gap-2">
           <Button
             variant="contained"
             color="primary"
@@ -371,7 +371,7 @@ const ProductPage = () => {
 
       <ManageProductCategory open={isManageCategoryDialog} onRefresh={() => fetchData()} onClose={() => setIsManageCategoryDialog(false)} />
       <AddProduct open={addProductDialog} onRefresh={() => fetchData()} onClose={() => setAddProductDialog(false)} />
-      <UpdateProduct open={updateProductDialog} product_id={selectedProductId} onRefresh={() => fetchData()} onClose={() => { setUpdateProductDialog(false); handleClose(); }} />
+      <UpdateProduct open={updateProductDialog} product_id={selectedProductId} onRefresh={() => fetchProducts()} onClose={() => { setUpdateProductDialog(false); handleClose(); }} />
     </>
   );
 };
