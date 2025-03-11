@@ -102,7 +102,6 @@ const SalesPage = () => {
         }
     };
 
-
     const renderProductImages = (productImg: string | null) => {
         if (!productImg) {
             return (

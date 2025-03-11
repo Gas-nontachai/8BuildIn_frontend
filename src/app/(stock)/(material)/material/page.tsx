@@ -2,7 +2,7 @@
 import { API_URL } from "@/utils/config"
 import { useEffect, useState, useRef } from "react";
 import { formatDate } from "@/utils/date-helper"
-import { Delete, Add, Home, Gavel, Search, ModeEdit, MoreVert } from "@mui/icons-material";
+import { Delete, Add, Home, Gavel, Search, ModeEdit, MoreVert, Clear, ArrowDownward, ArrowUpward, Sort } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
   TableContainer,
@@ -30,7 +30,7 @@ import UpdateMaterial from "@/app/components/Material/Update";
 import Loading from "@/app/components/Loading";
 
 import { useUnit, useMaterialCategory } from "@/hooks/hooks";
-import { Unit } from '@/misc/types';
+import { MaterialCategory, Unit } from '@/misc/types';
 
 
 import useMaterial from "@/hooks/useMaterial";
@@ -45,14 +45,19 @@ const MaterialPage = () => {
   const [loading, setLoading] = useState(false);
   const [isManageCategoryDialog, setIsManageCategoryDialog] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [selectedMaterial, setSelectedMaterialCategory] = useState<string>("");
+  const [selectedMaterialCategory, setSelectedMaterialCategory] = useState<string>("");
   const [unit, setUnit] = useState<Unit[]>([]);
-  const [materialCategory, setMaterialCategory] = useState<{ material_category_name: string, value: string }[]>([]);
-  const [search, setSearch] = useState<string>("");
+  const [materialCategory, setMaterialCategory] = useState<MaterialCategory[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selected, setSelected] = useState<Material | null>(null);
   const [isUpdateDialog, setIsUpdateDialog] = useState(false);
   const material_id = useRef("");
+  const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
+  const [search, setSearch] = useState<string>("");
+  const [sort, setSort] = useState<{ name: string; order: "ASC" | "DESC" }>({
+    name: "adddate",
+    order: "DESC",
+  });
 
   const handleClickMenu = (event: React.MouseEvent<HTMLElement>, material: Material) => {
     setAnchorEl(event.currentTarget);
@@ -63,12 +68,6 @@ const MaterialPage = () => {
     setSelected(null);
   };
 
-
-  const [sort, setSort] = useState<{ name: string; order: "ASC" | "DESC" }>({
-    name: "adddate",
-    order: "DESC",
-  });
-
   const fetchMaterials = async () => {
     setLoading(true);
     try {
@@ -78,25 +77,27 @@ const MaterialPage = () => {
           columns: ["material_name"],
           condition: "LIKE",
         },
-        match: selectedMaterial ? { material_category_id: selectedMaterial } : {},
+        match: selectedMaterialCategory ? { material_category_id: selectedMaterialCategory } : {},
         sorter: [{ key: sort.name, order: sort.order }],
       });
       setMaterials(docs);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching materials:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+
   };
 
   const fetchMaterialCategory = async () => {
     setLoading(true);
     try {
       const { docs } = await getMaterialCategoryBy(
-        selectedMaterial ? { material_category_id: selectedMaterial } : {}
+        selectedMaterialCategory ? { material_category_id: selectedMaterialCategory } : {}
       );
-      setMaterialCategory(docs.map(item => ({ material_category_name: item.material_category_name, value: item.material_category_id })));
+      setMaterialCategory(docs);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching materials:", error);
     }
     setLoading(false);
   };
@@ -123,7 +124,7 @@ const MaterialPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedMaterial]);
+  }, [selectedMaterialCategory, sort]);
 
   const fetchUnit = async () => {
     try {
@@ -132,6 +133,30 @@ const MaterialPage = () => {
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
+  };
+
+  const toggleSort = (key: "name" | "order", value: string) => {
+    setSort((prevSort) => {
+      if (prevSort.name === value) {
+        return {
+          ...prevSort,
+          order: prevSort.order === "ASC" ? "DESC" : "ASC",
+        };
+      } else {
+        return {
+          name: value,
+          order: "ASC",
+        };
+      }
+    });
+  };
+
+  const openMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setSortAnchorEl(event.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setSortAnchorEl(null);
   };
   return (
     <>
@@ -154,45 +179,78 @@ const MaterialPage = () => {
           </Button>
         </div>
       </div>
-
       <div className="flex gap-2 mb-5">
         <TextField
           variant="outlined"
           size="small"
-          placeholder="ค้นหาชื่อวัสดุ..."
+          placeholder="ค้นหาชื่อสินค้า..."
           className="w-64"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           InputProps={{
             startAdornment: (
-              <InputAdornment
-                position="start"
-                onClick={fetchMaterials}
-                className="cursor-pointer"
-              >
+              <InputAdornment position="start" onClick={fetchMaterials} className="cursor-pointer">
                 <Search />
               </InputAdornment>
             ),
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === 'Enter') {
               fetchMaterials();
             }
           }}
         />
-
         <FormControl sx={{ minWidth: 200 }}>
           <Autocomplete
             size="small"
             options={materialCategory}
             getOptionLabel={(option) => option.material_category_name}
-            value={materialCategory.find(item => item.value === selectedMaterial) || null}
-            onChange={(event, newValue) => setSelectedMaterialCategory(newValue?.value || "")}
-            renderInput={(params) => <TextField {...params} label="ค้นหาโดยประเภทวัสดุ" />}
+            value={materialCategory.find(item => item.material_category_id === selectedMaterialCategory) || null}
+            onChange={(event, newValue) => setSelectedMaterialCategory(newValue?.material_category_id || "")}
+            renderInput={(params) => <TextField {...params} label="ค้นหาโดยประเภทสินค้า" />}
           />
         </FormControl>
+        {
+          (search || selectedMaterialCategory) && (
+            <button
+              className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
+              onClick={() => {
+                setSearch('');
+                setSelectedMaterialCategory('');
+              }}
+            >
+              <Clear />
+            </button>
+          )
+        }
+        <div className="flex gap-2">
+          <Button
+            className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
+            onClick={openMenu}
+            endIcon={<Sort />}
+          >
+            Sort
+          </Button>
+          <Menu
+            anchorEl={sortAnchorEl}
+            open={Boolean(sortAnchorEl)}
+            onClose={closeMenu}
+          >
+            <MenuItem onClick={() => toggleSort("name", "adddate")}>
+              จัดเรียงตามวันที่
+              {sort.name === "adddate" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+            </MenuItem>
+            <MenuItem onClick={() => toggleSort("name", "material_price")}>
+              จัดเรียงตามราคา
+              {sort.name === "material_price" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+            </MenuItem>
+            <MenuItem onClick={() => toggleSort("name", "material_name")}>
+              จัดเรียงตามชื่อสินค้า
+              {sort.name === "material_name" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+            </MenuItem>
+          </Menu>
+        </div>
       </div>
-
       {loading ? (
         <Loading />
       ) : (
@@ -219,14 +277,14 @@ const MaterialPage = () => {
                       <div className="flex justify-center">
                         <img
                           src={material.material_img ? `${API_URL}${material.material_img.split(",")[0]}` : "/no-img.jpg"}
-                          alt="Product"
+                          alt="Material"
                           className="w-12 h-12 object-cover rounded-lg"
                         />
                       </div>
                     </TableCell>
                     <TableCell align="center">{material.material_name}</TableCell>
                     <TableCell align="center">
-                      {materialCategory.find((mt) => mt.value === material.material_category_id)?.material_category_name || 'ประเภท'}
+                      {materialCategory.find((mt) => mt.material_category_id === material.material_category_id)?.material_category_name || 'ประเภท'}
                     </TableCell>
                     <TableCell align="center">
                       {decimalFix(material.material_price)} ฿ / {unit.find((s) => s.unit_id === material.unit_id)?.unit_name_th || 'ชิ้น'}

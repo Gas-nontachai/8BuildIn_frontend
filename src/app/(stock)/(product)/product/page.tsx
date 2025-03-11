@@ -1,10 +1,28 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
-import { MoreVert, Store, Delete, Add, Home, Edit, Visibility } from "@mui/icons-material";
+import { MoreVert, Store, Delete, Add, Home, Edit, Visibility, Search, ArrowUpward, ArrowDownward, Clear, Sort } from "@mui/icons-material";
 import {
-  MenuItem, Menu, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, TablePagination, Button, Breadcrumbs, Checkbox, Typography, Stack, Link, IconButton
+  MenuItem,
+  Menu,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Button,
+  Breadcrumbs,
+  Checkbox,
+  Typography,
+  Stack,
+  Link,
+  IconButton,
+  TextField,
+  InputAdornment,
+  Autocomplete,
+  FormControl
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
@@ -19,7 +37,9 @@ import { Product, Unit, ProductCategory } from '@/misc/types';
 import { API_URL } from "@/utils/config"
 
 const ProductPage = () => {
+
   const [selectedProductId, setSelectedProductId] = useState('');
+  const [sortAnchorEl, setSortAnchorEl] = React.useState<null | HTMLElement>(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { getProductBy, deleteProductBy } = useProduct()
@@ -33,16 +53,44 @@ const ProductPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [unit, setUnit] = useState<Unit[]>([]);
   const [productCategory, setProductCategory] = useState<ProductCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [sort, setSort] = useState<{ name: string; order: "ASC" | "DESC" }>({
+    name: "adddate",
+    order: "DESC",
+  });
 
   useEffect(() => {
+    fetchProducts()
     fetchData();
   }, []);
+
+  useEffect(() => {
+    fetchProducts()
+  }, [selectedCategory, sort]);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const { docs } = await getProductBy({
+        search: {
+          text: search,
+          columns: ["product_name"],
+          condition: "LIKE",
+        },
+        match: selectedCategory ? { product_category_id: selectedCategory } : {},
+        sorter: [{ key: sort.name, order: sort.order }],
+      });
+      setProducts(docs);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+    setLoading(false);
+  };
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { docs: res_prod } = await getProductBy();
-      setProducts(res_prod);
       const { docs: res_unit } = await getUnitBy();
       setUnit(res_unit);
       const { docs: res_prod_cat } = await getProductCategoryBy();
@@ -99,6 +147,29 @@ const ProductPage = () => {
     }
   };
 
+  const openMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setSortAnchorEl(event.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setSortAnchorEl(null);
+  };
+
+  const toggleSort = (key: "name" | "order", value: string) => {
+    setSort((prevSort) => {
+      if (prevSort.name === value) {
+        return {
+          ...prevSort,
+          order: prevSort.order === "ASC" ? "DESC" : "ASC",
+        };
+      } else {
+        return {
+          name: value,
+          order: "ASC",
+        };
+      }
+    });
+  };
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -121,6 +192,78 @@ const ProductPage = () => {
           <Button variant="contained" color="primary" onClick={() => setAddProductDialog(true)} startIcon={<Add />}>
             เพิ่มสินค้า
           </Button>
+        </div>
+      </div>
+      <div className="flex gap-2 mb-5">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="ค้นหาชื่อสินค้า..."
+          className="w-64"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" onClick={fetchProducts} className="cursor-pointer">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              fetchProducts();
+            }
+          }}
+        />
+        <FormControl sx={{ minWidth: 200 }}>
+          <Autocomplete
+            size="small"
+            options={productCategory}
+            getOptionLabel={(option) => option.product_category_name}
+            value={productCategory.find(item => item.product_category_id === selectedCategory) || null}
+            onChange={(event, newValue) => setSelectedCategory(newValue?.product_category_id || "")}
+            renderInput={(params) => <TextField {...params} label="ค้นหาโดยประเภทสินค้า" />}
+          />
+        </FormControl>
+        {
+          (search || selectedCategory) && (
+            <button
+              className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
+              onClick={() => {
+                setSearch('');
+                setSelectedCategory('');
+              }}
+            >
+              <Clear />
+            </button>
+          )
+        }
+        <div className="flex gap-2">
+          <Button
+            className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
+            onClick={openMenu}
+            endIcon={<Sort />}
+          >
+            Sort
+          </Button>
+          <Menu
+            anchorEl={sortAnchorEl}
+            open={Boolean(sortAnchorEl)}
+            onClose={closeMenu}
+          >
+            <MenuItem onClick={() => toggleSort("name", "adddate")}>
+              จัดเรียงตามวันที่
+              {sort.name === "adddate" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+            </MenuItem>
+            <MenuItem onClick={() => toggleSort("name", "product_price")}>
+              จัดเรียงตามราคา
+              {sort.name === "product_price" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+            </MenuItem>
+            <MenuItem onClick={() => toggleSort("name", "product_name")}>
+              จัดเรียงตามชื่อสินค้า
+              {sort.name === "product_name" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+            </MenuItem>
+          </Menu>
         </div>
       </div>
       {loading ? (
