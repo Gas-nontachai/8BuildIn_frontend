@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
 
-import { Add, Home, Timeline } from "@mui/icons-material";
+import { Add, Home, Timeline, Receipt } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
@@ -44,10 +44,7 @@ const PurchaseRequestPage = () => {
 
   const openPDF = async () => {
     try {
-      // สร้าง PDF โดยใช้ @react-pdf/renderer
       const blob = await pdf(<PR />).toBlob();
-      
-      // เปิด PDF ในแท็บใหม่
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     } catch (error) {
@@ -70,9 +67,6 @@ const PurchaseRequestPage = () => {
             <Typography variant="body1" color="text.secondary">เปิด PR</Typography>
           </Stack>
         </Breadcrumbs>
-        <Button variant="contained" color="info" onClick={openPDF} startIcon={<Add />}>
-          ทดสอบออกใบ PR
-        </Button>
         <Button variant="contained" color="info" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
           สร้าง PR
         </Button>
@@ -110,12 +104,12 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.pr_note}</TableCell>
                   <TableCell>{item.addby}</TableCell>
                   <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                  <TableCell></TableCell>
+                  <TableCell><Button onClick={openPDF} startIcon={<Receipt />}>ออกบิล</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table >
-        </TableContainer>
+        </TableContainer >
       )}
       <TablePagination
         rowsPerPageOptions={[5, 10, 15]}

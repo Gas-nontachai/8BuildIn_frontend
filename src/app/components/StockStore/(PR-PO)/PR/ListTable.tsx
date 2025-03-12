@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
 
-import { Check, Close, MoreVert } from "@mui/icons-material";
+import { Check, Close, MoreVert, EventNote } from "@mui/icons-material";
 import {
     Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Menu, MenuItem
@@ -153,6 +153,13 @@ const ListTablePR = () => {
                                             open={Boolean(anchorEl)}
                                             onClose={handleCloseMenu}
                                         >
+                                            <MenuItem onClick={() => {
+                                                pr_id.current = selected?.pr_id!;
+                                                handleApprove(pr_id.current);
+                                                handleCloseMenu();
+                                            }}>
+                                                <EventNote className="mr-2" /> ดูรายละเอียด
+                                            </MenuItem>
                                             <MenuItem onClick={() => {
                                                 pr_id.current = selected?.pr_id!;
                                                 handleApprove(pr_id.current);
