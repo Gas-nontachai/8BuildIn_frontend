@@ -2,7 +2,7 @@ import { API_URL } from '@/utils/config';
 import { SecureFetch } from '@/utils/fetch';
 import { PurchaseOrder } from '@/misc/types'
 
-const prefix = 'purchaseorder';
+const prefix = 'purchase-order';
 
 const getPurchaseOrderBy = (data: any = {}): Promise<{ docs: PurchaseOrder[], totalDocs: number }> => {
     return SecureFetch.post(`${API_URL}${prefix}/getPurchaseOrderBy`, data);
