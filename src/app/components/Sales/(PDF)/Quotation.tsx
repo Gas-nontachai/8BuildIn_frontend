@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font , Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import { Employee, Product } from '@/misc/types';
 
 
@@ -24,6 +24,13 @@ const styles = StyleSheet.create({
         padding: 40,
         fontSize: 14,
         fontFamily: 'Sarabun',
+    },
+    pageNumber: {
+        position: 'absolute',
+        top: 10,
+        right: 40,
+        fontSize: 10,
+        color: '#4B4B4B',
     },
     header: {
         flexDirection: 'row',
@@ -246,125 +253,140 @@ const Quotation = ({ employee, products, totalAmount }: QuotationProps) => {
     const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     const quotationNumber = `QT-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(date.getTime()).slice(-4)}`;
 
+    // คำนวณจำนวนหน้าทั้งหมด (10 รายการต่อหน้า)
+    const ITEMS_PER_PAGE = 10;
+    const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
-                {/* Header */}
-                <View style={styles.header}>
-                    <Image 
-                        src="/logo.jpg" // ใช้โลโก้จาก public
-                        style={{ width: 100, height: 'auto' }} // ปรับขนาดตามต้องการ
-                    />
-                    <View style={styles.textContainer}>
-                        <Text style={styles.brandName}>8BUILT-IN</Text>
-                        <Text style={styles.documentTitle}>ใบเสนอราคา / Quotation</Text>
-                    </View>
-                </View>
+        {[...Array(totalPages)].map((_, pageIndex) => {
+            const startIndex = pageIndex * ITEMS_PER_PAGE;
+            const pageProducts = products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+            const isLastPage = pageIndex === totalPages - 1;
 
-                {/* Document Info */}
-                <View style={styles.infoSection}>
-                    <Text style={styles.infoText}>เลขที่ใบเสนอราคา: {`${quotationNumber}\u00A0`}</Text>
-                    <Text style={styles.infoText}>วันที่: {formattedDate}</Text>
-                    <Text style={[styles.infoText, { paddingRight: 6 }]}>
-                        ผู้ออกเอกสาร: {employee.employee_prefix}{employee.employee_firstname} {`${employee.employee_lastname}\u00A0`}
-                    </Text>
-                    {/* <Text style={styles.infoText}>ตำแหน่ง: {employee.license_name}</Text> */}
-                </View>
-
-                <View style={styles.table}>
-                    <View style={styles.tableHeader}>
-                        <Text style={styles.columnNo}>{`ลำดับ\u00A0`}</Text>
-                        <Text style={styles.columnItem}>{`รายการ\u00A0`}</Text>
-                        <Text style={styles.columnPrice}>{`ราคา/ชิ้น\u00A0`}</Text>
-                        <Text style={styles.columnQty}>{`จำนวน\u00A0`}</Text>
-                        <Text style={styles.columnTotal}>{`ยอดรวม\u00A0`}</Text>
-                    </View>
-
-                    {products.map((product, index) => (
-                        <View key={index} style={styles.tableRow}>
-                            <Text style={[styles.columnNo, { textAlign: 'center' , fontSize: 10}]}>{index + 1}</Text>
-                            <Text style={[styles.columnItem, { textAlign: 'left' , fontSize: 10}]}>{product.product_name}</Text>
-                            <Text style={[styles.columnPrice, { textAlign: 'right' , fontSize: 10}]}>
-                                {Number(product.product_price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}
-                            </Text>
-                            <Text style={[styles.columnQty, { textAlign: 'center' , fontSize: 10}]}>{product.quantity}</Text>
-                            <Text style={[styles.columnTotal, { textAlign: 'right' , fontSize: 10 }]}>
-                                {product.total.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
-                            </Text>
-                        </View>
-                    ))}
-
-                    {/* เพิ่มแถวว่างเพื่อให้ตารางดูยาวขึ้น */}
-                    {[...Array(10 - products.length)].map((_, index) => (
-                        <View key={`empty-${index}`} style={styles.tableRow}>
-                            <Text style={styles.columnNo}></Text>
-                            <Text style={styles.columnItem}></Text>
-                            <Text style={styles.columnPrice}></Text>
-                            <Text style={styles.columnQty}></Text>
-                            <Text style={styles.columnTotal}></Text>
-                        </View>
-                    ))}
-                </View>
-
-                {/* Remark Section */}
-                <View style={styles.remarkBox}>
-                    <Text style={styles.remarkLabel}>หมายเหตุ</Text>
-                </View>
-
-                {/* Total Section */}
-                <View style={styles.totalSection}>
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>จำนวนรายการทั้งหมด:</Text>
-                        <Text style={styles.totalAmount}>{products.length} รายการ</Text>
-                    </View>
-                    <View style={styles.totalLastRow}>
-                        <Text style={styles.totalLabel}>ยอดรวมทั้งสิ้น:</Text>
-                        <Text style={styles.totalAmount}>
-                            ฿ {totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
-                        </Text>
-                    </View>
-                </View>
-
-                {/* Signature Section */}
-                <View style={styles.signatureSection}>
-                    <View style={styles.signatureBox}>
-                        <Text style={styles.signatureTitle}>{`สำนักงานใหญ่\u00A0`}</Text>
-                        <View style={styles.signatureLine} />
-                        <Text style={styles.signatureLabel}>{`ผู้มีอำนาจลงนาม\u00A0`}</Text>
-                    </View>
-
-                    {/* กล่องที่ 2: จัดเตรียมและตรวจสอบ */}
-                    <View style={styles.signatureBox}>
-                        <Text style={styles.signatureTitle}>จัดเตรียมโดย</Text>
-                        <View style={styles.signatureLine} />
-                        <Text style={[styles.signatureTitle, { marginTop: 10 }]}>ตรวจสอบโดย</Text>
-                        <View style={styles.signatureLine} />
-                    </View>
-
-                    {/* กล่องที่ 3: การชำระเงิน */}
-                    <View style={styles.paymentBox}>
-                        <View style={styles.paymentHeader}>
-                            <Text style={styles.paymentTitle}>{`ชำระโดย\u00A0`}</Text>
-                            <View style={styles.checkboxRow}>
-                                <View style={styles.checkbox} />
-                                <Text style={{ fontSize: 10 }}>เงินสด</Text>
-                            </View>
-                            <View style={styles.checkboxRow}>
-                                <View style={styles.checkbox} />
-                                <Text style={{ fontSize: 10 }}>เช็ค</Text>
+                return (
+                    <Page key={pageIndex} size="A4" style={styles.page}>
+                           <Text style={styles.pageNumber}>หน้า: {pageIndex + 1}/{totalPages}</Text>
+                        {/* Header */}
+                        <View style={styles.header}>
+                            <Image
+                                src="/logo.jpg" // ใช้โลโก้จาก public
+                                style={{ width: 100, height: 'auto' }} // ปรับขนาดตามต้องการ
+                            />
+                            <View style={styles.textContainer}>
+                                <Text style={styles.brandName}>8BUILT-IN</Text>
+                                <Text style={styles.documentTitle}>ใบเสนอราคา / Quotation</Text>
                             </View>
                         </View>
 
-                        <Text style={{ fontSize: 10, marginTop: 10 }}>ธนาคาร: _________________</Text>
-                        <View style={styles.paymentRow}>
-                            <Text style={{ fontSize: 10 }}>เลขที่: _________</Text>
-                            <Text style={{ fontSize: 10 }}>วันที่: _________</Text>
+                        {/* Document Info */}
+                        <View style={styles.infoSection}>
+                            <Text style={styles.infoText}>เลขที่ใบเสนอราคา: {`${quotationNumber}\u00A0`}</Text>
+                            <Text style={styles.infoText}>วันที่: {formattedDate}</Text>
+                            <Text style={[styles.infoText, { paddingRight: 6 }]}>
+                                ผู้ออกเอกสาร: {employee.employee_prefix}{employee.employee_firstname} {`${employee.employee_lastname}\u00A0`}
+                            </Text>
+                            {/* <Text style={styles.infoText}>ตำแหน่ง: {employee.license_name}</Text> */}
                         </View>
 
-                        <Text style={[styles.signatureLabel, { marginTop: 15, textAlign: 'center' }]}>ผู้รับเงิน</Text>
-                    </View>
-                </View>
-            </Page>
+                        <View style={styles.table}>
+                            <View style={styles.tableHeader}>
+                                <Text style={styles.columnNo}>{`ลำดับ\u00A0`}</Text>
+                                <Text style={styles.columnItem}>{`รายการ\u00A0`}</Text>
+                                <Text style={styles.columnPrice}>{`ราคา/ชิ้น\u00A0`}</Text>
+                                <Text style={styles.columnQty}>{`จำนวน\u00A0`}</Text>
+                                <Text style={styles.columnTotal}>{`ยอดรวม\u00A0`}</Text>
+                            </View>
+
+                            {pageProducts.map((product, index) => (
+                                <View key={startIndex + index} style={styles.tableRow}>
+                                    <Text style={[styles.columnNo, { textAlign: 'center', fontSize: 10 }]}>{startIndex + index + 1}</Text>
+                                    <Text style={[styles.columnItem, { textAlign: 'left', fontSize: 10 }]}>{product.product_name}</Text>
+                                    <Text style={[styles.columnPrice, { textAlign: 'right', fontSize: 10 }]}>
+                                        {Number(product.product_price).toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                                    </Text>
+                                    <Text style={[styles.columnQty, { textAlign: 'center', fontSize: 10 }]}>{product.quantity}</Text>
+                                    <Text style={[styles.columnTotal, { textAlign: 'right', fontSize: 10 }]}>
+                                        {product.total.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                                    </Text>
+                                </View>
+                            ))}
+
+                            {/* เพิ่มแถวว่างในหน้าที่ไม่เต็ม */}
+                            {isLastPage && [...Array(ITEMS_PER_PAGE - pageProducts.length)].map((_, index) => (
+                                <View key={`empty-${index}`} style={styles.tableRow}>
+                                    <Text style={styles.columnNo}></Text>
+                                    <Text style={styles.columnItem}></Text>
+                                    <Text style={styles.columnPrice}></Text>
+                                    <Text style={styles.columnQty}></Text>
+                                    <Text style={styles.columnTotal}></Text>
+                                </View>
+                            ))}
+                        </View>
+
+
+                        <View style={styles.remarkBox}>
+                            <Text style={styles.remarkLabel}>หมายเหตุ</Text>
+                        </View>
+                        {/* แสดงส่วนสรุปเฉพาะหน้าสุดท้าย */}
+                        {isLastPage && (
+                            <>
+                                <View style={styles.totalSection}>
+                                    <View style={styles.totalRow}>
+                                        <Text style={styles.totalLabel}>จำนวนรายการทั้งหมด:</Text>
+                                        <Text style={styles.totalAmount}>{products.length} รายการ</Text>
+                                    </View>
+                                    <View style={styles.totalLastRow}>
+                                        <Text style={styles.totalLabel}>ยอดรวมทั้งสิ้น:</Text>
+                                        <Text style={styles.totalAmount}>
+                                            ฿ {totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.signatureSection}>
+                                    <View style={styles.signatureBox}>
+                                        <Text style={styles.signatureTitle}>{`สำนักงานใหญ่\u00A0`}</Text>
+                                        <View style={styles.signatureLine} />
+                                        <Text style={styles.signatureLabel}>{`ผู้มีอำนาจลงนาม\u00A0`}</Text>
+                                    </View>
+
+                                    {/* กล่องที่ 2: จัดเตรียมและตรวจสอบ */}
+                                    <View style={styles.signatureBox}>
+                                        <Text style={styles.signatureTitle}>จัดเตรียมโดย</Text>
+                                        <View style={styles.signatureLine} />
+                                        <Text style={[styles.signatureTitle, { marginTop: 10 }]}>ตรวจสอบโดย</Text>
+                                        <View style={styles.signatureLine} />
+                                    </View>
+
+                                    {/* กล่องที่ 3: การชำระเงิน */}
+                                    <View style={styles.paymentBox}>
+                                        <View style={styles.paymentHeader}>
+                                            <Text style={styles.paymentTitle}>{`ชำระโดย\u00A0`}</Text>
+                                            <View style={styles.checkboxRow}>
+                                                <View style={styles.checkbox} />
+                                                <Text style={{ fontSize: 10 }}>เงินสด</Text>
+                                            </View>
+                                            <View style={styles.checkboxRow}>
+                                                <View style={styles.checkbox} />
+                                                <Text style={{ fontSize: 10 }}>เช็ค</Text>
+                                            </View>
+                                        </View>
+
+                                        <Text style={{ fontSize: 10, marginTop: 10 }}>ธนาคาร: _________________</Text>
+                                        <View style={styles.paymentRow}>
+                                            <Text style={{ fontSize: 10 }}>เลขที่: _________</Text>
+                                            <Text style={{ fontSize: 10 }}>วันที่: _________</Text>
+                                        </View>
+
+                                        <Text style={[styles.signatureLabel, { marginTop: 15, textAlign: 'center' }]}>ผู้รับเงิน</Text>
+                                    </View>
+                                </View>
+                            </>
+                        )}
+                    </Page>
+                );
+            })}
         </Document>
     );
 };

@@ -284,13 +284,25 @@ const SalesPage = () => {
                                     })()}
                                 </Box>
                                 <CardContent className="flex-grow p-4">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <Typography gutterBottom variant="h6" component="div" className="font-semibold text-lg">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <Typography 
+                                            gutterBottom 
+                                            variant="h6" 
+                                            component="div" 
+                                            className="font-semibold text-lg h-[50px] overflow-hidden"
+                                            sx={{
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: 'vertical',
+                                                wordBreak: 'break-word',
+                                                lineHeight: '1.2'
+                                            }}
+                                        >
                                             {product.product_name}
                                         </Typography>
                                         <IconButton
                                             onClick={() => handleViewDetails(product.product_id)}
-                                            className="hover:bg-gray-200 rounded-full p-1"
+                                            className="hover:bg-gray-200 rounded-full p-1 ml-2 flex-shrink-0"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                                 <path fill="currentColor" d="M17.4 17h-1.8a1.6 1.6 0 0 1-1.6-1.6v-3.8a1.6 1.6 0 0 1 1.6-1.6h1.8a1.6 1.6 0 0 1 1.6 1.6v3.8a1.6 1.6 0 0 1-1.6 1.6m-9 0H6.6A1.6 1.6 0 0 1 5 15.4V3.6A1.6 1.6 0 0 1 6.6 2h1.8A1.6 1.6 0 0 1 10 3.6v11.8A1.6 1.6 0 0 1 8.4 17" />
@@ -298,15 +310,17 @@ const SalesPage = () => {
                                             </svg>
                                         </IconButton>
                                     </div>
-                                    <Typography variant="body2" color="text.secondary" className="mb-2">
-                                        รหัสสินค้า: <span className="font-medium">{product.product_id}</span>
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary" className="mb-2">
-                                        จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} {(() => {
-                                            const un = unit.find((e) => e.unit_id === product.unit_id);
-                                            return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
-                                        })()}</span>
-                                    </Typography>
+                                    <div className="space-y-2">
+                                        <Typography variant="body2" color="text.secondary">
+                                            รหัสสินค้า: <span className="font-medium">{product.product_id}</span>
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} {(() => {
+                                                const un = unit.find((e) => e.unit_id === product.unit_id);
+                                                return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                            })()}</span>
+                                        </Typography>
+                                    </div>
                                     <p className="text-[#d59d35] mt-3 text-[18px] font-[400]">
                                         ฿ {decimalFix(product.product_price)} / {(() => {
                                             const un = unit.find((e) => e.unit_id === product.unit_id);
