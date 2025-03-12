@@ -60,42 +60,46 @@ const PurchaseRequestPage = () => {
           สร้าง PR
         </Button>
       </div>
-      <TableContainer style={{ minHeight: "24rem" }}>
-        <Table>
-          <TableHead>
-            <TableRow className="bg-gray-200">
-              <TableCell>#</TableCell>
-              <TableCell>รหัส PR</TableCell>
-              <TableCell>สถานะ PR</TableCell>
-              <TableCell>หมายเหตุ</TableCell>
-              <TableCell>เพิ่มโดย</TableCell>
-              <TableCell>วันที่เพิ่ม</TableCell>
-              <TableCell>ออกบิล</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {purchaseRequests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-              <TableRow hover>
-                <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                <TableCell>{item.pr_id}</TableCell>
-                <TableCell>
-                  {item.pr_states === 'pending' ? (
-                    <Chip label="Pending" color="warning" />
-                  ) : item.pr_states === 'success' ? (
-                    <Chip label="Success" color="success" />
-                  ) : (
-                    <Chip label={item.pr_states} />
-                  )}
-                </TableCell>
-                <TableCell>{item.pr_note}</TableCell>
-                <TableCell>{item.addby}</TableCell>
-                <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                <TableCell>ปุ่มออกบิล</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {loading ? (
+        <Loading />
+      ) : (
+        <TableContainer style={{ minHeight: "24rem" }}>
+          <Table>
+            <TableHead>
+              <TableRow className="bg-gray-200">
+                <TableCell>#</TableCell>
+                <TableCell>รหัส PR</TableCell>
+                <TableCell>สถานะ PR</TableCell>
+                <TableCell>หมายเหตุ</TableCell>
+                <TableCell>เพิ่มโดย</TableCell>
+                <TableCell>วันที่เพิ่ม</TableCell>
+                <TableCell>ออกบิล</TableCell>
+              </TableRow >
+            </TableHead >
+            <TableBody>
+              {purchaseRequests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                <TableRow key={item.pr_id} hover>
+                  <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                  <TableCell>{item.pr_id}</TableCell>
+                  <TableCell>
+                    {item.pr_status === 'pending' ? (
+                      <Chip label="Pending" color="warning" />
+                    ) : item.pr_status === 'success' ? (
+                      <Chip label="Success" color="success" />
+                    ) : (
+                      <Chip label={item.pr_status} />
+                    )}
+                  </TableCell>
+                  <TableCell>{item.pr_note}</TableCell>
+                  <TableCell>{item.addby}</TableCell>
+                  <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                  <TableCell>ปุ่มออกบิล</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table >
+        </TableContainer>
+      )}
       <TablePagination
         rowsPerPageOptions={[5, 10, 15]}
         component="div"
@@ -106,7 +110,7 @@ const PurchaseRequestPage = () => {
         onRowsPerPageChange={onChangeRowsPerPage}
       />
 
-      <PurchaseRequestAdd open={isDialogAdd} onClose={() => setIsDialogAdd(false)} onRefresh={() => { }} />
+      <PurchaseRequestAdd open={isDialogAdd} onClose={() => setIsDialogAdd(false)} onRefresh={async () => { await fetchData() }} />
     </>
   )
 }

@@ -37,10 +37,10 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
 
     const [purchaseRequest, setPurchaseRequest] = useState<PurchaseRequest>({
         pr_id: '',
+        pr_status: '',
+        pr_note: '',
         product: '',
         material: '',
-        pr_states: '',
-        pr_note: '',
     })
     const [product, setProduct] = useState<{ product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
     const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
@@ -93,6 +93,7 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
             ...purchaseRequest,
             product: JSON.stringify(product),
             material: JSON.stringify(material),
+            pr_status: "pending",
         };
         Swal.fire({
             title: 'กำลังดำเนินการ...',
@@ -108,10 +109,10 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
             await insertPurchaseRequest(insertData);
             setPurchaseRequest({
                 pr_id: '',
+                pr_status: '',
+                pr_note: '',
                 product: '',
                 material: '',
-                pr_states: '',
-                pr_note: '',
             });
             setMaterial([]);
             setProduct([]);
@@ -145,6 +146,20 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
+                    <Grid size={12}>
+                        <FormLabel component="legend" sx={{ fontSize: '0.875rem' }}>
+                            หมายเหตุ (ไม่บังคับ)
+                        </FormLabel>
+                        <textarea
+                            value={purchaseRequest.pr_note}
+                            onChange={(e) =>
+                                setPurchaseRequest({ ...purchaseRequest, pr_note: e.target.value })
+                            }
+                            placeholder="เพิ่มหมายเหตุ..."
+                            className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            rows={3}
+                        />
+                    </Grid>
                     <Grid size={12}>
                         <Button onClick={() => handleAddData("product")} startIcon={<Add />} color="primary">
                             เพิ่มสินค้า
@@ -265,7 +280,7 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
                     </Grid>
                 </Grid>
             </DialogContent>
-            <DialogActions sx={{ justifyContent: "center" }}>
+            <DialogActions sx={{ justifyContent: "center", marginBottom: 3 }}>
                 <Button onClick={handleSubmit} color="success" variant="contained">
                     บันทึก
                 </Button>
