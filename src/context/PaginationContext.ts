@@ -13,5 +13,5 @@ export const usePagination = () => {
     setPage(0);
   };
 
-  return { page, rowsPerPage, onChangePage, onChangeRowsPerPage };
+  return { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage };
 };

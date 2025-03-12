@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
-import AddSupplier from "@/app/components/Supplier/Add";
-import UpdateSupplier from "@/app/components/Supplier/Update";
+import AddSupplier from "@/app/components/StockStore/Supplier/Add";
+import UpdateSupplier from "@/app/components/StockStore/Supplier/Update";
 import Loading from "@/app/components/Loading";
 
 import useSupplier from "@/hooks/useSupplier";
@@ -21,7 +21,7 @@ import { Supplier } from '@/misc/types';
 const { getSupplierBy, deleteSupplierBy } = useSupplier();
 
 const SupplierPage = () => {
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -69,6 +69,7 @@ const SupplierPage = () => {
     setLoading(true);
     try {
       const { docs: res } = await getSupplierBy();
+      setPage(0)
       setSuppliers(res);
     } catch (error) {
       console.error("Error fetching suppliers:", error);

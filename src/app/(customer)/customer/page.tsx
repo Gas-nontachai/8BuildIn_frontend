@@ -23,7 +23,7 @@ import { match } from "assert";
 const { getCustomerBy, deleteCustomerBy } = useCustomer();
 
 const CustomerPage = () => {
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [loading, setLoading] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -69,6 +69,7 @@ const CustomerPage = () => {
   const fetchData = async () => {
     setLoading(true);
     const { docs: res } = await getCustomerBy();
+    setPage(0)
     setCustomers(res);
     setLoading(false);
   };
