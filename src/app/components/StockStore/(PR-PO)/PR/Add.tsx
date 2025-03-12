@@ -20,11 +20,12 @@ import {
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
 
-import { usePurchaseRequest } from "@/hooks/hooks";
+import { usePurchaseRequest, useUnit } from "@/hooks/hooks";
 import { PurchaseRequest } from '@/misc/types';
 import { decimalFix } from "@/utils/number-helper";
 
 const { insertPurchaseRequest } = usePurchaseRequest();
+const { getUnitBy } = useUnit();
 
 interface Props {
     onRefresh: () => void;
@@ -41,16 +42,32 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
         pr_states: '',
         pr_note: '',
     })
-    const [product, setProduct] = useState<{ product_name: string, product_quantity: number, product_price: number }[]>([]);
-    const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, material_price: number }[]>([]);
+    const [product, setProduct] = useState<{ product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
+    const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
+    const [unit, setUnit] = useState<{ id: string; name: string }[]>([]);
+
+    useEffect(() => {
+        fetchUnit();
+    }, [])
+
+    const fetchUnit = async () => {
+        try {
+            const { docs: res } = await getUnitBy();
+            setUnit(res.map(item => ({ id: item.unit_id, name: `${item.unit_name_th}(${item.unit_name_en})` })))
+        } catch (error) {
+            console.error("Error fetching supplier data:", error);
+            Swal.fire("Error", "ไม่สามารถดึงข้อมูลผู้จำหน่ายได้", "error");
+        }
+    };
 
     const handleAddData = (type: "product" | "material") => {
         if (type === "product") {
-            setProduct([...product, { product_name: "", product_quantity: 0, product_price: 0 }]);
+            setProduct([...product, { product_name: "", product_quantity: 0, unit_id: '', product_price: 0 }]);
         } else {
-            setMaterial([...material, { material_name: "", material_quantity: 0, material_price: 0 }]);
+            setMaterial([...material, { material_name: "", material_quantity: 0, unit_id: '', material_price: 0 }]);
         }
     };
+
     const handleDataChange = (index: number, key: string, value: string, type: "product" | "material") => {
         if (type === "product") {
             const updatedProductList = [...product];
@@ -144,7 +161,7 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
                             <Grid container spacing={2} key={index} sx={{
                                 mb: 1
                             }}>
-                                <Grid size={8}>
+                                <Grid size={5}>
                                     <TextField
                                         label="ชื่อสินค้า"
                                         size="small"
@@ -164,6 +181,24 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
                                         onChange={(e) => handleDataChange(index, "product_quantity", e.target.value, "product")}
                                     />
                                 </Grid>
+                                <Grid size={3}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel id={`unit-label-${index}`}>หน่วย</InputLabel>
+                                        <Select
+                                            labelId={`unit-label-${index}`}
+                                            name="unit_id"
+                                            label="หน่วย"
+                                            value={product.unit_id}
+                                            onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "product")}
+                                        >
+                                            {unit?.map((unit) => (
+                                                <MenuItem key={unit.id} value={unit.id}>
+                                                    {unit.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
                                 <Grid size={1}>
                                     <IconButton onClick={() => handleRemoveData(index, "product")} color="error">
                                         <DeleteForeverRounded />
@@ -181,7 +216,7 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
                             <Grid container spacing={2} key={index} sx={{
                                 mb: 1
                             }}>
-                                <Grid size={8}>
+                                <Grid size={5}>
                                     <TextField
                                         label="ชื่อวัสดุ"
                                         size="small"
@@ -200,6 +235,24 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
                                         inputProps={{ min: 0 }}
                                         onChange={(e) => handleDataChange(index, "material_quantity", e.target.value, "material")}
                                     />
+                                </Grid>
+                                <Grid size={3}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel id={`unit-label-${index}`}>หน่วย</InputLabel>
+                                        <Select
+                                            labelId={`unit-label-${index}`}
+                                            name="unit_id"
+                                            label="หน่วย"
+                                            value={material.unit_id}
+                                            onChange={(e) => handleDataChange(index, "unit_id", e.target.value, "material")}
+                                        >
+                                            {unit?.map((unit) => (
+                                                <MenuItem key={unit.id} value={unit.id}>
+                                                    {unit.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                                 <Grid size={1}>
                                     <IconButton onClick={() => handleRemoveData(index, "material")} color="error">

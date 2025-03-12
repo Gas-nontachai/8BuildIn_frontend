@@ -21,6 +21,7 @@ const { getPurchaseRequestBy } = usePurchaseRequest();
 const PurchaseRequestPage = () => {
   const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequest[]>([]);
+
   const [isDialogAdd, setIsDialogAdd] = useState(false);
   const [loading, setLoading] = useState(false);
 
