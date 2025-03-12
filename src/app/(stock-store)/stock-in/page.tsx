@@ -12,7 +12,7 @@ import {
 import {
     Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Menu, TablePagination, InputAdornment, Button,
-    Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField, Collapse, Box, Chip, Avatar, FormControl, Card, CardContent
+    Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField, Collapse, Divider, Chip, Avatar, FormControl, Card, CardContent
 } from "@mui/material";
 
 import { usePagination } from "@/context/PaginationContext";
@@ -221,7 +221,7 @@ const StockInPage = () => {
                                     <TableCell align="center"># </TableCell>
                                     <TableCell align="center">รหัสสต็อก </TableCell>
                                     <TableCell align="center">ดูรายละเอียดสต็อกเข้า</TableCell>
-                                    <TableCell align="center">ผู้จัดจำหน่าย</TableCell>
+                                    <TableCell>ผู้จัดจำหน่าย</TableCell>
                                     <TableCell align="center">วันที่ถูกเพิ่ม</TableCell>
                                     <TableCell align="center"> จัดการ </TableCell>
                                 </TableRow>
@@ -242,7 +242,7 @@ const StockInPage = () => {
                                                 </IconButton>
                                             </TableCell>
                                             <TableCell align="center">
-                                                <div className="flex justify-center  items-center space-x-2">
+                                                <div className="flex justify-start  items-center space-x-2">
                                                     <img className="w-10 h-10 rounded-3xl border-2" src={`${API_URL}${supplier.find((s) => s.supplier_id === stock.supplier_id)?.supplier_img}` || "/default-emp"} />
                                                     <span className="text-[15px] font-[400]">{supplier.find((s) => s.supplier_id === stock.supplier_id)?.supplier_name || "Unknown"}</span>
                                                 </div>
@@ -293,26 +293,29 @@ const StockInPage = () => {
                                                             <div className="text-sm font-medium text-gray-600 mb-4">
                                                                 วันที่เพิ่ม : {formatDate(stock.adddate, "dd/MM/yyyy HH:mm:ss")}
                                                             </div>
-                                                            <div>
-                                                                {stock.stock_in_note && (
-                                                                    <>
-                                                                        <p className="text-[16px] font-medium text-gray-800 mb-1">หมายเหตุ <span className="text-red-500">*</span></p>
+                                                            {stock.stock_in_note && (
+                                                                <>
+                                                                    <p className="text-[16px] font-medium text-gray-800 mb-1">หมายเหตุ <span className="text-red-500">*</span></p>
 
-                                                                        <div className="w-full p-3 mt-2 border border-gray-300 text-[14px] bg-[#eee] rounded-md">
-                                                                            {stock.stock_in_note}
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                            </div>
+                                                                    <div className="w-full p-3 mt-2 border border-gray-300 text-[14px] bg-[#eee] rounded-md">
+                                                                        {stock.stock_in_note}
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                            <Divider></Divider>
                                                         </CardContent>
                                                         {JSON.parse(stock.product).length > 0 && (
-                                                            <CardContent>
-                                                                <div className="my-2">
+                                                            <CardContent sx={{ mb: -2 }}>
+                                                                <div className="mb-2">
                                                                     <Chip
-                                                                        sx={{ fontSize: 14, fontWeight: 600 }}
                                                                         avatar={<Avatar><Store /></Avatar>}
                                                                         label={`สินค้า ${JSON.parse(stock.product).length} ชิ้น`}
                                                                         color="primary"
+                                                                        sx={{
+                                                                            '& .MuiChip-label': {
+                                                                                fontWeight: '500',
+                                                                            },
+                                                                        }}
                                                                     />
                                                                 </div>
                                                                 <Table size="small" aria-label="products">
@@ -340,12 +343,16 @@ const StockInPage = () => {
 
                                                         {JSON.parse(stock.material).length > 0 && (
                                                             <CardContent>
-                                                                <div className="my-2">
+                                                                <div className="mb-2">
                                                                     <Chip
-                                                                        sx={{ fontSize: 14, fontWeight: 600 }}
                                                                         avatar={<Avatar><Gavel /></Avatar>}
                                                                         label={`วัสดุ ${JSON.parse(stock.material).length} ชิ้น`}
-                                                                        color="secondary"
+                                                                        color="error"
+                                                                        sx={{
+                                                                            '& .MuiChip-label': {
+                                                                                fontWeight: '500',
+                                                                            },
+                                                                        }}
                                                                     />
                                                                 </div>
                                                                 <Table size="small" aria-label="materials">
@@ -392,7 +399,7 @@ const StockInPage = () => {
             )}
 
             <AddStockIn open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
-            <UpdateStockIn open={isUpdateDialogOpen} stock_in_id={stock_in_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} /> 
+            <UpdateStockIn open={isUpdateDialogOpen} stock_in_id={stock_in_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
         </>
     );
 };
