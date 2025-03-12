@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
 
@@ -18,6 +19,7 @@ import { usePurchaseRequest } from "@/hooks/hooks";
 const { getPurchaseRequestBy, updatePurchaseRequestBy } = usePurchaseRequest();
 
 const ListTablePR = () => {
+    const router = useRouter();
     const [purchaserequest, setPurchaseRequest] = useState<PurchaseRequest>({
         pr_id: '',
         pr_status: '',
@@ -104,6 +106,11 @@ const ListTablePR = () => {
         }
     }
 
+    const handleDetail = (pr_id: string) => {
+        router.push('/purchase-request/detail/?pr_id=' + pr_id);
+    }
+
+
     return (
         <>
             {loading ? (
@@ -120,7 +127,7 @@ const ListTablePR = () => {
                                 <TableCell>เพิ่มโดย</TableCell>
                                 <TableCell>วันที่เพิ่ม</TableCell>
                                 <TableCell>ดูบิล</TableCell>
-                                <TableCell>อนุมติ</TableCell>
+                                <TableCell>อนุมัติ</TableCell>
                             </TableRow >
                         </TableHead >
                         <TableBody>
@@ -155,7 +162,7 @@ const ListTablePR = () => {
                                         >
                                             <MenuItem onClick={() => {
                                                 pr_id.current = selected?.pr_id!;
-                                                handleApprove(pr_id.current);
+                                                handleDetail(pr_id.current);
                                                 handleCloseMenu();
                                             }}>
                                                 <EventNote className="mr-2" /> ดูรายละเอียด

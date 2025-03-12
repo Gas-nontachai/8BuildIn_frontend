@@ -62,7 +62,7 @@ const ListTablePO = () => {
     const handleNotApprove = async (pr_id: string) => {
         try {
             const { isConfirmed } = await Swal.fire({
-                title: 'ไม่อนุมัติ PR นี้?',
+                title: 'ไม่อนุมัติ PO นี้?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ใช่',
@@ -81,10 +81,10 @@ const ListTablePO = () => {
         }
     };
 
-    const handleApprove = async (pr_id: string) => {
+    const handleApprove = async (po_id: string) => {
         try {
             const { isConfirmed } = await Swal.fire({
-                title: 'อนุมัติ PR นี้?',
+                title: 'อนุมัติ PO นี้?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ใช่',
@@ -93,7 +93,7 @@ const ListTablePO = () => {
             if (isConfirmed) {
                 const updateStatus = {
                     ...purchaseorder,
-                    pr_id: pr_id,
+                    po_id: po_id,
                     pr_status: 'approve'
                 }
                 await updatePurchaseOrderBy(updateStatus);
@@ -120,7 +120,7 @@ const ListTablePO = () => {
                                 <TableCell>เพิ่มโดย</TableCell>
                                 <TableCell>วันที่เพิ่ม</TableCell>
                                 <TableCell>ดูบิล</TableCell>
-                                <TableCell>อนุมติ</TableCell>
+                                <TableCell>อนุมัติ</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
