@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import Swal from 'sweetalert2';
 import { useSearchParams } from "next/navigation";
 import {
     Typography,
@@ -12,13 +13,15 @@ import {
     Paper,
     CircularProgress,
     Box,
-    Chip,
+    Button,
     Breadcrumbs,
     Link,
     Stack,
-    Grid
+    Grid,
+    Tooltip,
+    TextField
 } from "@mui/material";
-import { ReceiptLong, EventNote } from "@mui/icons-material";
+import { ListAlt, EventNote } from "@mui/icons-material";
 
 import { decimalFix } from "@/utils/number-helper";
 import { PurchaseRequest, Unit } from "@/misc/types";
@@ -28,7 +31,14 @@ const PurchaseRequestDetailPage = () => {
     const searchParams = useSearchParams();
     const purchase_request_id = searchParams.get("pr_id");
     const [pr, setPR] = useState<PurchaseRequest | null>(null);
-    const { getPurchaseRequestByID } = usePurchaseRequest();
+    const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequest>({
+        pr_id: '',
+        pr_status: '',
+        pr_note: '',
+        product: '',
+        material: '',
+    });
+    const { getPurchaseRequestByID, updatePurchaseRequestBy } = usePurchaseRequest();
 
     useEffect(() => {
         if (purchase_request_id) {
@@ -56,6 +66,51 @@ const PurchaseRequestDetailPage = () => {
         }
     };
 
+    const handleNotApprove = async (pr_id: string) => {
+        try {
+            const { isConfirmed } = await Swal.fire({
+                title: 'ไม่อนุมัติ PR นี้?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่',
+                cancelButtonText: 'ไม่',
+            });
+            if (isConfirmed) {
+                const updatedData = {
+                    ...purchaseRequests,
+                    pr_id: pr_id,
+                    pr_status: 'not-approve',
+                };
+                await updatePurchaseRequestBy(updatedData);
+            }
+        } catch (error) {
+            console.log("Error disapprove PR:", error);
+        }
+    };
+
+    const handleApprove = async (pr_id: string) => {
+        try {
+            const { isConfirmed } = await Swal.fire({
+                title: 'อนุมัติ PR นี้?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่',
+                cancelButtonText: 'ไม่',
+            });
+            if (isConfirmed) {
+                const updatedData = {
+                    ...purchaseRequests,
+                    pr_id: pr_id,
+                    pr_status: 'approve',
+                };
+                await updatePurchaseRequestBy(updatedData);
+            }
+        } catch (error) {
+            console.log("Error approve PR:", error);
+        }
+    };
+
+
     return (
         <Box sx={{ p: 4 }}>
             {pr ? (
@@ -64,7 +119,7 @@ const PurchaseRequestDetailPage = () => {
                         <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
                             <Link underline="hover" href="/pr-po-list">
                                 <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
-                                    <ReceiptLong fontSize="small" />
+                                    <ListAlt fontSize="small" />
                                     <Typography variant="body1" color="primary">จัดการคำขอซื้อและใบสั่งซื้อ</Typography>
                                 </Stack>
                             </Link>
@@ -74,22 +129,26 @@ const PurchaseRequestDetailPage = () => {
                             </Stack>
                         </Breadcrumbs>
                     </div>
-                    <Typography variant="h5" fontWeight="bold" gutterBottom>
-                        หมายเลขคำขอซื้อ: {pr.pr_id}
-                    </Typography>
-                    <span
-                        className={`inline-block px-3 py-1 mb-2 rounded-2xl text-[17px] font-bold shadow-md
+                    <Box display="inline-flex" alignItems="center" gap={2}>
+                        <Typography variant="h5" fontWeight="bold" gutterBottom>
+                            หมายเลขคำขอซื้อ: {pr.pr_id}
+                        </Typography>
+                        <span
+                            className={`inline-block px-3 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
                             ${pr.pr_status === "not-approved" ? "bg-red-500 text-white" :
-                                pr.pr_status === "approved" ? "bg-green-500 text-white" :
-                                    pr.pr_status === "pending" ? "bg-yellow-500 text-white" : ""}`}
-                    >
-                        {pr.pr_status === "not-approved" ? "ไม่อนุมัติ" :
-                            pr.pr_status === "approved" ? "อนุมัติ" :
-                                pr.pr_status === "pending" ? "รอดำเนินการ" : ""}
-                    </span>
-                    <Typography variant="body1" gutterBottom>
-                        หมายเหตุ: {pr.pr_note}
-                    </Typography>
+                                    pr.pr_status === "approved" ? "bg-green-500 text-white" :
+                                        pr.pr_status === "pending" ? "bg-yellow-500 text-white" : ""}`}
+                        >
+                            {pr.pr_status === "not-approved" ? "ไม่อนุมัติ" :
+                                pr.pr_status === "approved" ? "อนุมัติ" :
+                                    pr.pr_status === "pending" ? "รอดำเนินการ" : ""}
+                        </span>
+                    </Box>
+                    {pr.pr_note && (
+                        <Typography variant="body1" gutterBottom>
+                            หมายเหตุ: {pr.pr_note}
+                        </Typography>
+                    )}
                     <Grid container spacing={2}>
                         {pr.product && pr.product !== "[]" && (
                             <Grid item xs={12} md={6}>
@@ -150,6 +209,31 @@ const PurchaseRequestDetailPage = () => {
                                 </Box>
                             </Grid>
                         )}
+                        <Grid item xs={12} sx={{ justifyContent: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 2, mt: 2 }}>
+                            <TextField
+                                label="หมายเหตุ"
+                                multiline
+                                value={purchaseRequests.pr_note}
+                                onChange={(e) => setPurchaseRequests({ ...purchaseRequests, pr_note: e.target.value })}
+                                rows={4}
+                                variant="outlined"
+                                fullWidth
+                            />
+                            <div className="flex gap-2">
+                                <Tooltip title="อนุมัติคำขอ" arrow>
+                                    <Button variant="contained" color="success">
+                                        อนุมัติ
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title="ไม่อนุมัติคำขอ" arrow>
+                                    <Button variant="contained" color="error">
+                                        ไม่อนุมัติ
+                                    </Button>
+                                </Tooltip>
+                            </div>
+                        </Grid>
+
+
                     </Grid>
                 </>
             ) : (

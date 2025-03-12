@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
 
 import { Check, Close, MoreVert, EventNote } from "@mui/icons-material";
@@ -19,14 +18,7 @@ import { usePurchaseRequest } from "@/hooks/hooks";
 const { getPurchaseRequestBy, updatePurchaseRequestBy } = usePurchaseRequest();
 
 const TableListPR = () => {
-    const router = useRouter();
-    const [purchaserequest, setPurchaseRequest] = useState<PurchaseRequest>({
-        pr_id: '',
-        pr_status: '',
-        pr_note: '',
-        product: '',
-        material: '',
-    });
+    const router = useRouter(); 
     const [loading, setLoading] = useState(false);
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequest[]>([]);
@@ -61,51 +53,6 @@ const TableListPR = () => {
         }
     };
 
-    const handleNotApprove = async (pr_id: string) => {
-        try {
-            const { isConfirmed } = await Swal.fire({
-                title: 'ไม่อนุมัติ PR นี้?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'ใช่',
-                cancelButtonText: 'ไม่',
-            });
-            if (isConfirmed) {
-                const updateStatus = {
-                    ...purchaserequest,
-                    pr_id: pr_id,
-                    pr_status: 'not-appreove'
-                }
-                await updatePurchaseRequestBy(updateStatus);
-            }
-        } catch (error) {
-            console.log("Error disapprove PR:", error);
-        }
-    };
-
-    const handleApprove = async (pr_id: string) => {
-        try {
-            const { isConfirmed } = await Swal.fire({
-                title: 'อนุมัติ PR นี้?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'ใช่',
-                cancelButtonText: 'ไม่',
-            });
-            if (isConfirmed) {
-                const updateStatus = {
-                    ...purchaserequest,
-                    pr_id: pr_id,
-                    pr_status: 'approve'
-                }
-                await updatePurchaseRequestBy(updateStatus);
-            }
-        }
-        catch (error) {
-            console.log("Error approve PR:", error);
-        }
-    }
-
     const handleDetail = (pr_id: string) => {
         router.push('/purchase-request/detail/?pr_id=' + pr_id);
     }
@@ -136,19 +83,19 @@ const TableListPR = () => {
                                     <TableCell>{item.pr_id}</TableCell>
                                     <TableCell>
                                         {item.pr_status === 'pending' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-white bg-yellow-500">
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-yellow-500">
                                                 รอดำเนินการ
                                             </span>
                                         ) : item.pr_status === 'success' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-white bg-green-500">
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-green-500">
                                                 สำเร็จ
                                             </span>
                                         ) : item.pr_status === 'not-approved' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-white bg-red-500">
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-red-500">
                                                 ไม่อนุมัติ
                                             </span>
                                         ) : (
-                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-black bg-gray-300">
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-black bg-gray-300">
                                                 {item.pr_status}
                                             </span>
                                         )}
@@ -174,20 +121,6 @@ const TableListPR = () => {
                                                 handleCloseMenu();
                                             }}>
                                                 <EventNote className="mr-2" /> ดูรายละเอียด
-                                            </MenuItem>
-                                            <MenuItem onClick={() => {
-                                                pr_id.current = selected?.pr_id!;
-                                                handleApprove(pr_id.current);
-                                                handleCloseMenu();
-                                            }}>
-                                                <Check className="mr-2" /> อนุมัติ
-                                            </MenuItem>
-                                            <MenuItem onClick={() => {
-                                                pr_id.current = selected?.pr_id!;
-                                                handleNotApprove(pr_id.current);
-                                                handleCloseMenu();
-                                            }}>
-                                                <Close className="mr-2" /> ไม่อนุมัติ
                                             </MenuItem>
                                         </Menu>
                                     </TableCell>

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-import { Checklist, Home, Assignment, ReceiptLong } from "@mui/icons-material";
+import { ListAlt, Home, Assignment, ReceiptLong } from "@mui/icons-material";
 import {
     Tabs, Tab, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
@@ -35,7 +35,7 @@ const PRPOList = () => {
                         </Stack>
                     </Link>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
-                        <ReceiptLong fontSize="small" />
+                        <ListAlt fontSize="small" />
                         <Typography variant="body1" color="text.secondary">จัดการคำขอซื้อและใบสั่งซื้อ</Typography>
                     </Stack>
                 </Breadcrumbs>

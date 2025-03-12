@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
 
-import { Add, Home, Timeline, Receipt } from "@mui/icons-material";
+import { Add, Home, Assignment, Description } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
+  TableContainer, TableHead, TableRow, IconButton, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
@@ -63,12 +63,12 @@ const PurchaseRequestPage = () => {
             </Stack>
           </Link>
           <Stack direction="row" alignItems="center" spacing={0.5}>
-            <Timeline fontSize="small" />
-            <Typography variant="body1" color="text.secondary">เปิด PR</Typography>
+            <Assignment fontSize="small" />
+            <Typography variant="body1" color="text.secondary">คำขอซื้อ</Typography>
           </Stack>
         </Breadcrumbs>
-        <Button variant="contained" color="info" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
-          สร้าง PR
+        <Button variant="contained" color="primary" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
+          เปิดใบคำขอซื้อ
         </Button>
       </div>
       {loading ? (
@@ -94,17 +94,29 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.pr_id}</TableCell>
                   <TableCell>
                     {item.pr_status === 'pending' ? (
-                      <Chip label="Pending" color="warning" size="small" />
-                    ) : item.pr_status === 'approve' ? (
-                      <Chip label="Approve" color="success" size="small" />
+                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-yellow-500">
+                        รอดำเนินการ
+                      </span>
+                    ) : item.pr_status === 'success' ? (
+                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-green-500">
+                        สำเร็จ
+                      </span>
+                    ) : item.pr_status === 'not-approved' ? (
+                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-red-500">
+                        ไม่อนุมัติ
+                      </span>
                     ) : (
-                      <Chip label={item.pr_status} />
+                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-black bg-gray-300">
+                        {item.pr_status}
+                      </span>
                     )}
                   </TableCell>
                   <TableCell>{item.pr_note}</TableCell>
                   <TableCell>{item.addby}</TableCell>
                   <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                  <TableCell><Button onClick={openPDF} startIcon={<Receipt />}>ออกบิล</Button></TableCell>
+                  <TableCell>
+                    <IconButton onClick={openPDF} color="primary"><Description /></IconButton> 
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

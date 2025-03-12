@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
+import { pdf } from '@react-pdf/renderer';
 
-import { MoreVert, Store, Delete, Add, Home, ModeEdit, Timeline } from "@mui/icons-material";
+import { MoreVert, Store, Delete, Add, Home, Description, Timeline } from "@mui/icons-material";
 import {
     MenuItem, Menu, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
+    TableContainer, TableHead, TableRow, IconButton, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import Swal from 'sweetalert2';
@@ -38,6 +39,16 @@ const PurchaseOrderPage = () => {
             console.log("Error fetching Purchase Order:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const openPDF = async () => {
+        try {
+            // const blob = await pdf(<PR />).toBlob();
+            // const url = URL.createObjectURL(blob);
+            // window.open(url, '_blank');
+        } catch (error) {
+            console.error("Error generating PDF:", error);
         }
     };
 
@@ -83,17 +94,27 @@ const PurchaseOrderPage = () => {
                                     <TableCell>{item.pr_id}</TableCell>
                                     <TableCell>
                                         {item.po_status === 'pending' ? (
-                                            <Chip label="Pending" color="warning" />
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-yellow-500">
+                                                รอดำเนินการ
+                                            </span>
                                         ) : item.po_status === 'success' ? (
-                                            <Chip label="Success" color="success" />
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-green-500">
+                                                สำเร็จ
+                                            </span>
+                                        ) : item.po_status === 'not-approved' ? (
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-red-500">
+                                                ไม่อนุมัติ
+                                            </span>
                                         ) : (
-                                            <Chip label={item.po_status} />
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-black bg-gray-300">
+                                                {item.po_status}
+                                            </span>
                                         )}
                                     </TableCell>
                                     <TableCell>{item.po_note}</TableCell>
                                     <TableCell>{item.addby}</TableCell>
                                     <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    <TableCell>ปุ่มออกบิล</TableCell>
+                                    <TableCell><IconButton onClick={openPDF} color="primary"><Description /></IconButton></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

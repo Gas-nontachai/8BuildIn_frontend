@@ -19,8 +19,9 @@ import {
     Outbound,
     Gavel,
     Timeline,
-    AddShoppingCart,
-    ListAlt
+    ReceiptLong,
+    ListAlt,
+    Assignment
 } from "@mui/icons-material";
 
 
@@ -69,8 +70,8 @@ export default function SidebarMenu() {
         { text: "ฝ่ายขาย", href: "/sales", icon: <SupportAgent /> },
     ];
     const PRPOList = [
-        { text: "เปิด PR", href: "/purchase-request", icon: <Timeline /> },
-        { text: "สร้าง PO", href: "/purchase-order", icon: <AddShoppingCart /> },
+        { text: "คำขอซื้อ", href: "/purchase-request", icon: <Assignment /> },
+        { text: "ใบสั่งซื้อ", href: "/purchase-order", icon: <ReceiptLong /> },
         { text: "รายการ PR/PO", href: "/pr-po-list", icon: <ListAlt /> }
     ];
 
