@@ -1,17 +1,17 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
 
-import { MoreVert, Store, Delete, Add, Home, ModeEdit, Timeline } from "@mui/icons-material";
+import { Add, Home, Timeline } from "@mui/icons-material";
 import {
-  MenuItem, Menu, Table, TableBody, TableCell,
+  Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
-import { usePagination } from "@/context/PaginationContext";
-import Swal from 'sweetalert2';
 
 import Loading from "@/app/components/Loading";
 import PurchaseRequestAdd from "@/app/components/StockStore/(PR-PO)/PR/Add";
+import { usePagination } from "@/context/PaginationContext";
 
 import { PurchaseRequest } from '@/misc/types';
 import { usePurchaseRequest } from "@/hooks/hooks";
@@ -84,8 +84,8 @@ const PurchaseRequestPage = () => {
                   <TableCell>
                     {item.pr_status === 'pending' ? (
                       <Chip label="Pending" color="warning" size="small" />
-                    ) : item.pr_status === 'success' ? (
-                      <Chip label="Success" color="success" size="small" />
+                    ) : item.pr_status === 'approve' ? (
+                      <Chip label="Approve" color="success" size="small" />
                     ) : (
                       <Chip label={item.pr_status} />
                     )}
