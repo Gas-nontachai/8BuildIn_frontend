@@ -83,9 +83,9 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.pr_id}</TableCell>
                   <TableCell>
                     {item.pr_status === 'pending' ? (
-                      <Chip label="Pending" color="warning" />
+                      <Chip label="Pending" color="warning" size="small" />
                     ) : item.pr_status === 'success' ? (
-                      <Chip label="Success" color="success" />
+                      <Chip label="Success" color="success" size="small" />
                     ) : (
                       <Chip label={item.pr_status} />
                     )}
@@ -93,7 +93,7 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.pr_note}</TableCell>
                   <TableCell>{item.addby}</TableCell>
                   <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                  <TableCell>ปุ่มออกบิล</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               ))}
             </TableBody>
