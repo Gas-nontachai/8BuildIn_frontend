@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useEffect, useRef, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
 import { Close, DeleteForeverRounded, Add, CloudUpload } from "@mui/icons-material";
@@ -21,7 +20,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
 
-import Loading from "../Loading";
+import Loading from "../../Loading";
 
 import { useMaterial, useMaterialCategory, useEmployee, useUnit } from "@/hooks/hooks";
 import { Material, MaterialCategory, Employee, Unit } from '@/misc/types';

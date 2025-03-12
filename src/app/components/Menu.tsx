@@ -69,8 +69,8 @@ export default function SidebarMenu() {
         { text: "ฝ่ายขาย", href: "/sales", icon: <SupportAgent /> },
     ];
     const PRPOList = [
-        { text: "เปิด PR", href: "/create-pr", icon: <Timeline /> },
-        { text: "สร้าง PO", href: "/create-po", icon: <AddShoppingCart /> },
+        { text: "เปิด PR", href: "/purchase-request", icon: <Timeline /> },
+        { text: "สร้าง PO", href: "/purchase-order", icon: <AddShoppingCart /> },
         { text: "รายการ PR/PO", href: "/pr-po-list", icon: <ListAlt /> }
     ];
 
