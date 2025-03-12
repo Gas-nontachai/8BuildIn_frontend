@@ -15,7 +15,8 @@ import { usePagination } from "@/context/PaginationContext";
 
 import { PurchaseRequest } from '@/misc/types';
 import { usePurchaseRequest } from "@/hooks/hooks";
-
+import { pdf } from '@react-pdf/renderer';
+import PR from "@/app/components/StockStore/(PDF)/PR";
 const { getPurchaseRequestBy } = usePurchaseRequest();
 
 const PurchaseRequestPage = () => {
@@ -41,6 +42,19 @@ const PurchaseRequestPage = () => {
     }
   };
 
+  const openPDF = async () => {
+    try {
+      // สร้าง PDF โดยใช้ @react-pdf/renderer
+      const blob = await pdf(<PR />).toBlob();
+      
+      // เปิด PDF ในแท็บใหม่
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-4" >
@@ -56,6 +70,9 @@ const PurchaseRequestPage = () => {
             <Typography variant="body1" color="text.secondary">เปิด PR</Typography>
           </Stack>
         </Breadcrumbs>
+        <Button variant="contained" color="info" onClick={openPDF} startIcon={<Add />}>
+          ทดสอบออกใบ PR
+        </Button>
         <Button variant="contained" color="info" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
           สร้าง PR
         </Button>
