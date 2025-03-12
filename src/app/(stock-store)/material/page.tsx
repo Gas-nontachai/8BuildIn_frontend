@@ -193,19 +193,17 @@ const MaterialPage = () => {
             renderInput={(params) => <TextField {...params} label="ค้นหาโดยประเภทสินค้า" />}
           />
         </FormControl>
-        {
-          (search || selectedMaterialCategory) && (
-            <button
-              className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
-              onClick={() => {
-                setSearch('');
-                setSelectedMaterialCategory('');
-              }}
-            >
-              <Clear />
-            </button>
-          )
-        }
+        {(search || selectedMaterialCategory) && (
+          <button
+            className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
+            onClick={() => {
+              setSearch('');
+              setSelectedMaterialCategory('');
+            }}
+          >
+            <Clear />
+          </button>
+        )}
         <div className="flex gap-2">
           <Button
             className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"

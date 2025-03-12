@@ -8,7 +8,7 @@ import {
     Button,
     TextField,
     IconButton,
-    FormLabel, 
+    FormLabel,
     Autocomplete,
     Divider
 } from "@mui/material";
@@ -271,10 +271,11 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                             <Grid container spacing={2} key={index} sx={{ mb: 1 }}>
                                 <Grid size={5}>
                                     <Autocomplete
+                                        key={option_material[index]?.material_id || index}
                                         disablePortal
                                         size="small"
                                         options={option_material.filter(option => !material.some(m => m.material_id === option.material_id))}
-                                        getOptionLabel={(option) => option.material_name}
+                                        getOptionLabel={(option) => `${option.material_name} (${option.material_id})`}  
                                         renderInput={(params) => <TextField {...params} label="วัสดุ" />}
                                         isOptionEqualToValue={(option, value) => option.material_id === value.material_id}
                                         onChange={(e, newValue) => {

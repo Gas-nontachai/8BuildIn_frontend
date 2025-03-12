@@ -7,6 +7,8 @@ export * from "./material";
 export * from "./menu";
 export * from "./permission";
 export * from "./product-category";
+export * from "./purchase-order";
+export * from "./purchase-request";
 export * from "./product";
 export * from "./stock-in";
 export * from "./stock-out";

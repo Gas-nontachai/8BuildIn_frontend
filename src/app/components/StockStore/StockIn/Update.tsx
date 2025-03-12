@@ -24,7 +24,7 @@ import Swal from 'sweetalert2';
 import { decimalFix } from "@/utils/number-helper"
 import { useSupplier, useStockIn, useUnit } from "@/hooks/hooks";
 import { StockIn } from '@/misc/types';
-import Loading from "../Loading";
+import Loading from "../../Loading";
 
 const { getSupplierBy } = useSupplier();
 const { getStockInByID, updateStockInBy } = useStockIn();
