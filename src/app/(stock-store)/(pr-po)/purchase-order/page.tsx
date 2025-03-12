@@ -78,7 +78,7 @@ const PurchaseOrderPage = () => {
                         </TableHead >
                         <TableBody>
                             {purchaseOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-                                <TableRow key={item.pr_id} hover>
+                                <TableRow key={item.po_id} hover>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                     <TableCell>{item.pr_id}</TableCell>
                                     <TableCell>

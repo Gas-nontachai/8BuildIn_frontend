@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
 
-import { Checklist, Home, ModeEdit, Timeline } from "@mui/icons-material";
+import { Checklist, Home, Assignment, ReceiptLong } from "@mui/icons-material";
 import {
     Tabs, Tab, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
 
-import ListTablePR from "@/app/components/StockStore/(PR-PO)/PR/ListTable";
-import ListTablePO from "@/app/components/StockStore/(PR-PO)/PO/ListTable";
+import TableListPR from "@/app/components/StockStore/(PR-PO)/PR/TableList";
+import TableListPO from "@/app/components/StockStore/(PR-PO)/PO/TableList";
 
 const PRComponent = () => {
     return <div>PR Content</div>;
@@ -28,15 +28,15 @@ const PRPOList = () => {
         <>
             <div className="flex justify-between items-center mb-4" >
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                    <Link underline="hover" href="/product">
+                    <Link underline="hover" href="/">
                         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
                             <Home fontSize="small" />
                             <Typography variant="body1" color="primary">หน้าหลัก</Typography>
                         </Stack>
                     </Link>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
-                        <Checklist fontSize="small" />
-                        <Typography variant="body1" color="text.secondary">อนุมัติการเปิดใบ PR/PO</Typography>
+                        <ReceiptLong fontSize="small" />
+                        <Typography variant="body1" color="text.secondary">จัดการคำขอซื้อและใบสั่งซื้อ</Typography>
                     </Stack>
                 </Breadcrumbs>
                 {/* <Button variant="contained" color="info" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
@@ -44,18 +44,28 @@ const PRPOList = () => {
                 </Button> */}
             </div>
             <Tabs
+                className="mb-4"
                 value={value}
                 onChange={handleChange}
-                textColor="secondary"
-                indicatorColor="secondary"
-                aria-label="secondary tabs example"
+                indicatorColor="primary"
+                textColor="inherit"
+                aria-label="icon label tabs example"
             >
-                <Tab value="pr" label="PR" />
-                <Tab value="po" label="PO" />
+                <Tab
+                    value="pr"
+                    icon={<Assignment />}
+                    label="คำขอซื้อ"
+                    sx={{ color: value === "pr" ? '#1976d2' : '#000', backgroundColor: value === "pr" ? '#e3f2fd' : 'transparent' }}
+                />
+                <Tab
+                    value="po"
+                    icon={<ReceiptLong />}
+                    label="ใบสั่งซื้อ"
+                    sx={{ color: value === "po" ? '#1976d2' : '#000', backgroundColor: value === "po" ? '#e3f2fd' : 'transparent' }}
+                />
             </Tabs>
-
-            {value === "pr" && <ListTablePR />}
-            {value === "po" && <ListTablePO />}
+            {value === "pr" && <TableListPR />}
+            {value === "po" && <TableListPO />}
         </>
     );
 };

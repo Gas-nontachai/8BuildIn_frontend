@@ -18,7 +18,7 @@ import { usePurchaseRequest } from "@/hooks/hooks";
 
 const { getPurchaseRequestBy, updatePurchaseRequestBy } = usePurchaseRequest();
 
-const ListTablePR = () => {
+const TableListPR = () => {
     const router = useRouter();
     const [purchaserequest, setPurchaseRequest] = useState<PurchaseRequest>({
         pr_id: '',
@@ -123,11 +123,10 @@ const ListTablePR = () => {
                                 <TableCell>#</TableCell>
                                 <TableCell>รหัส PR</TableCell>
                                 <TableCell>สถานะ PR</TableCell>
-                                <TableCell>หมายเหตุ</TableCell>
                                 <TableCell>เพิ่มโดย</TableCell>
                                 <TableCell>วันที่เพิ่ม</TableCell>
                                 <TableCell>ดูบิล</TableCell>
-                                <TableCell>อนุมัติ</TableCell>
+                                <TableCell align="center">จัดการคำขอซื้อ</TableCell>
                             </TableRow >
                         </TableHead >
                         <TableBody>
@@ -137,18 +136,27 @@ const ListTablePR = () => {
                                     <TableCell>{item.pr_id}</TableCell>
                                     <TableCell>
                                         {item.pr_status === 'pending' ? (
-                                            <Chip label="Pending" color="warning" size="small" />
+                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-white bg-yellow-500">
+                                                รอดำเนินการ
+                                            </span>
                                         ) : item.pr_status === 'success' ? (
-                                            <Chip label="Success" color="success" size="small" />
+                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-white bg-green-500">
+                                                สำเร็จ
+                                            </span>
+                                        ) : item.pr_status === 'not-approved' ? (
+                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-white bg-red-500">
+                                                ไม่อนุมัติ
+                                            </span>
                                         ) : (
-                                            <Chip label={item.pr_status} />
+                                            <span className="inline-block px-2 py-0.5 rounded-xl text-[15px] font-[400] text-black bg-gray-300">
+                                                {item.pr_status}
+                                            </span>
                                         )}
                                     </TableCell>
-                                    <TableCell>{item.pr_note}</TableCell>
                                     <TableCell>{item.addby}</TableCell>
                                     <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                                     <TableCell></TableCell>
-                                    <TableCell>
+                                    <TableCell align="center">
                                         <IconButton
                                             size="small"
                                             onClick={(e) => handleClickMenu(e, item)}
@@ -201,4 +209,4 @@ const ListTablePR = () => {
         </>
     )
 }
-export default ListTablePR
+export default TableListPR

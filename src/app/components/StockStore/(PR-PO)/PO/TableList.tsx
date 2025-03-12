@@ -17,7 +17,7 @@ import { usePurchaseOrder } from "@/hooks/hooks";
 
 const { getPurchaseOrderBy, updatePurchaseOrderBy } = usePurchaseOrder();
 
-const ListTablePO = () => {
+const TableListPO = () => {
     const [purchaseorder, setPurchaseOrder] = useState<PurchaseOrder>({
         po_id: '',
         pr_id: '',
@@ -187,4 +187,4 @@ const ListTablePO = () => {
         </>
     )
 }
-export default ListTablePO
+export default TableListPO
