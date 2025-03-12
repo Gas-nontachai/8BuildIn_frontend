@@ -18,7 +18,9 @@ import {
     ManageAccounts,
     Outbound,
     Gavel,
-    Timeline
+    Timeline,
+    AddShoppingCart,
+    ListAlt
 } from "@mui/icons-material";
 
 
@@ -28,6 +30,7 @@ export default function SidebarMenu() {
     const [openEmp, setOpenEmp] = useState(false);
     const [openAcc, setOpenAcc] = useState(false);
     const [openSale, setOpenSale] = useState(false);
+    const [openPRPO, setOpenPRPO] = useState(false);
 
     const [openMaterial, setOpenMaterial] = useState(false);
     const [openProduct, setOpenProduct] = useState(false);
@@ -65,6 +68,12 @@ export default function SidebarMenu() {
     const Sale = [
         { text: "ฝ่ายขาย", href: "/sales", icon: <SupportAgent /> },
     ];
+    const PRPOList = [
+        { text: "เปิด PR", href: "/create-pr", icon: <Timeline /> },
+        { text: "สร้าง PO", href: "/create-po", icon: <AddShoppingCart /> },
+        { text: "รายการ PR/PO", href: "/pr-po-list", icon: <ListAlt /> }
+    ];
+
 
     return (
         <List>
@@ -76,7 +85,31 @@ export default function SidebarMenu() {
                     </ListItemButton>
                 </ListItem>
             ))}
-            {/* Manage Emp */}
+
+            {/* เมนูจัดซื้อ */}
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => setOpenPRPO(!openPRPO)}>
+                    <ListItemText primary="เมนูจัดซื้อ" />
+                    <IconButton edge="end">
+                        {openPRPO ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                </ListItemButton>
+            </ListItem>
+            <Collapse in={openPRPO} timeout="auto" unmountOnExit>
+                {PRPOList.map((item) => (
+                    <ListItem key={item.text} disablePadding>
+                        <Link href={item.href} passHref legacyBehavior>
+                            <ListItemButton component="a">
+                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItemButton>
+                        </Link>
+                    </ListItem>
+                ))}
+                <Divider />
+            </Collapse>
+
+            {/* เมนูพนักงาน */}
             <ListItem disablePadding>
                 <ListItemButton onClick={() => setOpenEmp(!openEmp)}>
                     <ListItemText primary="เมนูพนักงาน" />

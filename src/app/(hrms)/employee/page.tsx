@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
-import AddEmployee from "@/app/components/Employee/Add";
-import UpdateEmployee from "@/app/components/Employee/Update";
+import AddEmployee from "@/app/components/HRMS/Employee/Add";
+import UpdateEmployee from "@/app/components/HRMS/Employee/Update";
 import Loading from "@/app/components/Loading";
 
 import { useEmployee, useLicense } from "@/hooks/hooks";

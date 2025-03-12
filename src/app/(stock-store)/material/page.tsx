@@ -25,8 +25,8 @@ import {
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
 
-import ManageMaterialCategory from "@/app/components/MaterialCategory/Manage";
-import UpdateMaterial from "@/app/components/Material/Update";
+import ManageMaterialCategory from "@/app/components/StockStore/Material/MaterialCategory/Manage";
+import UpdateMaterial from "@/app/components/StockStore/Material/Update";
 import Loading from "@/app/components/Loading";
 
 import { useUnit, useMaterialCategory } from "@/hooks/hooks";

@@ -8,9 +8,8 @@ import {
 import { usePagination } from "@/context/PaginationContext";
 import Swal from 'sweetalert2';
 
-
-import AddUnit from "@/app/components/Unit/Add";
-import UpdateUnit from "@/app/components/Unit/Update";
+import AddUnit from "@/app/components/StockStore/Product/Unit/Add";
+import UpdateUnit from "@/app/components/StockStore/Product/Unit/Update";
 import Loading from "@/app/components/Loading";
 
 import useUnit from "@/hooks/useUnit";

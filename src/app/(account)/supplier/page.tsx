@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
-import AddSupplier from "@/app/components/Supplier/Add";
-import UpdateSupplier from "@/app/components/Supplier/Update";
+import AddSupplier from "@/app/components/StockStore/Supplier/Add";
+import UpdateSupplier from "@/app/components/StockStore/Supplier/Update";
 import Loading from "@/app/components/Loading";
 
 import useSupplier from "@/hooks/useSupplier";

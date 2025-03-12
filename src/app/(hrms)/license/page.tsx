@@ -5,8 +5,8 @@ import { ModeEdit, Delete, Add, MoreVert, Badge, PeopleOutlined } from "@mui/ico
 import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Menu, MenuItem, Typography, Stack, Link } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 
-import AddLicense from "@/app/components/License/Add";
-import UpdateLicense from "@/app/components/License/Update";
+import AddLicense from "@/app/components/HRMS/License/Add";
+import UpdateLicense from "@/app/components/HRMS/License/Update";
 import Loading from "@/app/components/Loading";
 
 import { useLicense } from "@/hooks/hooks";

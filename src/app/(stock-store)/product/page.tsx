@@ -14,8 +14,7 @@ import {
   TableRow,
   TablePagination,
   Button,
-  Breadcrumbs,
-  Divider,
+  Breadcrumbs, 
   Typography,
   Stack,
   Link,
@@ -27,10 +26,9 @@ import {
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { decimalFix } from "@/utils/number-helper"
-import ManageProductCategory from "@/app/components/ProductCategory/Manage";
-import AddProduct from "@/app/components/Product/Add";
-import UpdateProduct from "@/app/components/Product/Update";
-
+import ManageProductCategory from "@/app/components/StockStore/Product/ProductCategory/Manage";
+import AddProduct from "@/app/components/StockStore/Product/Add";
+import UpdateProduct from "@/app/components/StockStore/Product/Update";
 import Loading from "@/app/components/Loading";
 
 import { useProduct, useUnit, useProductCategory } from "@/hooks/hooks";

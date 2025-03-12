@@ -17,8 +17,8 @@ import {
 
 import { usePagination } from "@/context/PaginationContext";
 
-import AddStockin from "@/app/components/StockIn/Add";
-import UpdateStockin from "@/app/components/StockIn/Update";
+import AddStockIn from "@/app/components/StockStore/StockIn/Add";
+import UpdateStockIn from "@/app/components/StockStore/StockIn/Update";
 import Loading from "@/app/components/Loading";
 
 import { useSupplier, useStockIn, useUnit, useEmployee } from "@/hooks/hooks";
@@ -391,9 +391,8 @@ const StockInPage = () => {
                 </>
             )}
 
-            <AddStockin open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
-            <UpdateStockin open={isUpdateDialogOpen} stock_in_id={stock_in_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
-
+            <AddStockIn open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
+            <UpdateStockIn open={isUpdateDialogOpen} stock_in_id={stock_in_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} /> 
         </>
     );
 };

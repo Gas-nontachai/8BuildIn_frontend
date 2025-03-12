@@ -27,7 +27,7 @@ import {
 import { AuthProvider } from "@/context/AuthContext";
 import { API_URL } from "@/utils/config";
 import ChangePassword from "./Auth/ChangePassword";
-import CartDropdown from "@/app/components/Cart/CartDropdown";
+import CartDropdown from "@/app/components/Sales/Cart/CartDropdown";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
