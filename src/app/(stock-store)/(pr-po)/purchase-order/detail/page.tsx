@@ -16,29 +16,54 @@ import {
 } from "@mui/material";
 
 import { decimalFix } from "@/utils/number-helper";
-import { PurchaseRequest, Unit } from "@/misc/types";
-import { usePurchaseRequest } from "@/hooks/hooks";
+import { PurchaseOrder, Unit } from "@/misc/types";
+import { usePurchaseOrder, usePurchaseRequest } from "@/hooks/hooks";
 
-const PurchaseRequestDetailPage = () => {
+const { getPurchaseOrderByID } = usePurchaseOrder();
+const { getPurchaseRequestByID } = usePurchaseRequest();
+
+const PurchaseOrderDetailPage = () => {
     const searchParams = useSearchParams();
-    const purchase_request_id = searchParams.get("pr_id");
-    const [pr, setPR] = useState<PurchaseRequest | null>(null);
-    const { getPurchaseRequestByID } = usePurchaseRequest();
+    const purchase_order_id = searchParams.get("po_id");
+    const [po, setPO] = useState<PurchaseOrder | null>(null);
+    const [material, setMaterial] = useState<{
+        material_name: string;
+        material_quantity: number;
+        unit_id: string;
+        material_price: number;
+    }[]>([]);
+
+    const [product, setProduct] = useState<{
+        product_name: string;
+        product_quantity: number;
+        unit_id: string;
+        product_price: number;
+    }[]>([]);
 
     useEffect(() => {
-        if (purchase_request_id) {
+        if (purchase_order_id) {
             fetchData();
         }
-    }, [purchase_request_id]);
+    }, [purchase_order_id]);
+
+    useEffect(() => {
+        if (product.length > 0) {
+            console.log("product", product);
+        }
+        if (material.length > 0) {
+            console.log("material", material);
+        }
+    }, [material, product]);
 
     const fetchData = async () => {
         try {
-            const res = await getPurchaseRequestByID({ pr_id: purchase_request_id || "" });
-            setPR(res);
-            console.log("data product", parseJSON(res.product));
-            console.log("data material", parseJSON(res.material));
+            const res = await getPurchaseOrderByID({ po_id: purchase_order_id || "" });
+            setPO(res);
+            const res_pr = await getPurchaseRequestByID({ pr_id: res.pr_id });
+            setMaterial(parseJSON(res_pr.material));
+            setProduct(parseJSON(res_pr.product));
         } catch (error) {
-            console.error("Error fetching purchase request:", error);
+            console.error("Error fetching purchase order:", error);
         }
     };
 
@@ -53,16 +78,16 @@ const PurchaseRequestDetailPage = () => {
 
     return (
         <Box sx={{ p: 4 }}>
-            {pr ? (
+            {po ? (
                 <>
                     <Typography variant="h5" fontWeight="bold" gutterBottom>
-                        หมายเลขคำขอซื้อ: {pr.pr_id}
+                        หมายเลขคำขอซื้อ: {po.po_id}
                     </Typography>
-                    <Chip label={`สถานะ: ${pr.pr_status}`} color="warning" variant="outlined" sx={{ mb: 2 }} />
+                    <Chip label={`สถานะ: ${po.po_status}`} color="warning" variant="outlined" sx={{ mb: 2 }} />
                     <Typography variant="body1" gutterBottom>
-                        หมายเหตุ: {pr.pr_note}
+                        หมายเหตุ: {po.po_note}
                     </Typography>
-                    {pr.product && pr.product !== "[]" && (
+                    {product.length > 0 && ( // Check if product has any items
                         <Box mt={3}>
                             <Typography variant="h6">Products</Typography>
                             <TableContainer component={Paper} elevation={2}>
@@ -76,12 +101,10 @@ const PurchaseRequestDetailPage = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {parseJSON(pr.product).map((item: any, index: number) => (
+                                        {product.map((item, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{item.product_name}</TableCell>
-                                                <TableCell>
-                                                    {item.product_quantity}
-                                                </TableCell>
+                                                <TableCell>{item.product_quantity}</TableCell>
                                                 <TableCell>{decimalFix(item.product_price / item.product_quantity)} ฿</TableCell>
                                                 <TableCell>{decimalFix(item.product_price)} ฿</TableCell>
                                             </TableRow>
@@ -92,7 +115,7 @@ const PurchaseRequestDetailPage = () => {
                         </Box>
                     )}
 
-                    {pr.material && pr.material !== "[]" && (
+                    {material.length > 0 && ( // Check if material has any items
                         <Box mt={3}>
                             <Typography variant="h6">Materials</Typography>
                             <TableContainer component={Paper} elevation={2}>
@@ -106,12 +129,10 @@ const PurchaseRequestDetailPage = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {parseJSON(pr.material).map((item: any, index: number) => (
+                                        {material.map((item, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{item.material_name}</TableCell>
-                                                <TableCell>
-                                                    {item.material_quantity}
-                                                </TableCell>
+                                                <TableCell>{item.material_quantity}</TableCell>
                                                 <TableCell>{decimalFix(item.material_price / item.material_quantity)} ฿</TableCell>
                                                 <TableCell>{decimalFix(item.material_price)} ฿</TableCell>
                                             </TableRow>
@@ -131,4 +152,4 @@ const PurchaseRequestDetailPage = () => {
     );
 };
 
-export default PurchaseRequestDetailPage;
+export default PurchaseOrderDetailPage;
