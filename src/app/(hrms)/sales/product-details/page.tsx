@@ -139,7 +139,7 @@ const ProductDetails = () => {
     }
     if (loading) {
         return <Loading />;
-    } 
+    }
     if (!product) {
         return (
             <Box p={4}>
@@ -197,6 +197,53 @@ const ProductDetails = () => {
                         </Button>
                     </div>
                 </Grid>
+                {product.material && (
+                    <Grid item xs={12}>
+                        <div className="space-y-4">
+                            <Typography variant="body1">
+                                รายการต้นทุนถอดละเอียด
+                            </Typography>
+                            <Table size="small" aria-label="materials">
+                                <TableHead className="bg-gray-200">
+                                    <TableRow>
+                                        <TableCell sx={{ width: '25%' }}>ชื่อวัสดุ</TableCell>
+                                        <TableCell sx={{ width: '25%' }}>จำนวน</TableCell>
+                                        <TableCell sx={{ width: '25%' }}>ราคา (บาท)</TableCell>
+                                        <TableCell sx={{ width: '25%' }}>ราคารวม (บาท)</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {JSON.parse(product.material).map((item: any, index: number) => (
+                                        <TableRow key={index}>
+                                            <TableCell>{material.find((e) => e.material_id === item.material_id)?.material_name}</TableCell>
+                                            <TableCell>{item.material_quantity}
+                                                {(() => {
+                                                    const un = unit.find((e) => e.unit_id === item.unit_id);
+                                                    return un ? `${un.unit_name_th} (${un.unit_name_en})` : "";
+                                                })()}
+                                            </TableCell>
+                                            <TableCell>{decimalFix(item.material_price)} ฿</TableCell>
+                                            <TableCell>{decimalFix(item.material_price * item.material_quantity)} ฿</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                            <div className="mt-4">
+                                <Typography variant="body2" className="font-semibold">
+                                    สรุป:
+                                </Typography>
+                                <Typography variant="body2">
+                                    จำนวนวัสดุทั้งหมด: {JSON.parse(product.material).reduce((acc: any, item: any) => acc + item.material_quantity, 0)} ชิ้น
+                                </Typography>
+                                <Typography variant="body2">
+                                    ราคารวมทั้งหมด: {decimalFix(
+                                        JSON.parse(product.material).reduce((acc: any, item: any) => acc + item.material_price * item.material_quantity, 0)
+                                    )} ฿
+                                </Typography>
+                            </div>
+                        </div>
+                    </Grid>
+                )}
             </Grid>
         </>
     );

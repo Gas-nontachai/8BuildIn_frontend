@@ -8,7 +8,7 @@ const getPurchaseRequestBy = (data: any = {}): Promise<{ docs: PurchaseRequest[]
     return SecureFetch.post(`${API_URL}${prefix}/getPurchaseRequestBy`, data);
 };
 
-const getPurchaseRequestByID = (data: { purchaserequest_id: string }): Promise<PurchaseRequest> => {
+const getPurchaseRequestByID = (data: { pr_id: string }): Promise<PurchaseRequest> => {
     return SecureFetch.post(`${API_URL}${prefix}/getPurchaseRequestByID`, data);
 };
 
@@ -20,7 +20,7 @@ const updatePurchaseRequestBy = async (data: PurchaseRequest): Promise<PurchaseR
     return await SecureFetch.post(`${API_URL}${prefix}/updatePurchaseRequestBy`, data);
 };
 
-const deletePurchaseRequestBy = (data: { purchaserequest_id: string }): Promise<PurchaseRequest> => {
+const deletePurchaseRequestBy = (data: { pr_id: string }): Promise<PurchaseRequest> => {
     return SecureFetch.post(`${API_URL}${prefix}/deletePurchaseRequestBy`, data);
 };
 
