@@ -46,7 +46,7 @@ const PurchaseRequestPage = () => {
       setLoading(false);
     }
   }
-  
+
   useEffect(() => {
     fetchData();
   }, [])
