@@ -182,8 +182,6 @@ const PurchaseRequestDetailPage = () => {
                                                 <TableRow>
                                                     <TableCell>ชื่อสินค้า</TableCell>
                                                     <TableCell>จำนวน</TableCell>
-                                                    <TableCell>ราคาต่อหน่วย (บาท)</TableCell>
-                                                    <TableCell>ราคารวม (บาท)</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -191,8 +189,6 @@ const PurchaseRequestDetailPage = () => {
                                                     <TableRow key={index}>
                                                         <TableCell>{item.product_name}</TableCell>
                                                         <TableCell>{item.product_quantity}</TableCell>
-                                                        <TableCell>{decimalFix(item.product_price / item.product_quantity)} ฿</TableCell>
-                                                        <TableCell>{decimalFix(item.product_price)} ฿</TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
@@ -212,8 +208,6 @@ const PurchaseRequestDetailPage = () => {
                                                 <TableRow>
                                                     <TableCell>ชื่อวัสดุ</TableCell>
                                                     <TableCell>จำนวน</TableCell>
-                                                    <TableCell>ราคาต่อหน่วย (บาท)</TableCell>
-                                                    <TableCell>ราคารวม (บาท)</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -221,8 +215,6 @@ const PurchaseRequestDetailPage = () => {
                                                     <TableRow key={index}>
                                                         <TableCell>{item.material_name}</TableCell>
                                                         <TableCell>{item.material_quantity}</TableCell>
-                                                        <TableCell>{decimalFix(item.material_price / item.material_quantity)} ฿</TableCell>
-                                                        <TableCell>{decimalFix(item.material_price)} ฿</TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>

@@ -193,12 +193,14 @@ const PurchaseOrderDetailPage = () => {
                             หมายเลขใบสั่งซื้อ: {po.po_id}
                         </Typography>
                         <span className={`inline-block px-3 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
-                                            ${po.po_status === "not-approved" ? "bg-red-500 text-white" :
-                                po.po_status === "approved" ? "bg-green-500 text-white" :
-                                    po.po_status === "pending" ? "bg-yellow-500 text-white" : ""}`}>
+                                ${po.po_status === "not-approved" ? "bg-red-500 text-white" :
+                                po.po_status === "pending" ? "bg-yellow-500 text-white" :
+                                    po.po_status === "buying" ? "bg-blue-500 text-white" :
+                                        po.po_status === "success" ? "bg-green-500 text-white" : ""}`}>
                             {po.po_status === "not-approved" ? "ไม่อนุมัติ" :
-                                po.po_status === "approved" ? "อนุมัติ" :
-                                    po.po_status === "pending" ? "รอดำเนินการ" : ""}
+                                po.po_status === "pending" ? "รอดำเนินการ" :
+                                    po.po_status === "buying" ? "กำลังสั่งซื้อ" :
+                                        po.po_status === "success" ? "สั่งซื้อสำเร็จ" : ""}
                         </span>
                     </Box>
                     {Note && (
