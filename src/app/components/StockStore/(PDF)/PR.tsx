@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer';
 import { formatDate } from "@/utils/date-helper";
-
+import { PurchaseRequest } from '@/misc/types';
 // กำหนดฟอนต์ไทย
 Font.register({
   family: 'Sarabun',
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Sarabun',
   },
   documentTitle: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   mainTitle: {
     fontSize: 18,
@@ -33,9 +33,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subTitle: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 20,
+    // fontSize: 14,
+    // color: '#666',
+    // marginBottom: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   headerInfo: {
     marginBottom: 20,
@@ -45,7 +48,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   infoLabel: {
-    width: 80,
+    width: 70,
     color: '#666',
   },
   infoValue: {
@@ -58,10 +61,12 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   table: {
-    marginTop: 5,
+    marginTop: 0,
     borderWidth: 1,
     borderColor: '#000',
-    height: 400,
+    height: 435,
+    display: 'flex',
+    flexDirection: 'column',
   },
   tableHeader: {
     flexDirection: 'row',
@@ -70,49 +75,74 @@ const styles = StyleSheet.create({
     borderBottomColor: '#000',
     fontSize: 16,
   },
+  tableItem: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    minHeight: 30,
+  },
   tableRow: {
     flexDirection: 'row',
-    minHeight: 24,
+    minHeight: 20,
+    borderBottomWidth: 0.5, // เส้นระหว่างแถว
+    // borderBottomColor: '#000',
   },
-  columnItem: {  // คอลัมน์รายการที่
-    width: '12%',
+  columnItem: {
+    width: '13%',
     borderRightWidth: 0.5,
     borderRightColor: '#000',
-    padding: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 4,
     textAlign: 'center',
     fontSize: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  columnname: {  // คอลัมน์ชื่อสินค้า
-    width: '52%',
+  // columnCode: {
+  //   width: '25%',
+  //   borderRightWidth: 0.5,
+  //   borderRightColor: '#000',
+  //   paddingVertical: 1,
+  //   paddingHorizontal: 4,
+  //   textAlign: 'center',
+  //   fontSize: 12,
+  //   display: 'flex',
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
+  columnname: {
+    width: '57%',
     borderRightWidth: 0.5,
     borderRightColor: '#000',
-    padding: 4,
-    paddingRight: 6,
+    paddingVertical: 1,
+    paddingHorizontal: 4,
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
-  columnQty: {  // คอลัมน์จำนวน
-    width: '12%',
+  columnQty: {
+    width: '15%',
     borderRightWidth: 0.5,
     borderRightColor: '#000',
-    padding: 4,
+    paddingVertical: 1,
     textAlign: 'center',
     fontSize: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  columnPrice: {  // คอลัมน์ราคา/หน่วย
-    width: '16%',
-    borderRightWidth: 0.5,
-    borderRightColor: '#000',
-    padding: 4,
+  columnnote: {
+    width: '15%',
+    paddingVertical: 1,
     textAlign: 'center',
     fontSize: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  columnnote: {  // คอลัมน์หมายเหตุ
-    width: '20%',
-    padding: 4,
-    textAlign: 'center',
-    fontSize: 12,
-  }, remarkBox: {
+  remarkBox: {
     marginTop: 8,
     marginBottom: 0,
     width: '100%',
@@ -129,6 +159,24 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#4B4B4B',
   },
+  columProducts: {  // คอลัมน์ชื่อสินค้า
+    width: '100%',
+    padding: 4,
+    paddingRight: 6,
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  columMaterials: {  // คอลัมน์ชื่อสินค้า
+    width: '100%',
+    padding: 4,
+    paddingRight: 6,
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  remarkValue: {
+    width: '100%',
+    height: 60,
+  },
   headerText: {
     fontSize: 11,
     color: '#000',
@@ -136,6 +184,7 @@ const styles = StyleSheet.create({
   },
   signatureSection: {
     position: 'absolute',
+    height: 100,
     bottom: 40,
     left: 40,
     right: 40,
@@ -143,7 +192,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   signatureBox: {
-    width: '25%',
+    width: '24.5%',
     borderWidth: 1,
     borderColor: '#000',
     padding: 8,
@@ -167,125 +216,140 @@ const styles = StyleSheet.create({
 
 // Props interface
 interface PRProps {
-  prData?: {
-    pr_id: string;
-    product: string;
-    material: string;
-    pr_states: string;
-    pr_note: string;
-    adddate: string;
-    addby: string;
-    lastupdate: string;
-    updateby: string;
-  };
+  prData: PurchaseRequest;
 }
 
 const PR: React.FC<PRProps> = ({ prData }) => {
-  return (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        {/* Document Title */}
-        <View style={styles.documentTitle}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.mainTitle}>{`ใบขอซื้อ\u00A0`}</Text>
-            <Text style={styles.subTitle}>{`Purchase Request (ต้นฉบับ / original)\u00A0`}</Text>
-          </View>
+  const materials = JSON.parse(prData.material || '[]');
+  const products = JSON.parse(prData.product || '[]');
+
+  // สร้าง Component สำหรับแสดงเนื้อหาในแต่ละหน้า
+  const PageContent = ({ items, type, pageNumber }: { items: any[], type: 'product' | 'material', pageNumber: number }) => (
+    <Page size="A4" style={styles.page}>
+      {/* Document Title */}
+      <View style={[styles.documentTitle, { flexDirection: 'row' }]}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.mainTitle}>
+            {`ใบขอซื้อ - ${type === 'product' ? '(สินค้า)' : '(วัสดุ) '}`}
+          </Text>
+          <Text style={styles.subTitle}>
+            {`Purchase Request - ${type === 'product' ? '(Products)' : '(Materials)'}`}
+          </Text>
+        </View>
+        <View>
           <Image
             src="/logo.jpg"
             style={{ width: 50, height: 'auto', alignSelf: 'flex-end' }}
           />
         </View>
+      </View>
 
-        {/* Header Information */}
-        <View style={styles.headerInfo}>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>{`ผู้รับเงิน\u00A0`}</Text>
-            <Text style={styles.infoValue}>{`: บริษัท .................................\u00A0`}</Text>
-            <Text style={styles.infoRight}>{`เลขที่ / No. ${prData?.pr_id || 'PO-XXXXXXXXX'}\u00A0`}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>{`ที่อยู่\u00A0`}</Text>
-            <Text style={styles.infoValue}>{`: .................................................................\u00A0`}</Text>
-            <Text style={styles.infoRight}>{`วันที่ / Issue ${prData?.adddate ? formatDate(prData.adddate, 'dd/MM/yyyy') : 'DD/MM/YYYY'}\u00A0`}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>{`เลขประจำตัวผู้เสียภาษี\u00A0`}</Text>
-            <Text style={styles.infoValue}>{`: .................................\u00A0`}</Text>
-            <Text style={styles.infoRight}>{`อ้างถึง / Ref .....................\u00A0`}</Text>
-          </View>
+      {/* Header Information */}
+      <View style={styles.headerInfo}>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>{`ผู้รับเงิน\u00A0`}</Text>
+          <Text style={styles.infoValue}>{`: ....................................................................................\u00A0`}</Text>
+          <Text style={styles.infoRight}>{`เลขที่ / No. ${prData?.pr_id || '-'}\u00A0`}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>{`ที่อยู่\u00A0`}</Text>
+          <Text style={styles.infoValue}>{`: ....................................................................................\u00A0`}</Text>
+          <Text style={styles.infoRight}>{`วันที่ / Issue ${prData?.adddate ? formatDate(prData.adddate, 'dd/MM/yyyy') : 'DD/MM/YYYY'}\u00A0`}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>{`ผู้รับผิดชอบ\u00A0`}</Text>
+          <Text style={styles.infoValue}>{`: ${prData?.updateby || prData?.addby || '....................................................................................'}\u00A0`}</Text>
+          <Text style={styles.infoRight}>{`เบอร์โทร / Tel .....................\u00A0`}</Text>
+        </View>
+      </View>
+
+      {/* Table Section */}
+      <View style={styles.table}>
+        <View style={styles.tableHeader}>
+          <Text style={styles.columnItem}>{`รายการที่\u00A0`}</Text>
+          {/* <Text style={styles.columnCode}>{`รหัสสินค้า\u00A0`}</Text> */}
+          <Text style={styles.columnname}>{`ชื่อ${type === 'product' ? 'สินค้า' : 'วัสดุ'}\u00A0`}</Text>
+          <Text style={styles.columnQty}>{`จำนวน\u00A0`}</Text>
+          <Text style={styles.columnnote}>{`หมายเหตุ\u00A0`}</Text>
         </View>
 
-        {/* Table Section */}
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.columnItem}>{`รายการที่\u00A0`}</Text>
-            <Text style={styles.columnname}>{`ชื่อสินค้า\u00A0`}</Text>
-            <Text style={styles.columnQty}>{`จำนวน\u00A0`}</Text>
-            <Text style={styles.columnPrice}>{`ราคาต่อชิ้น\u00A0`}</Text>
-            <Text style={styles.columnnote}>{`หมายเหตุ\u00A0`}</Text>
+        {items.map((item: any, index: number) => (
+          <View key={`${type}-${index}`} style={styles.tableRow}>
+            <Text style={[styles.columnItem, { textAlign: 'center', fontSize: 10 }]}>{index + 1}</Text>
+            {/* <Text style={[styles.columnCode, { textAlign: 'center' }]}>{`${item.unit_id}`}</Text> */}
+            <Text style={[styles.columnname, { textAlign: 'left', fontSize: 10 }]}>
+              {`${type === 'product' ? item.product_name : item.material_name}\u00A0`}
+            </Text>
+            <Text style={[styles.columnQty, { textAlign: 'center', fontSize: 10 }]}>
+              {`${type === 'product' ? item.product_quantity : item.material_quantity}\u00A0`}
+            </Text>
+            <Text style={[styles.columnnote, { textAlign: 'center', fontSize: 10 }]}>{''}</Text>
           </View>
+        ))}
 
-          {/* ข้อมูลจริง */}
-          {[
-            { id: 1, quantity: 2, description: 'สินค้า A', price: 100, total: 200 },
-            { id: 2, quantity: 1, description: 'สินค้า B', price: 150, total: 150 },
-            { id: 3, quantity: 3, description: 'สินค้า C', price: 200, total: 600 },
-            { id: 4, quantity: 5, description: 'สินค้า D', price: 50, total: 250 },
-            { id: 5, quantity: 4, description: 'สินค้า E', price: 75, total: 300 },
-          ].map((product) => (
-            <View key={product.id} style={[styles.tableRow, { borderBottomWidth: 0.5, borderBottomColor: '#000' }]}>
-              <Text style={[styles.columnItem, { textAlign: 'center', fontSize: 10 }]}>{product.id}</Text>
-              <Text style={[styles.columnname, { textAlign: 'left', fontSize: 10 }]}>{product.description}</Text>
-              <Text style={[styles.columnQty, { textAlign: 'center', fontSize: 10 }]}>{product.quantity}</Text>
-              <Text style={[styles.columnPrice, { textAlign: 'right', fontSize: 10 }]}>{product.price.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</Text>
-              <Text style={[styles.columnnote, { textAlign: 'right', fontSize: 10 }]}>{product.total.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</Text>
-            </View>
-          ))}
+        {/* แถวว่างที่เหลือ */}
+        {[...Array(Math.max(0, 20 - items.length))].map((_, index) => (
+          <View key={`empty-${index}`} style={styles.tableRow}>
+            <Text style={styles.columnItem}>{'\u00A0'}</Text>
+            {/* <Text style={styles.columnCode}>{'\u00A0'}</Text> */}
+            <Text style={styles.columnname}>{'\u00A0'}</Text>
+            <Text style={styles.columnQty}>{'\u00A0'}</Text>
+            <Text style={styles.columnnote}>{'\u00A0'}</Text>
+          </View>
+        ))}
+      </View>
 
-          {/* แถวว่างที่เหลือ */}
-          {[...Array(15 - 5)].map((_, index) => (
-            <View key={`empty-${index}`} style={[styles.tableRow, { borderBottomWidth: 0.5, borderBottomColor: '#000' }]}>
-              <Text style={styles.columnItem}></Text>
-              <Text style={styles.columnname}></Text>
-              <Text style={styles.columnQty}></Text>
-              <Text style={styles.columnPrice}></Text>
-              <Text style={styles.columnnote}></Text>
-            </View>
-          ))}
+      <View style={styles.remarkBox}>
+        <Text style={styles.remarkLabel}>หมายเหตุ</Text>
+        <Text style={styles.remarkValue}>{`${prData?.pr_note || ''}`}</Text>
+      </View>
+
+      {/* ส่วนลงนาม */}
+      <View style={styles.signatureSection}>
+        <View style={styles.signatureBox}>
+          <Text style={styles.signatureLabel}>{`จัดทำโดย\u00A0`}</Text>
+          <View style={styles.signatureLine} />
+          <Text style={styles.dateLabel}>{`(_____/_____/_____)\u00A0`}</Text>
         </View>
 
-        <View style={styles.remarkBox}>
-          <Text style={styles.remarkLabel}>หมายเหตุ</Text>
+        <View style={styles.signatureBox}>
+          <Text style={styles.signatureLabel}>{`อนุมัติโดย\u00A0`}</Text>
+          <View style={styles.signatureLine} />
+          <Text style={styles.dateLabel}>{`(_____/_____/_____)\u00A0`}</Text>
         </View>
 
-        {/* ส่วนลงนาม */}
-        <View style={styles.signatureSection}>
-          <View style={styles.signatureBox}>
-            <Text style={styles.signatureLabel}>{`จัดทำโดย\u00A0`}</Text>
-            <View style={styles.signatureLine} />
-            <Text style={styles.dateLabel}>{`(_____/_____/_____)\u00A0`}</Text>
-          </View>
-
-          <View style={styles.signatureBox}>
-            <Text style={styles.signatureLabel}>{`อนุมัติโดย\u00A0`}</Text>
-            <View style={styles.signatureLine} />
-            <Text style={styles.dateLabel}>{`(_____/_____/_____)\u00A0`}</Text>
-          </View>
-
-          <View style={styles.signatureBox}>
-            <Text style={styles.signatureLabel}>{`ตำแหน่งสั่งซื้อแผนกจัดซื้อ\u00A0`}</Text>
-            <View style={styles.signatureLine} />
-            <Text style={styles.dateLabel}>{`สำเนาเก็บที่ผู้จัดทำ\u00A0`}</Text>
-          </View>
-
-          <View style={styles.signatureBox}>
-            <Text style={styles.signatureLabel}>{`แผนกจัดซื้อ\u00A0`}</Text>
-            <Text style={styles.signatureLabel}>{`รับวันที่ ____/____/____\u00A0`}</Text>
-            <View style={styles.signatureLine} />
-            <Text style={styles.dateLabel}>{`ผู้รับเรื่อง\u00A0`}</Text>
-          </View>
+        <View style={styles.signatureBox}>
+          <Text style={styles.signatureLabel}>{`ตำแหน่งสั่งซื้อแผนกจัดซื้อ\u00A0`}</Text>
+          <View style={styles.signatureLine} />
+          <Text style={styles.dateLabel}>{`สำเนาเก็บที่ผู้จัดทำ\u00A0`}</Text>
         </View>
-      </Page>
+
+        <View style={styles.signatureBox}>
+          <Text style={styles.signatureLabel}>{`แผนกจัดซื้อ\u00A0`}</Text>
+          <Text style={styles.signatureLabel}>{`รับวันที่ ____/____/____\u00A0`}</Text>
+          <View style={styles.signatureLine} />
+          <Text style={styles.dateLabel}>{`ผู้รับเรื่อง\u00A0`}</Text>
+        </View>
+      </View>
+
+      {/* เลขหน้า */}
+      <Text style={{
+        position: 'absolute',
+        bottom: 30,
+        right: 40,
+        fontSize: 10,
+      }}>{`หน้า ${pageNumber}`}</Text>
+    </Page>
+  );
+
+  return (
+    <Document>
+      {products.length > 0 && (
+        <PageContent items={products} type="product" pageNumber={1} />
+      )}
+      {materials.length > 0 && (
+        <PageContent items={materials} type="material" pageNumber={products.length > 0 ? 2 : 1} />
+      )}
     </Document>
   );
 };

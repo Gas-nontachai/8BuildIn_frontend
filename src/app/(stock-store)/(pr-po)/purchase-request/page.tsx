@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Swal from 'sweetalert2';
 import { formatDate } from "@/utils/date-helper"
-
 import { Add, Home, Assignment, Description } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
@@ -20,7 +18,7 @@ import PR from "@/app/components/StockStore/(PDF)/PR";
 const { getPurchaseRequestBy } = usePurchaseRequest();
 
 const PurchaseRequestPage = () => {
-  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequest[]>([]);
 
   const [isDialogAdd, setIsDialogAdd] = useState(false);
@@ -35,6 +33,7 @@ const PurchaseRequestPage = () => {
       setLoading(true);
       const { docs: res } = await getPurchaseRequestBy();
       setPurchaseRequests(res);
+      console.log("res", res);
     } catch (error) {
       console.log("Error fetching Purchase Request:", error);
     } finally {
@@ -42,9 +41,9 @@ const PurchaseRequestPage = () => {
     }
   };
 
-  const openPDF = async () => {
+  const openPDF = async (prData: PurchaseRequest) => {
     try {
-      const blob = await pdf(<PR />).toBlob();
+      const blob = await pdf(<PR prData ={prData} />).toBlob();
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     } catch (error) {
@@ -124,7 +123,7 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.addby}</TableCell>
                   <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                   <TableCell>{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                  <TableCell align="center"><Button size="small" onClick={openPDF} color="info"><Description /> PDF</Button></TableCell>
+                  <TableCell align="center"><Button size="small" onClick={() => openPDF(item)} color="info"><Description /> PDF</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>
