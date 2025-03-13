@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   //   justifyContent: 'center',
   // },
   columnname: {
-    width: '57%',
+    width: '42%',
     borderRightWidth: 0.5,
     borderRightColor: '#000',
     paddingVertical: 1,
@@ -125,6 +125,17 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   columnQty: {
+    width: '15%',
+    borderRightWidth: 0.5,
+    borderRightColor: '#000',
+    paddingVertical: 1,
+    textAlign: 'center',
+    fontSize: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },  
+  columnPrice: {
     width: '15%',
     borderRightWidth: 0.5,
     borderRightColor: '#000',
@@ -272,6 +283,7 @@ const PO: React.FC<POProps> = ({ purchaseOrder }) => {
           {/* <Text style={styles.columnCode}>{`รหัสสินค้า\u00A0`}</Text> */}
           <Text style={styles.columnname}>{`ชื่อ${type === 'product' ? 'สินค้า' : 'วัสดุ'}\u00A0`}</Text>
           <Text style={styles.columnQty}>{`จำนวน\u00A0`}</Text>
+          <Text style={styles.columnPrice}>{`ราคา\u00A0`}</Text>
           <Text style={styles.columnnote}>{`หมายเหตุ\u00A0`}</Text>
         </View>
 
@@ -284,6 +296,9 @@ const PO: React.FC<POProps> = ({ purchaseOrder }) => {
             </Text>
             <Text style={[styles.columnQty, { textAlign: 'center', fontSize: 10 }]}>
               {`${type === 'product' ? item.product_quantity : item.material_quantity}\u00A0`}
+            </Text>     
+            <Text style={[styles.columnPrice, { textAlign: 'center', fontSize: 10 }]}>
+              {`${type === 'product' ? item.product_price : item.material_price}\u00A0`}
             </Text>
             <Text style={[styles.columnnote, { textAlign: 'center', fontSize: 10 }]}>{''}</Text>
           </View>
@@ -296,6 +311,7 @@ const PO: React.FC<POProps> = ({ purchaseOrder }) => {
             {/* <Text style={styles.columnCode}>{'\u00A0'}</Text> */}
             <Text style={styles.columnname}>{'\u00A0'}</Text>
             <Text style={styles.columnQty}>{'\u00A0'}</Text>
+            <Text style={styles.columnPrice}>{'\u00A0'}</Text>
             <Text style={styles.columnnote}>{'\u00A0'}</Text>
           </View>
         ))}

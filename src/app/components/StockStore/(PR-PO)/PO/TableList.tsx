@@ -8,7 +8,8 @@ import {
     Box, Button, Table, TableBody, TableCell,
     TableContainer, TableHead, TablePagination, TableRow, TextField
 } from "@mui/material";
-
+import { pdf } from '@react-pdf/renderer';
+import PO from "@/app/components/StockStore/(PDF)/PO";
 import Loading from "@/app/components/Loading";
 import { usePagination } from "@/context/PaginationContext";
 
@@ -43,6 +44,16 @@ const TableListPO = () => {
 
     const handleDetail = (po_id: string) => {
         router.push('/purchase-order/detail/?po_id=' + po_id);
+    }
+
+    const openPDF = async (purchaseOrder: PurchaseOrder) => {
+        try {
+            const blob = await pdf(<PO purchaseOrder={purchaseOrder} />).toBlob();
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        }
     }
 
     return (
@@ -108,7 +119,7 @@ const TableListPO = () => {
                                             <Box display="flex" justifyContent="center" alignItems="center">
                                                 <Button
                                                     size="small"
-                                                    // onClick={openPDF}
+                                                    onClick={() => openPDF(item)}
                                                     color="info"
                                                     variant="contained"
                                                     startIcon={<Description />}
