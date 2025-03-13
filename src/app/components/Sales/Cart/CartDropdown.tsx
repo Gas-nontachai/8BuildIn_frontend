@@ -117,7 +117,7 @@ export default function CartDropdown() {
                                                 </div>
                                                 <div className="flex-shrink-0 mr-2">
                                                     <p className="text-gray-600 font-[400]">
-                                                        ฿ {decimalFix(productDetails?.product_price || 0)}
+                                                        {decimalFix(productDetails?.product_price || 0)} ฿
                                                     </p>
                                                 </div>
                                                 <IconButton onClick={() => onDeleteCart(item.cart_id)} color="error">
@@ -131,7 +131,10 @@ export default function CartDropdown() {
                                 {cartItems.length > 0 && (
                                     <div className="flex justify-between items-center mt-2">
                                         <span className="text-gray-700 text-[13px]">{cartItems.length} สินค้าในตะกร้า</span>
-                                        <Button variant="text" color="info" onClick={() => router.push(`/sales/cart-details?emp_id=${$profile.employee_id}`)}>
+                                        <Button variant="text" color="info" onClick={() => {
+                                            router.push(`/sales/cart-details?emp_id=${$profile.employee_id}`)
+                                            setAnchorEl(null);
+                                        }}>
                                             ดูตะกร้าสินค้า
                                         </Button>
                                     </div>

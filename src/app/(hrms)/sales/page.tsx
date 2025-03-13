@@ -285,10 +285,10 @@ const SalesPage = () => {
                                 </Box>
                                 <CardContent className="flex-grow p-4">
                                     <div className="flex justify-between items-start mb-3">
-                                        <Typography 
-                                            gutterBottom 
-                                            variant="h6" 
-                                            component="div" 
+                                        <Typography
+                                            gutterBottom
+                                            variant="h6"
+                                            component="div"
                                             className="font-semibold text-lg h-[50px] overflow-hidden"
                                             sx={{
                                                 display: '-webkit-box',
@@ -317,14 +317,14 @@ const SalesPage = () => {
                                         <Typography variant="body2" color="text.secondary">
                                             จำนวนคงเหลือ: <span className="font-medium">{product.product_quantity} {(() => {
                                                 const un = unit.find((e) => e.unit_id === product.unit_id);
-                                                return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                                return un ? `${un.unit_name_th}` : "";
                                             })()}</span>
                                         </Typography>
                                     </div>
                                     <p className="text-[#d59d35] mt-3 text-[18px] font-[400]">
-                                        ฿ {decimalFix(product.product_price)} / {(() => {
+                                        {decimalFix(product.product_price)} ฿ / {(() => {
                                             const un = unit.find((e) => e.unit_id === product.unit_id);
-                                            return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                            return un ? `${un.unit_name_th}` : "";
                                         })()}
                                     </p>
                                 </CardContent>
