@@ -214,6 +214,9 @@ const StockInPage = () => {
                                                         <CardContent>
                                                             <h2 className="text-xl font-bold mb-4 text-gray-800">รายละเอียดสินค้าและวัสดุ</h2>
                                                             <div className="text-sm font-medium text-gray-600 mb-2">
+                                                                รหัสใบสั่งซื้อ : {stock.po_id || 'ไม่ทราบรหัสใบสั่งซื้อ'}
+                                                            </div>
+                                                            <div className="text-sm font-medium text-gray-600 mb-2">
                                                                 เพิ่มสต็อกเข้าโดย : {(() => {
                                                                     const emp = employee.find((e) => e.employee_id === stock.addby);
                                                                     return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "";

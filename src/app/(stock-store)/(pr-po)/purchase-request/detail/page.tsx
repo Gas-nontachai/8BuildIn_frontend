@@ -25,7 +25,6 @@ import {
 } from "@mui/material";
 import { ListAlt, EventNote } from "@mui/icons-material";
 
-import { decimalFix } from "@/utils/number-helper";
 import { PurchaseRequest, Unit } from "@/misc/types";
 import { usePurchaseRequest } from "@/hooks/hooks";
 

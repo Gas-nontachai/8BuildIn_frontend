@@ -27,13 +27,12 @@ import Loading from "../../Loading";
 import Swal from 'sweetalert2';
 
 import { decimalFix } from "@/utils/number-helper"
-import { useStockIn, useUnit, usePurchaseOrder, usePurchaseRequest } from "@/hooks/hooks";
+import { useStockIn, useUnit, usePurchaseOrder } from "@/hooks/hooks";
 import { StockIn } from '@/misc/types';
 
 const { insertStockIn } = useStockIn();
 const { getUnitBy } = useUnit();
 const { getPurchaseOrderBy, getPurchaseOrderByID } = usePurchaseOrder();
-const { getPurchaseRequestByID } = usePurchaseRequest();
 
 interface AddStockInProps {
     onClose: () => void;
@@ -54,7 +53,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
 
     const [loading, setLoading] = useState(false);
     const [unit, setUnit] = useState<{ id: string; name: string }[]>([]);
-    const [po, setPO] = useState<{ id: string; name: string }[]>([]);
+    const [po, setPO] = useState<{ id: string; name: string, supplier_id: string }[]>([]);
     const [product, setProduct] = useState<{ product_name: string, product_quantity: number, unit_id: string, product_price: number }[]>([]);
     const [material, setMaterial] = useState<{ material_name: string, material_quantity: number, unit_id: string, material_price: number }[]>([]);
 
@@ -86,7 +85,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                     po_status: "buying"
                 }
             });
-            setPO(res.map(item => ({ id: item.po_id, name: item.po_id })))
+            setPO(res.map(item => ({ id: item.po_id, name: item.po_id, supplier_id: item.supplier_id })))
         } catch (error) {
             console.error("Error fetching PO data:", error);
             Swal.fire("Error", "ไม่สามารถดึงข้อมูลใบสั่งซื้อได้", "error");
@@ -126,6 +125,7 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
     const handleSubmit = async () => {
         const insertData = {
             ...formData,
+            supplier_id: po.find(p => p.id === formData.po_id)?.supplier_id || '',
             product: JSON.stringify(product),
             material: JSON.stringify(material),
         };
