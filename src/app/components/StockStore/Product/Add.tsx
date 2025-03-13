@@ -275,7 +275,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                                         disablePortal
                                         size="small"
                                         options={option_material.filter(option => !material.some(m => m.material_id === option.material_id))}
-                                        getOptionLabel={(option) => `${option.material_name} (${option.material_id})`}  
+                                        getOptionLabel={(option) => `${option.material_name} (${option.material_id})`}
                                         renderInput={(params) => <TextField {...params} label="วัสดุ" />}
                                         isOptionEqualToValue={(option, value) => option.material_id === value.material_id}
                                         onChange={(e, newValue) => {
@@ -301,7 +301,7 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
                                         label="ราคาทั้งหมด"
                                         size="small"
                                         fullWidth
-                                        value={contact.material_price * contact.material_quantity}
+                                        value={decimalFix(contact.material_price * contact.material_quantity)}
                                         type="number"
                                         inputProps={{ min: 0 }}
                                     />

@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
-import { Add, Home, Assignment, Description } from "@mui/icons-material";
+import { Add, Home, Assignment, Description, Search } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, TextField, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Box
+  TableContainer, TableHead, TableRow, TextField, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip, Box,
+  InputAdornment
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
@@ -27,6 +28,27 @@ const PurchaseRequestPage = () => {
 
   const [isDialogAdd, setIsDialogAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState<string>("");
+  const [selectedPurchaseRequest] = useState<string>("");
+
+  const fatchPurchaseRequest = async () => {
+    setLoading(true);
+    try {
+      const { docs } = await getPurchaseRequestBy({
+        search: {
+          text: search,
+          columns: ["pr_id"],
+          condition: "LIKE",
+        },
+        match: selectedPurchaseRequest ? { pr_id: selectedPurchaseRequest } : {}
+      });
+      setPurchaseRequests(docs)
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     fetchData();
@@ -82,6 +104,20 @@ const PurchaseRequestPage = () => {
           size="small"
           placeholder="ค้นหารหัสใบขอซื้อ..."
           className="w-64"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" onClick={fatchPurchaseRequest} className="cursor-pointer">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              fatchPurchaseRequest();
+            }
+          }}
         />
         <Button variant="contained" color="info" size="small" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
           เปิดใบขอซื้อ
