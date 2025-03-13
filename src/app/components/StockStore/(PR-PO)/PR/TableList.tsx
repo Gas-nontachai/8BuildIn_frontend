@@ -91,23 +91,23 @@ const TableListPR = () => {
                                         <TableCell align="center">{item.pr_id}</TableCell>
                                         <TableCell align="center">
                                             {item.pr_status === 'pending' ? (
-                                                <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
+                                                <span className="inline-block px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
                                                     รอดำเนินการ
                                                 </span>
                                             ) : item.pr_status === 'approved' ? (
-                                                <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-green-600">
+                                                <span className="inline-block px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-white bg-green-600">
                                                     อนุมัติแล้ว
                                                 </span>
                                             ) : item.pr_status === 'not-approved' ? (
-                                                <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
+                                                <span className="inline-block px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
                                                     ไม่อนุมัติ
                                                 </span>
                                             ) : item.pr_status === 'success' ? (
-                                                <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-blue-500">
+                                                <span className="inline-block px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-white bg-blue-500">
                                                     สั่งซื้อสำเร็จ
                                                 </span>
                                             ) : (
-                                                <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-black bg-gray-300">
+                                                <span className="inline-block px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-black bg-gray-300">
                                                     {item.pr_status}
                                                 </span>
                                             )}
