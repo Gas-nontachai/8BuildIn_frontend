@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
-import { Newspaper, FirstPage } from "@mui/icons-material";
+import { Newspaper, FirstPage, AddShoppingCart } from "@mui/icons-material";
 import {
     Typography,
     Box,
@@ -193,6 +193,7 @@ const ProductDetails = () => {
                             disabled={!product.product_quantity || parseInt(product.product_quantity) <= 0}
                             onClick={() => addToCart(product.product_id)}
                         >
+                            <AddShoppingCart className="mr-2" />
                             เพิ่มลงตะกร้า
                         </Button>
                     </div>
