@@ -1,5 +1,6 @@
 export type StockIn = {
     stock_in_id: string;
+    po_id: string;
     product: string;
     material: string;
     stock_in_price: number;
