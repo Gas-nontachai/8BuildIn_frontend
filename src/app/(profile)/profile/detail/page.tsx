@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Employee } from "@/misc/types";
 import { useEmployee } from "@/hooks/hooks";
 import Loading from '@/app/components/Loading';
-import { PersonOutlined, ArrowBack } from "@mui/icons-material";
+import { PersonOutlined, FirstPage } from "@mui/icons-material";
 import { Button, Grid, Stack, Link, Typography, Breadcrumbs, Card, CardContent } from "@mui/material";
 import { formatDate } from "@/utils/date-helper"
 
@@ -38,12 +38,12 @@ const EmployeeDetail = () => {
         <>
             <div className="flex justify-start">
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                    <Button onClick={() => router.back()} sx={{ color: 'primary.main', textTransform: 'none' }}>
-                        <Stack direction="row" alignItems="center" spacing={0.5}>
-                            <ArrowBack fontSize="small" />
-                            <Typography variant="body1">ย้อนกลับ</Typography>
+                    <Link underline="hover" onClick={() => router.back()}>
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main', cursor: 'pointer' }}>
+                            <FirstPage fontSize="small" />
+                            <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
                         </Stack>
-                    </Button>
+                    </Link>
                 </Breadcrumbs>
             </div>
             {loading ? (

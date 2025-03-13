@@ -64,7 +64,7 @@ const PurchaseRequestPage = () => {
     <>
       <div className="flex justify-between items-center mb-3" >
         <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-          <Link underline="hover" href="/product">
+          <Link underline="hover" href="/">
             <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
               <Home fontSize="small" />
               <Typography variant="body1" color="primary">หน้าหลัก</Typography>

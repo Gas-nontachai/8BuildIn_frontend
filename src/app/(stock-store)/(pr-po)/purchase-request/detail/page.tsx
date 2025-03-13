@@ -23,7 +23,7 @@ import {
     TextField,
     Divider
 } from "@mui/material";
-import { ListAlt, EventNote } from "@mui/icons-material";
+import { FirstPage, EventNote } from "@mui/icons-material";
 
 import { PurchaseRequest } from "@/misc/types";
 import { usePurchaseRequest } from "@/hooks/hooks";
@@ -135,10 +135,10 @@ const PurchaseRequestDetailPage = () => {
                 <>
                     <div className="flex justify-between items-center mb-4" >
                         <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                            <Link underline="hover" href="/pr-po-list">
-                                <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
-                                    <ListAlt fontSize="small" />
-                                    <Typography variant="body1" color="primary">จัดการใบขอซื้อและใบสั่งซื้อ</Typography>
+                            <Link underline="hover" onClick={() => router.back()}>
+                                <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main', cursor: 'pointer' }}>
+                                    <FirstPage fontSize="small" />
+                                    <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
                                 </Stack>
                             </Link>
                             <Stack direction="row" alignItems="center" spacing={0.5}>

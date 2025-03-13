@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 import { Newspaper, FirstPage, AddShoppingCart } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import {
     Typography,
     Box,
@@ -30,6 +31,7 @@ const { getUnitBy } = useUnit();
 const { getMaterialBy } = useMaterial();
 
 const ProductDetails = () => {
+    const router = useRouter()
     const searchParams = useSearchParams();
     const productId = searchParams.get('id');
     const [product, setProduct] = useState<Product | null>(null);
@@ -150,8 +152,8 @@ const ProductDetails = () => {
         <>
             <Box sx={{ mb: 4 }}>
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                    <Link underline="hover" href="/sales">
-                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                    <Link underline="hover" onClick={() => router.back()}>
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main', cursor: 'pointer' }}>
                             <FirstPage fontSize="small" />
                             <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
                         </Stack>
