@@ -232,10 +232,10 @@ const PO: React.FC<POProps> = ({ purchaseOrder }) => {
       <View style={[styles.documentTitle, { flexDirection: 'row' }]}>
         <View style={{ flex: 1 }}>
           <Text style={styles.mainTitle}>
-            {`ใบขอซื้อ - ${type === 'product' ? '(สินค้า)' : '(วัสดุ) '}`}
+            {`ใบสั่งซื้อ - ${type === 'product' ? '(สินค้า)' : '(วัสดุ) '}`}
           </Text>
           <Text style={styles.subTitle}>
-            {`Purchase Request - ${type === 'product' ? '(Products)' : '(Materials)'}`}
+            {`Purchase Order - ${type === 'product' ? '(Products)' : '(Materials)'}`}
           </Text>
         </View>
         <View>
