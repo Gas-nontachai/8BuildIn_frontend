@@ -244,12 +244,12 @@ const TableListPR = () => {
                                 <TableHead>
                                     <TableRow className="bg-gray-200">
                                         <TableCell>#</TableCell>
-                                        <TableCell>รหัส PR</TableCell>
-                                        <TableCell>สถานะ PR</TableCell>
-                                        <TableCell>เพิ่มโดย</TableCell>
-                                        <TableCell>วันที่เพิ่ม</TableCell>
-                                        <TableCell>อัพเดทล่าสุด</TableCell>
-                                        <TableCell>ดูบิล</TableCell>
+                                        <TableCell align="center">รหัสใบขอซื้อ</TableCell>
+                                        <TableCell align="center">สถานะใบขอซื้อ</TableCell>
+                                        <TableCell align="center">เพิ่มโดย</TableCell>
+                                        <TableCell align="center">วันที่เพิ่ม</TableCell>
+                                        <TableCell align="center">อัพเดทล่าสุด</TableCell>
+                                        <TableCell align="center">ดูบิล</TableCell>
                                         <TableCell align="center">รายละเอียดคำขอซื้อ</TableCell>
                                     </TableRow >
                                 </TableHead >
@@ -257,8 +257,8 @@ const TableListPR = () => {
                                     {purchaseRequests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                                         <TableRow key={item.pr_id} hover>
                                             <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                            <TableCell>{item.pr_id}</TableCell>
-                                            <TableCell>
+                                            <TableCell align="center">{item.pr_id}</TableCell>
+                                            <TableCell align="center">
                                                 {item.pr_status === 'pending' ? (
                                                     <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
                                                         รอดำเนินการ
@@ -271,19 +271,44 @@ const TableListPR = () => {
                                                     <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
                                                         ไม่อนุมัติ
                                                     </span>
+                                                ) : item.pr_status === 'success' ? (
+                                                    <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-blue-500">
+                                                        สั่งซื้อสำเร็จ
+                                                    </span>
                                                 ) : (
                                                     <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-black bg-gray-300">
                                                         {item.pr_status}
                                                     </span>
                                                 )}
                                             </TableCell>
-                                            <TableCell>{getEmployeeName(item.addby)}</TableCell>
-                                            <TableCell>{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                            <TableCell>
+                                            <TableCell align="center">{getEmployeeName(item.addby)}</TableCell>
+                                            <TableCell align="center">{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                            <TableCell align="center">
                                                 {formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}
                                             </TableCell>
-                                            <TableCell>
-                                                <Button color="info" size="small"><Description /> PDF</Button>
+                                            <TableCell align="center">
+                                                <Box display="flex" justifyContent="center" alignItems="center">
+                                                    <Button
+                                                        size="small"
+                                                        onClick={() => openPDF(item)}
+                                                        color="info"
+                                                        variant="contained"
+                                                        startIcon={<Description />}
+                                                        sx={{
+                                                            backgroundColor: "#ef4036",
+                                                            color: "#fff",
+                                                            textTransform: "none",
+                                                            borderRadius: "12px",
+                                                            padding: "3px 4px",
+                                                            transition: "0.3s",
+                                                            "&:hover": {
+                                                                boxShadow: 6
+                                                            }
+                                                        }}
+                                                    >
+                                                        PDF
+                                                    </Button>
+                                                </Box>
                                             </TableCell>
                                             <TableCell align="center">
                                                 <Button
@@ -299,8 +324,7 @@ const TableListPR = () => {
                                                         boxShadow: 3,
                                                         transition: "all 0.3s ease",
                                                         "&:hover": {
-                                                            boxShadow: 6,
-                                                            transform: "scale(1.05)",
+                                                            boxShadow: 6
                                                         }
                                                     }}
                                                 >
