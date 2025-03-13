@@ -100,8 +100,8 @@ const TableListPO = () => {
                                                     กำลังสั่งซื้อ
                                                 </span>
                                             ) : item.po_status === 'success' ? (
-                                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-white bg-blue-500">
-                                                    สั่งซื้อสำเร็จ
+                                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-white bg-green-600">
+                                                    นำเข้าสินค้าสำเร็จแล้ว
                                                 </span>
                                             ) : item.po_status === 'not-approved' ? (
                                                 <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">

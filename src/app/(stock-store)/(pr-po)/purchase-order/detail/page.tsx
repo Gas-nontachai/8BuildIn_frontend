@@ -166,7 +166,7 @@ const PurchaseOrderDetailPage = () => {
     };
 
     return (
-        <Box sx={{ p: 4 }}>
+        <>
             <div className="flex justify-between items-center mb-4">
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
                     <Link underline="hover" onClick={() => router.back()}>
@@ -181,35 +181,27 @@ const PurchaseOrderDetailPage = () => {
                     </Stack>
                 </Breadcrumbs>
             </div>
-            <div className="-mt-2 mb-4">
-                <Divider />
-            </div>
             {loading ? (
                 <Loading />
             ) : (
                 <>
-                    <Box display="inline-flex" alignItems="center" gap={2}>
-                        <Typography variant="h5" fontWeight="bold" gutterBottom>
+                    <div className="flex justify-between">
+                        <div className="font-bold text-xl mb-2 text-gray-700">
                             หมายเลขใบสั่งซื้อ: {po.po_id}
-                        </Typography>
-                        <span className={`inline-block px-3 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
+                        </div>
+                        <span className={`inline-block px-3 py-1 mb-2 rounded-md text-[14px] font-[600] shadow-md
                                 ${po.po_status === "not-approved" ? "bg-red-500 text-white" :
                                 po.po_status === "pending" ? "bg-yellow-500 text-white" :
-                                    po.po_status === "buying" ? "bg-blue-500 text-white" :
-                                        po.po_status === "success" ? "bg-green-500 text-white" : ""}`}>
+                                    po.po_status === "buying" ? "bg-orange-500 text-white" :
+                                        po.po_status === "success" ? "bg-green-600 text-white" : ""}`}>
                             {po.po_status === "not-approved" ? "ไม่อนุมัติ" :
                                 po.po_status === "pending" ? "รอดำเนินการ" :
                                     po.po_status === "buying" ? "กำลังสั่งซื้อ" :
-                                        po.po_status === "success" ? "สั่งซื้อสำเร็จ" : ""}
+                                        po.po_status === "success" ? "นำเข้าสินค้าสำเร็จแล้ว" : ""}
                         </span>
-                    </Box>
-                    {Note && (
-                        <Typography variant="body1" gutterBottom>
-                            หมายเหตุ: {Note}
-                        </Typography>
-                    )}
-                    <FormControl size="small" sx={{ width: '300px' }}>
-                        <FormLabel component="legend">
+                    </div>
+                    <FormControl size="small" sx={{ width: '230px' }}>
+                        <FormLabel component="legend" sx={{ fontSize: '0.8rem' }}>
                             เลือกผู้จัดจำหน่าย <span className="text-red-500">*</span>
                         </FormLabel>
                         <Select
@@ -225,8 +217,15 @@ const PurchaseOrderDetailPage = () => {
                             ))}
                         </Select>
                     </FormControl>
-                    <Typography variant="h6" sx={{ mb: 1 }}>ราคารวม : {decimalFix(totalPrice)} ฿</Typography>
+                    <h6 className="text-[15px] font-[400] text-gray-700 mb-1 mt-5">
+                        ราคารวม : {decimalFix(totalPrice)} ฿
+                    </h6>
                     <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <div className="mt-3 -mb-5">
+                                <Divider />
+                            </div>
+                        </Grid>
                         {product.length > 0 && (
                             <Grid item xs={6}>
                                 <Box mt={3}>
@@ -248,13 +247,16 @@ const PurchaseOrderDetailPage = () => {
                                                         <TableCell>{item.product_quantity}</TableCell>
                                                         <TableCell>{decimalFix(item.product_price / item.product_quantity)} ฿</TableCell>
                                                         <TableCell>
-                                                            <TextField
-                                                                type="number"
-                                                                value={item.product_price}
-                                                                onChange={(e) => handlePriceChange(e, index, 'product')}
-                                                                size="small"
-                                                                sx={{ width: '100px' }}
-                                                            />
+                                                            {po.po_status === 'buying' || po.po_status === 'success' ? (
+                                                                <Typography variant="body1">{item.product_price}</Typography>
+                                                            ) : (
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    value={item.product_price}
+                                                                    onChange={(e) => handlePriceChange(e, index, 'product')}
+                                                                />
+                                                            )}
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
@@ -286,13 +288,16 @@ const PurchaseOrderDetailPage = () => {
                                                         <TableCell>{item.material_quantity}</TableCell>
                                                         <TableCell>{decimalFix(item.material_price / item.material_quantity)} ฿</TableCell>
                                                         <TableCell>
-                                                            <TextField
-                                                                type="number"
-                                                                value={item.material_price}
-                                                                onChange={(e) => handlePriceChange(e, index, 'material')}
-                                                                size="small"
-                                                                sx={{ width: '100px' }}
-                                                            />
+                                                            {po.po_status === 'buying' || po.po_status === 'success' ? (
+                                                                <Typography variant="body1">{item.material_price}</Typography>
+                                                            ) : (
+                                                                <TextField
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    value={item.material_price}
+                                                                    onChange={(e) => handlePriceChange(e, index, 'product')}
+                                                                />
+                                                            )}
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
@@ -314,14 +319,15 @@ const PurchaseOrderDetailPage = () => {
                                 variant="outlined"
                             />
                             <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                                <Button variant="contained" color="primary" onClick={handleSubmit}>บันทึก</Button>
-                                <Button variant="outlined" color="secondary" onClick={() => router.push('/pr-po-list')}>ยกเลิก</Button>
+                                <Button variant="contained" color="success" onClick={handleSubmit}>บันทึก</Button>
+                                <Button variant="contained" color="info" onClick={() => router.push('/pr-po-list')}>ยกเลิก</Button>
                             </Box>
                         </Grid>
                     </Grid>
                 </>
-            )}
-        </Box>
+            )
+            }
+        </>
     );
 };
 

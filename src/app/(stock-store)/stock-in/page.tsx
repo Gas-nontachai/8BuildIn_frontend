@@ -214,13 +214,13 @@ const StockInPage = () => {
                                                     <Card sx={{ marginTop: 3, marginBottom: 3 }}>
                                                         <CardContent>
                                                             <h2 className="text-xl font-bold mb-4 text-gray-800">รายละเอียดสินค้าและวัสดุ</h2>
-                                                            <div className="text-sm font-medium text-gray-600 mb-2">
+                                                            <div className="text-sm font-medium text-gray-600">
                                                                 รหัสใบสั่งซื้อ :
                                                                 <Button onClick={() => router.push(`/purchase-order/detail?po_id=${stock.po_id}`)}>
                                                                     {stock.po_id || 'ไม่ทราบรหัสใบสั่งซื้อ'}
                                                                 </Button >
                                                             </div>
-                                                            <div className="text-sm font-medium text-gray-600 mb-2">
+                                                            <div className="text-sm font-medium text-gray-600">
                                                                 เพิ่มสต็อกเข้าโดย :
                                                                 <Button onClick={() => router.push(`/profile/detail?id=${stock.addby}`)}>
                                                                     {(() => {
@@ -229,19 +229,15 @@ const StockInPage = () => {
                                                                     })()}
                                                                 </Button >
                                                             </div>
-                                                            <div className="text-sm font-medium text-gray-600 mb-4">
-                                                                วันที่เพิ่ม : {formatDate(stock.adddate, "dd/MM/yyyy HH:mm:ss")}
+                                                            <div className="text-sm font-medium text-gray-600 mb-2">
+                                                                วันที่เพิ่ม : <span className="font-[400] text-gray-600">{formatDate(stock.adddate, "dd/MM/yyyy HH:mm:ss")}</span>
                                                             </div>
                                                             {stock.stock_in_note && (
-                                                                <>
-                                                                    <p className="text-[16px] font-medium text-gray-800 mb-1">หมายเหตุ <span className="text-red-500">*</span></p>
-
-                                                                    <div className="w-full p-3 mt-2 border border-gray-300 text-[14px] bg-[#eee] rounded-md">
-                                                                        {stock.stock_in_note}
-                                                                    </div>
-                                                                </>
+                                                                <div className="text-sm font-medium text-gray-600 mb-2">
+                                                                    หมายเหตุ :
+                                                                    <span className="ml-1 text-gray-600">{stock.stock_in_note}</span>
+                                                                </div>
                                                             )}
-                                                            <Divider></Divider>
                                                         </CardContent>
                                                         {JSON.parse(stock.product).length > 0 && (
                                                             <CardContent sx={{ mb: -2 }}>
@@ -278,10 +274,12 @@ const StockInPage = () => {
                                                                     </TableBody>
                                                                 </Table>
                                                             </CardContent>
-                                                        )}
-
+                                                        )} 
                                                         {JSON.parse(stock.material).length > 0 && (
                                                             <CardContent>
+                                                                <div className="my-5">
+                                                                    <Divider sx={{ borderBottomWidth: 3 }} />
+                                                                </div>
                                                                 <div className="mb-2">
                                                                     <Chip
                                                                         avatar={<Avatar><Gavel /></Avatar>}
@@ -335,7 +333,8 @@ const StockInPage = () => {
                         onRowsPerPageChange={onChangeRowsPerPage}
                     />
                 </>
-            )}
+            )
+            }
 
             <AddStockIn open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
         </>

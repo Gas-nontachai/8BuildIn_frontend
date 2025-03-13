@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { API_URL } from '@/utils/config';
 import Swal from 'sweetalert2';
-import { MoreVert, ModeEdit, Delete, Add, Home, Store, Search } from "@mui/icons-material";
+import { MoreVert, ModeEdit, Delete, Add, Home, Business, Search } from "@mui/icons-material";
 import {
   MenuItem, Menu, IconButton, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, TablePagination, Button, Breadcrumbs, Typography, Stack, Link,
@@ -110,7 +110,7 @@ const SupplierPage = () => {
             </Stack>
           </Link>
           <Stack direction="row" alignItems="center" spacing={0.5}>
-            <Store fontSize="small" sx={{ color: 'text.secondary' }} />
+            <Business fontSize="small" sx={{ color: 'text.secondary' }} />
             <Typography variant="body1" color="text.secondary">ข้อมูลผู้จัดจำหน่าย</Typography>
           </Stack>
         </Breadcrumbs>

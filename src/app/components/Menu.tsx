@@ -6,14 +6,14 @@ import {
     Lock as LockIcon,
     People as PeopleIcon,
     Person as PersonIcon,
-    Store as StoreIcon,
-    Inventory as InventoryIcon,
+    Business,
+    Inventory,
     Build as BuildIcon,
     ExpandLess,
     ExpandMore,
     Home,
     Store,
-    SupportAgent,
+    Storefront,
     Badge,
     ManageAccounts,
     Outbound,
@@ -45,13 +45,14 @@ export default function SidebarMenu() {
     ];
 
     const Account = [
-        { text: "ผู้จัดจำหน่าย", href: "/supplier", icon: <StoreIcon /> }
+        { text: "หนักหลัก", href: "/", icon: <Home /> },
     ];
 
     const StockStore = [
         // { text: "รายงานสโตร์", href: "/dash-stock", icon: <Timeline /> },
-        { text: "บันทึกสต็อกเข้า", href: "/stock-in", icon: <InventoryIcon /> },
-        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Outbound /> }
+        { text: "บันทึกสต็อกเข้า", href: "/stock-in", icon: <Inventory /> },
+        { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Outbound /> },
+        { text: "ผู้จัดจำหน่าย", href: "/supplier", icon: <Business /> }
     ];
 
     const MenuList = [
@@ -67,7 +68,7 @@ export default function SidebarMenu() {
     ];
 
     const Sale = [
-        { text: "ฝ่ายขาย", href: "/sales", icon: <SupportAgent /> },
+        { text: "ฝ่ายขาย", href: "/sales", icon: <Storefront /> },
     ];
     const PRPOList = [
         { text: "ใบขอซื้อ", href: "/purchase-request", icon: <Assignment /> },

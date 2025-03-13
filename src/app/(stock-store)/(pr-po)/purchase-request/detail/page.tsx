@@ -130,7 +130,7 @@ const PurchaseRequestDetailPage = () => {
     };
 
     return (
-        <Box sx={{ p: 4 }}>
+        <>
             {pr ? (
                 <>
                     <div className="flex justify-between items-center mb-4" >
@@ -147,30 +147,34 @@ const PurchaseRequestDetailPage = () => {
                             </Stack>
                         </Breadcrumbs>
                     </div>
-                    <div className="mb-5 -mt-2">
-                        <Divider />
-                    </div>
-                    <Box display="inline-flex" alignItems="center" gap={2}>
-                        <Typography variant="h5" fontWeight="bold" gutterBottom>
-                            หมายเลขใบขอซื้อ: {pr.pr_id}
-                        </Typography>
+                    <div className="flex justify-between">
+                        <div className="font-bold text-xl mb-2 text-gray-700">
+                            หมายเลขใบขอซื้อ : {pr.pr_id}
+                        </div>
                         <span
-                            className={`inline-block px-2 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
+                            className={`inline-block px-2 py-1 mb-2 rounded-md text-[14px] font-[600] shadow-md
                             ${pr.pr_status === "not-approved" ? "bg-red-500 text-white" :
                                     pr.pr_status === "approved" ? "bg-green-600 text-white" :
-                                        pr.pr_status === "pending" ? "bg-yellow-500 text-white" : ""}`}
+                                        pr.pr_status === "success" ? "bg-blue-500 text-white" :
+                                            pr.pr_status === "pending" ? "bg-yellow-500 text-white" : ""}`}
                         >
                             {pr.pr_status === "not-approved" ? "ไม่อนุมัติ" :
                                 pr.pr_status === "approved" ? "อนุมัติแล้ว" :
-                                    pr.pr_status === "pending" ? "รอดำเนินการ" : ""}
+                                    pr.pr_status === "success" ? "สั่งซื้อสำเร็จ" :
+                                        pr.pr_status === "pending" ? "รอดำเนินการ" : ""}
                         </span>
-                    </Box>
+                    </div>
                     {pr.pr_note && (
-                        <Typography variant="body1" gutterBottom>
-                            หมายเหตุ: {pr.pr_note}
-                        </Typography>
+                        <h6 className="text-[15px] font-[400] text-gray-700 mb-1">
+                            หมายเหตุ : <span className="text-[14px] font-[300]">{pr.pr_note}</span>
+                        </h6>
                     )}
                     <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <div className="mt-3 -mb-5">
+                                <Divider />
+                            </div>
+                        </Grid>
                         {pr.product && pr.product !== "[]" && (
                             <Grid item xs={12} md={6}>
                                 <Box mt={3}>
@@ -254,7 +258,7 @@ const PurchaseRequestDetailPage = () => {
                     <CircularProgress />
                 </Box>
             )}
-        </Box>
+        </>
     );
 };
 
