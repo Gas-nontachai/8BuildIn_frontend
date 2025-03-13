@@ -1,57 +1,44 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Swal from 'sweetalert2';
 import { API_URL } from '@/utils/config';
 import { formatDate } from "@/utils/date-helper"
-import { decimalFix, toInt } from "@/utils/number-helper"
+import { decimalFix } from "@/utils/number-helper"
 
 import {
-    ModeEdit, Delete, Add, Inventory2, Home, MoreVert, Store,
+    Add, Inventory2, Home, Store,
     Search, SwapVert, KeyboardArrowDown, KeyboardArrowUp, Gavel
 } from "@mui/icons-material";
+
 import {
     Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Menu, TablePagination, InputAdornment, Button,
-    Breadcrumbs, MenuItem, IconButton, Typography, Stack, Link, TextField, Collapse, Divider, Chip, Avatar, FormControl, Card, CardContent
+    TableContainer, TableHead, TableRow, TablePagination, InputAdornment, Button,
+    Breadcrumbs, IconButton, Typography, Stack, Link, TextField, Collapse, Divider, Chip, Avatar, Card, CardContent
 } from "@mui/material";
 
 import { usePagination } from "@/context/PaginationContext";
 
 import AddStockIn from "@/app/components/StockStore/StockIn/Add";
-import UpdateStockIn from "@/app/components/StockStore/StockIn/Update";
 import Loading from "@/app/components/Loading";
 
 import { useSupplier, useStockIn, useUnit, useEmployee } from "@/hooks/hooks";
 import { StockIn, Supplier, Employee } from '@/misc/types';
 
-const { getStockInBy, deleteStockInBy } = useStockIn();
+const { getStockInBy } = useStockIn();
 const { getSupplierBy } = useSupplier();
 const { getUnitBy } = useUnit();
 const { getEmployeeBy } = useEmployee();
 
 const StockInPage = () => {
+    const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [search, setSearch] = useState("");
     const [sortDate, setSortDate] = useState<"ASC" | "DESC">("DESC");
-    const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [loading, setLoading] = useState(false);
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
     const [supplier, setSupplier] = useState<Supplier[]>([]);
     const [employee, setEmployee] = useState<Employee[]>([]);
     const [stockIn, setStockIn] = useState<StockIn[]>([]);
-    const stock_in_id = useRef('')
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [selected, setSelected] = useState<StockIn | null>(null);
     const [unit, setUnit] = useState<{ id: string; name: string }[]>([]);
-
-    const handleClickMenu = (event: React.MouseEvent<HTMLElement>, stockin: StockIn) => {
-        setAnchorEl(event.currentTarget);
-        setSelected(stockin);
-    };
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-        setSelected(null);
-    };
 
     const [openRows, setOpenRows] = useState<{ [key: string]: boolean }>({});
 
@@ -111,36 +98,6 @@ const StockInPage = () => {
         } catch (error) {
             console.error("Error fetching supplier data:", error);
             Swal.fire("Error", "ไม่สามารถดึงข้อมูลผู้จำหน่ายได้", "error");
-        }
-    };
-
-    const onDelete = async (stock_in_id: string) => {
-        const result = await Swal.fire({
-            title: "คุณแน่ใจหรือไม่?",
-            text: "คุณจะไม่สามารถย้อนกลับการกระทำนี้ได้!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "ลบ",
-            cancelButtonText: "ยกเลิก",
-            reverseButtons: true,
-        });
-        if (result.isConfirmed) {
-            try {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'กำลังลบข้อมูล...',
-                    text: 'โปรดรอสักครู่',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
-                await deleteStockInBy({ stock_in_id: stock_in_id })
-                Swal.fire("ลบแล้ว!", "ข้อมูลสต็อกถูกลบเรียบร้อยแล้ว", "success");
-                await fetchData();
-            } catch (error) {
-                console.error("Error deleting supplier:", error);
-            }
         }
     };
 
@@ -223,7 +180,6 @@ const StockInPage = () => {
                                     <TableCell align="center">ดูรายละเอียดสต็อกเข้า</TableCell>
                                     <TableCell>ผู้จัดจำหน่าย</TableCell>
                                     <TableCell align="center">วันที่ถูกเพิ่ม</TableCell>
-                                    <TableCell align="center"> จัดการ </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -249,33 +205,6 @@ const StockInPage = () => {
                                             </TableCell>
                                             <TableCell align="center">
                                                 {formatDate(stock.adddate, "dd/MM/yyyy HH:mm:ss")}
-                                            </TableCell>
-                                            < TableCell align="center">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={(e) => handleClickMenu(e, stock)}
-                                                >
-                                                    <MoreVert />
-                                                </IconButton>
-                                                <Menu
-                                                    anchorEl={anchorEl}
-                                                    open={Boolean(anchorEl)}
-                                                    onClose={handleCloseMenu}
-                                                >
-                                                    <MenuItem onClick={() => {
-                                                        setIsUpdateDialogOpen(true);
-                                                        stock_in_id.current = selected?.stock_in_id!;
-                                                        handleCloseMenu();
-                                                    }}>
-                                                        <ModeEdit className="mr-2" /> แก้ไข
-                                                    </MenuItem>
-                                                    <MenuItem onClick={() => {
-                                                        onDelete(selected?.stock_in_id!);
-                                                        handleCloseMenu();
-                                                    }}>
-                                                        <Delete className="mr-2" /> ลบ
-                                                    </MenuItem>
-                                                </Menu>
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -399,7 +328,6 @@ const StockInPage = () => {
             )}
 
             <AddStockIn open={isAddDialogOpen} onRefresh={() => fetchData()} onClose={() => setIsAddDialogOpen(false)} />
-            <UpdateStockIn open={isUpdateDialogOpen} stock_in_id={stock_in_id.current} onRefresh={() => fetchData()} onClose={() => setIsUpdateDialogOpen(false)} />
         </>
     );
 };
