@@ -3,13 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
 import { pdf } from '@react-pdf/renderer';
 
-import { CheckCircle, ShoppingCart, Cancel, HourglassEmpty, Home, Description, ReceiptLong } from "@mui/icons-material";
+import { Home, Description, ReceiptLong } from "@mui/icons-material";
 import {
-    MenuItem, Menu, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Divider, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, TextField
+    Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, Box, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, TextField
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
-import Swal from 'sweetalert2';
 
 import Loading from "@/app/components/Loading";
 import PurchaseOrderAdd from "@/app/components/StockStore/(PR-PO)/PR/Add";
@@ -84,12 +83,12 @@ const PurchaseOrderPage = () => {
                         <TableHead>
                             <TableRow className="bg-gray-200">
                                 <TableCell>#</TableCell>
-                                <TableCell>รหัส PR</TableCell>
-                                <TableCell>สถานะ PR</TableCell>
-                                <TableCell>หมายเหตุ</TableCell>
-                                <TableCell>เพิ่มโดย</TableCell>
-                                <TableCell>วันเวลาเพิ่ม</TableCell>
-                                <TableCell>อัพเดทล่าสุด</TableCell>
+                                <TableCell align="center">รหัสใบสั่งซื้อ</TableCell>
+                                <TableCell align="center">สถานะใบสั่งซื้อ</TableCell>
+                                <TableCell align="center">หมายเหตุ</TableCell>
+                                <TableCell align="center">เพิ่มโดย</TableCell>
+                                <TableCell align="center">วันเวลาเพิ่ม</TableCell>
+                                <TableCell align="center">อัพเดทล่าสุด</TableCell>
                                 <TableCell align="center">ออกบิล</TableCell>
                             </TableRow >
                         </TableHead >
@@ -97,8 +96,8 @@ const PurchaseOrderPage = () => {
                             {purchaseOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                                 <TableRow key={item.po_id} hover>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                    <TableCell>{item.pr_id}</TableCell>
-                                    <TableCell>
+                                    <TableCell align="center">{item.po_id}</TableCell>
+                                    <TableCell align="center">
                                         {item.po_status === 'pending' ? (
                                             <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
                                                 รอดำเนินการ
@@ -122,11 +121,36 @@ const PurchaseOrderPage = () => {
                                         )}
 
                                     </TableCell>
-                                    <TableCell>{item.po_note}</TableCell>
-                                    <TableCell>{item.addby}</TableCell>
-                                    <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    <TableCell>{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    <TableCell align="center"><Button onClick={openPDF} color="info" size="small"><Description /> PDF</Button></TableCell>
+                                    <TableCell align="center">{item.po_note}</TableCell>
+                                    <TableCell align="center">{item.addby}</TableCell>
+                                    <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                    <TableCell align="center">{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                    <TableCell align="center">
+                                        <Box display="flex" justifyContent="center" alignItems="center">
+                                            <Button
+                                                size="small"
+                                                onClick={openPDF}
+                                                color="info"
+                                                variant="contained"
+                                                startIcon={<Description />}
+                                                sx={{
+                                                    backgroundColor: "#ef4036",
+                                                    color: "#fff",
+                                                    textTransform: "none",
+                                                    borderRadius: "12px",
+                                                    padding: "1px 4px",
+                                                    transition: "0.3s",
+                                                    "&:hover": {
+                                                        boxShadow: 6,
+                                                        transform: "scale(1.05)",
+                                                        backgroundColor: "#ff2116",
+                                                    }
+                                                }}
+                                            >
+                                                PDF
+                                            </Button>
+                                        </Box>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

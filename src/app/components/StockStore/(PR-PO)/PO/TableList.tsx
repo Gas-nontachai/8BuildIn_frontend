@@ -3,20 +3,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/date-helper"
 
-import { Visibility, Description } from "@mui/icons-material";
+import { Description, Visibility } from "@mui/icons-material";
 import {
-    Chip, Button, Table, TableBody, TableCell,
+    Box, Button, Table, TableBody, TableCell,
     TableContainer, TableHead, TablePagination, TableRow, TextField
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
 import { usePagination } from "@/context/PaginationContext";
 
-import { PurchaseOrder, Employee } from '@/misc/types';
-import { usePurchaseOrder, useEmployee } from "@/hooks/hooks";
+import { PurchaseOrder } from '@/misc/types';
+import { usePurchaseOrder } from "@/hooks/hooks";
 
-const { getPurchaseOrderBy } = usePurchaseOrder();
-const { getEmployeeBy } = useEmployee();
+const { getPurchaseOrderBy, updatePurchaseOrderBy } = usePurchaseOrder();
 
 const TableListPO = () => {
     const router = useRouter();
@@ -65,23 +64,23 @@ const TableListPO = () => {
                             <TableHead>
                                 <TableRow className="bg-gray-200">
                                     <TableCell>#</TableCell>
-                                    <TableCell>รหัส PO</TableCell>
-                                    <TableCell>รหัส PR</TableCell>
-                                    <TableCell>สถานะ PO</TableCell>
-                                    <TableCell>หมายเหตุ</TableCell>
-                                    <TableCell>เพิ่มโดย</TableCell>
-                                    <TableCell>วันที่เพิ่ม</TableCell>
-                                    <TableCell>ดูบิล</TableCell>
-                                    <TableCell align="center">รายละเอียดใบสั่งซื้อ</TableCell>
+                                    <TableCell align="center">รหัสขอคำซื้อ</TableCell>
+                                    <TableCell align="center">รหัสใบสั่งซื้อ</TableCell>
+                                    <TableCell align="center">สถานะใบสั่งซื้อ</TableCell>
+                                    <TableCell align="center">หมายเหตุ</TableCell>
+                                    <TableCell align="center">เพิ่มโดย</TableCell>
+                                    <TableCell align="center">วันที่เพิ่ม</TableCell>
+                                    <TableCell align="center">ดูบิล</TableCell>
+                                    <TableCell align="center">จัดการใบสั่งซื้อ</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {purchaseOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                                     <TableRow key={item.po_id} hover>
                                         <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                        <TableCell>{item.po_id}</TableCell>
-                                        <TableCell>{item.pr_id}</TableCell>
-                                        <TableCell>
+                                        <TableCell align="center">{item.po_id}</TableCell>
+                                        <TableCell align="center">{item.pr_id}</TableCell>
+                                        <TableCell align="center">
                                             {item.po_status === 'pending' ? (
                                                 <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
                                                     รอดำเนินการ
@@ -104,11 +103,34 @@ const TableListPO = () => {
                                                 </span>
                                             )}
                                         </TableCell>
-                                        <TableCell>{item.po_note}</TableCell>
-                                        <TableCell>{item.addby}</TableCell>
-                                        <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                        <TableCell>
-                                            <Button color="info" size="small"><Description /> PDF</Button>
+                                        <TableCell align="center">{item.po_note}</TableCell>
+                                        <TableCell align="center">{item.addby}</TableCell>
+                                        <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                        <TableCell align="center">
+                                            <Box display="flex" justifyContent="center" alignItems="center">
+                                                <Button
+                                                    size="small"
+                                                    // onClick={openPDF}
+                                                    color="info"
+                                                    variant="contained"
+                                                    startIcon={<Description />}
+                                                    sx={{
+                                                        backgroundColor: "#ef4036",
+                                                        color: "#fff",
+                                                        textTransform: "none",
+                                                        borderRadius: "12px",
+                                                        padding: "3px 4px",
+                                                        transition: "0.3s",
+                                                        "&:hover": {
+                                                            boxShadow: 6,
+                                                            transform: "scale(1.05)",
+                                                            backgroundColor: "#ff2116",
+                                                        }
+                                                    }}
+                                                >
+                                                    PDF
+                                                </Button>
+                                            </Box>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Button
@@ -120,7 +142,8 @@ const TableListPO = () => {
                                                 sx={{
                                                     borderRadius: "12px",
                                                     textTransform: "none",
-                                                    fontWeight: "bold",
+                                                    fontWeight: "600",
+                                                    padding: "3px 10px",
                                                     boxShadow: 3,
                                                     transition: "all 0.3s ease",
                                                     "&:hover": {
@@ -129,7 +152,7 @@ const TableListPO = () => {
                                                     }
                                                 }}
                                             >
-                                                ดูรายละเอียด
+                                                จัดการใบสั่งซื้อ
                                             </Button>
                                         </TableCell>
                                     </TableRow>
