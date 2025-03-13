@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 import { Newspaper, FirstPage, AddShoppingCart } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import {
     Typography,
     Box,
@@ -30,6 +31,7 @@ const { getUnitBy } = useUnit();
 const { getMaterialBy } = useMaterial();
 
 const ProductDetails = () => {
+    const router = useRouter()
     const searchParams = useSearchParams();
     const productId = searchParams.get('id');
     const [product, setProduct] = useState<Product | null>(null);
@@ -150,8 +152,8 @@ const ProductDetails = () => {
         <>
             <Box sx={{ mb: 4 }}>
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                    <Link underline="hover" href="/sales">
-                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                    <Link underline="hover" onClick={() => router.back()}>
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main', cursor: 'pointer' }}>
                             <FirstPage fontSize="small" />
                             <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
                         </Stack>
@@ -169,10 +171,10 @@ const ProductDetails = () => {
                 <Grid item xs={12} md={5}>
                     <div className="space-y-4">
                         <Typography variant="h4" className="font-semibold">{product.product_name}</Typography>
-                        <Typography variant="h5" className="text-[#e6ba78]">
-                            ราคา: {decimalFix(product.product_price)} บาท / {(() => {
+                        <Typography variant="h5" className="text-[#d59d35]">
+                            {decimalFix(product.product_price)} ฿ / {(() => {
                                 const un = unit.find((e) => e.unit_id === product.unit_id);
-                                return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                return un ? `${un.unit_name_th}` : "";
                             })()}
                         </Typography>
                         <div className="space-y-2">
@@ -182,12 +184,12 @@ const ProductDetails = () => {
                             <Typography variant="body1" color="text.secondary">
                                 จำนวนคงเหลือ: {product.product_quantity} {(() => {
                                     const un = unit.find((e) => e.unit_id === product.unit_id);
-                                    return un ? `${un.unit_name_th}(${un.unit_name_en})` : "";
+                                    return un ? `${un.unit_name_th}` : "";
                                 })()}
                             </Typography>
                         </div>
                         <Button
-                            sx={{ color: '#e6ba78' }}
+                            sx={{ color: '#d59d35' }}
                             className="flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black rounded-2xl w-full py-2 px-3 transition-all duration-200 shadow-lg"
                             disabled={!product.product_quantity || parseInt(product.product_quantity) <= 0}
                             onClick={() => addToCart(product.product_id)}
@@ -219,7 +221,7 @@ const ProductDetails = () => {
                                             <TableCell>{item.material_quantity}
                                                 {(() => {
                                                     const un = unit.find((e) => e.unit_id === item.unit_id);
-                                                    return un ? `${un.unit_name_th} (${un.unit_name_en})` : "";
+                                                    return un ? `${un.unit_name_th}` : "";
                                                 })()}
                                             </TableCell>
                                             <TableCell>{decimalFix(item.material_price)} ฿</TableCell>

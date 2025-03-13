@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react'
 import { pdf } from '@react-pdf/renderer';
+import { useRouter } from 'next/navigation';
 import { Box, Button, Divider, IconButton, Typography, Breadcrumbs, Link, Stack, } from "@mui/material";
 import { DeleteForever, Add, Remove, ReceiptLong, ShoppingCart, FirstPage, ShoppingBag } from "@mui/icons-material";
 import { useCart, useEmployee, useProduct } from "@/hooks/hooks";
@@ -17,6 +18,7 @@ const { getEmployeeByID } = useEmployee();
 const { getProductByID } = useProduct();
 
 const CartDetailPage = () => {
+    const router = useRouter()
     const searchParams = useSearchParams();
     const employee_id = searchParams.get('emp_id');
     const { cartItems, refreshCart } = useCartContext();
@@ -152,8 +154,8 @@ const CartDetailPage = () => {
     return (
         <>
             <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                <Link underline="hover" href="/sales">
-                    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                <Link underline="hover" onClick={() => router.back()}>
+                    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main', cursor: 'pointer' }}>
                         <FirstPage fontSize="small" />
                         <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
                     </Stack>

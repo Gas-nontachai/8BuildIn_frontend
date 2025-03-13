@@ -27,7 +27,7 @@ import {
     FormLabel,
     FormControl
 } from "@mui/material";
-import { ListAlt, ReceiptLong } from "@mui/icons-material";
+import { FirstPage, ReceiptLong } from "@mui/icons-material";
 
 import Loading from "@/app/components/Loading";
 
@@ -169,10 +169,10 @@ const PurchaseOrderDetailPage = () => {
         <Box sx={{ p: 4 }}>
             <div className="flex justify-between items-center mb-4">
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
-                    <Link underline="hover" href="/pr-po-list">
-                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
-                            <ListAlt fontSize="small" />
-                            <Typography variant="body1" color="primary">จัดการใบขอซื้อและใบสั่งซื้อ</Typography>
+                    <Link underline="hover" onClick={() => router.back()}>
+                        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main', cursor: 'pointer' }}>
+                            <FirstPage fontSize="small" />
+                            <Typography variant="body1" color="primary">ย้อนกลับ</Typography>
                         </Stack>
                     </Link>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
