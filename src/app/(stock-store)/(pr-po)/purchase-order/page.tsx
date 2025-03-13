@@ -108,7 +108,7 @@ const PurchaseOrderPage = () => {
                                                 กำลังสั่งซื้อ
                                             </span>
                                         ) : item.po_status === 'success' ? (
-                                            <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
+                                            <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-blue-500">
                                                 สั่งซื้อสำเร็จ
                                             </span>
                                         ) : item.po_status === 'not-approved' ? (
@@ -139,11 +139,10 @@ const PurchaseOrderPage = () => {
                                                     color: "#fff",
                                                     textTransform: "none",
                                                     borderRadius: "12px",
-                                                    padding: "1px 4px",
+                                                    padding: "3px 4px",
                                                     transition: "0.3s",
                                                     "&:hover": {
                                                         boxShadow: 6,
-                                                        transform: "scale(1.05)",
                                                         backgroundColor: "#ff2116",
                                                     }
                                                 }}

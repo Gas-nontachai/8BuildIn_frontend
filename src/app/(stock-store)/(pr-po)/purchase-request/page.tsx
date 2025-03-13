@@ -141,11 +141,10 @@ const PurchaseRequestPage = () => {
                           color: "#fff",
                           textTransform: "none",
                           borderRadius: "12px",
-                          padding: "1px 4px",
+                          padding: "3px 4px",
                           transition: "0.3s",
                           "&:hover": {
                             boxShadow: 6,
-                            transform: "scale(1.05)",
                             backgroundColor: "#ff2116",
                           }
                         }}

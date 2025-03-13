@@ -102,6 +102,10 @@ const TableListPR = () => {
                                                 <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
                                                     ไม่อนุมัติ
                                                 </span>
+                                            ) : item.pr_status === 'success' ? (
+                                                <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-blue-500">
+                                                    สั่งซื้อสำเร็จ
+                                                </span>
                                             ) : (
                                                 <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-black bg-gray-300">
                                                     {item.pr_status}
@@ -130,7 +134,6 @@ const TableListPR = () => {
                                                         transition: "0.3s",
                                                         "&:hover": {
                                                             boxShadow: 6,
-                                                            transform: "scale(1.05)",
                                                             backgroundColor: "#ff2116",
                                                         }
                                                     }}
@@ -154,8 +157,7 @@ const TableListPR = () => {
                                                     boxShadow: 3,
                                                     transition: "all 0.3s ease",
                                                     "&:hover": {
-                                                        boxShadow: 6,
-                                                        transform: "scale(1.05)",
+                                                        boxShadow: 6
                                                     }
                                                 }}
                                             >
