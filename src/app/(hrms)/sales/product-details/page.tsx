@@ -197,7 +197,7 @@ const ProductDetails = () => {
                         </Button>
                     </div>
                 </Grid>
-                {product.material && (
+                {JSON.parse(product.material).length > 0 && (
                     <Grid item xs={12}>
                         <div className="space-y-4">
                             <Typography variant="body1">
