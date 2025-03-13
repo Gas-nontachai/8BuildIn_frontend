@@ -70,6 +70,7 @@ const PurchaseOrderDetailPage = () => {
         unit_id: string;
         product_price: number;
     }[]>([]);
+    const [totalPrice, setTotalPrice] = useState(0);
 
     const [Note, setNote] = useState('')
 
@@ -78,6 +79,10 @@ const PurchaseOrderDetailPage = () => {
             fetchData();
         }
     }, [purchase_order_id]);
+
+    useEffect(() => {
+        calculate_price();
+    }, [product, material]);
 
     const fetchData = async () => {
         try {
@@ -151,6 +156,15 @@ const PurchaseOrderDetailPage = () => {
         }
     }
 
+
+    const calculate_price = () => {
+        const totalProductPrice = product.reduce((sum, item) => sum + (Number(item.product_price) || 0), 0);
+        const totalMaterialPrice = material.reduce((sum, item) => sum + (Number(item.material_price) || 0), 0);
+        const totalPrice = totalProductPrice + totalMaterialPrice;
+
+        setTotalPrice(totalPrice);
+    };
+
     return (
         <Box sx={{ p: 4 }}>
             <div className="flex justify-between items-center mb-4">
@@ -209,7 +223,7 @@ const PurchaseOrderDetailPage = () => {
                             ))}
                         </Select>
                     </FormControl>
-
+                    <Typography variant="h6" sx={{ mb: 1 }}>ราคารวม : {decimalFix(totalPrice)} ฿</Typography>
                     <Grid container spacing={2}>
                         {product.length > 0 && (
                             <Grid item xs={6}>

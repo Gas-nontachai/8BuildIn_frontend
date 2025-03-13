@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/date-helper"
 
-import { MoreVert, EventNote, Visibility } from "@mui/icons-material";
+import { Visibility, Description } from "@mui/icons-material";
 import {
     Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, TablePagination, TextField, IconButton, Menu, MenuItem, Button
+    TableContainer, TableHead, TableRow, TablePagination, TextField, Button
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
@@ -24,7 +24,6 @@ const TableListPR = () => {
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequest[]>([]);
     const [employee, setEmployee] = useState<Employee[]>([]);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     useEffect(() => {
         fetchData();
@@ -118,7 +117,9 @@ const TableListPR = () => {
                                         <TableCell>
                                             {formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}
                                         </TableCell>
-                                        <TableCell></TableCell>
+                                        <TableCell>
+                                            <Button color="info" size="small"><Description /> PDF</Button>
+                                        </TableCell>
                                         <TableCell align="center">
                                             <Button
                                                 onClick={() => handleDetail(item.pr_id)}

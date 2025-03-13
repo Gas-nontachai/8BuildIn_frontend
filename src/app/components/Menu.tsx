@@ -49,7 +49,7 @@ export default function SidebarMenu() {
     ];
 
     const StockStore = [
-        { text: "รายงานสโตร์", href: "/dash-stock", icon: <Timeline /> },
+        // { text: "รายงานสโตร์", href: "/dash-stock", icon: <Timeline /> },
         { text: "บันทึกสต็อกเข้า", href: "/stock-in", icon: <InventoryIcon /> },
         { text: "เบิกสินค้าออก", href: "/stock-out", icon: <Outbound /> }
     ];
@@ -98,52 +98,6 @@ export default function SidebarMenu() {
             </ListItem>
             <Collapse in={openPRPO} timeout="auto" unmountOnExit>
                 {PRPOList.map((item) => (
-                    <ListItem key={item.text} disablePadding>
-                        <Link href={item.href} passHref legacyBehavior>
-                            <ListItemButton component="a">
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} />
-                            </ListItemButton>
-                        </Link>
-                    </ListItem>
-                ))}
-                <Divider />
-            </Collapse>
-
-            {/* เมนูพนักงาน */}
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => setOpenEmp(!openEmp)}>
-                    <ListItemText primary="เมนูพนักงาน" />
-                    <IconButton edge="end">
-                        {openEmp ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                </ListItemButton>
-            </ListItem>
-            <Collapse in={openEmp} timeout="auto" unmountOnExit>
-                {Employee.map((item) => (
-                    <ListItem key={item.text} disablePadding>
-                        <Link href={item.href} passHref legacyBehavior>
-                            <ListItemButton component="a">
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.text} />
-                            </ListItemButton>
-                        </Link>
-                    </ListItem>
-                ))}
-                <Divider />
-            </Collapse>
-
-            {/* Manage sale */}
-            <ListItem disablePadding>
-                <ListItemButton onClick={() => setOpenSale(!openSale)}>
-                    <ListItemText primary="เมนูฝ่ายขาย" />
-                    <IconButton edge="end">
-                        {openSale ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                </ListItemButton>
-            </ListItem>
-            <Collapse in={openSale} timeout="auto" unmountOnExit>
-                {Sale.map((item) => (
                     <ListItem key={item.text} disablePadding>
                         <Link href={item.href} passHref legacyBehavior>
                             <ListItemButton component="a">
@@ -224,17 +178,17 @@ export default function SidebarMenu() {
                 <Divider />
             </Collapse>
 
-            {/* Manage Customer */}
+            {/* Manage sale */}
             <ListItem disablePadding>
-                <ListItemButton onClick={() => setOpenCus(!openCus)}>
-                    <ListItemText primary="เมนูลูกค้า" />
+                <ListItemButton onClick={() => setOpenSale(!openSale)}>
+                    <ListItemText primary="เมนูฝ่ายขาย" />
                     <IconButton edge="end">
-                        {openCus ? <ExpandLess /> : <ExpandMore />}
+                        {openSale ? <ExpandLess /> : <ExpandMore />}
                     </IconButton>
                 </ListItemButton>
             </ListItem>
-            <Collapse in={openCus} timeout="auto" unmountOnExit>
-                {Customer.map((item) => (
+            <Collapse in={openSale} timeout="auto" unmountOnExit>
+                {Sale.map((item) => (
                     <ListItem key={item.text} disablePadding>
                         <Link href={item.href} passHref legacyBehavior>
                             <ListItemButton component="a">
@@ -258,6 +212,52 @@ export default function SidebarMenu() {
             </ListItem>
             <Collapse in={openAcc} timeout="auto" unmountOnExit>
                 {Account.map((item) => (
+                    <ListItem key={item.text} disablePadding>
+                        <Link href={item.href} passHref legacyBehavior>
+                            <ListItemButton component="a">
+                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItemButton>
+                        </Link>
+                    </ListItem>
+                ))}
+                <Divider />
+            </Collapse>
+
+            {/* Manage Customer */}
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => setOpenCus(!openCus)}>
+                    <ListItemText primary="เมนูลูกค้า" />
+                    <IconButton edge="end">
+                        {openCus ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                </ListItemButton>
+            </ListItem>
+            <Collapse in={openCus} timeout="auto" unmountOnExit>
+                {Customer.map((item) => (
+                    <ListItem key={item.text} disablePadding>
+                        <Link href={item.href} passHref legacyBehavior>
+                            <ListItemButton component="a">
+                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItemButton>
+                        </Link>
+                    </ListItem>
+                ))}
+                <Divider />
+            </Collapse>
+
+            {/* เมนูพนักงาน */}
+            <ListItem disablePadding>
+                <ListItemButton onClick={() => setOpenEmp(!openEmp)}>
+                    <ListItemText primary="เมนูพนักงาน" />
+                    <IconButton edge="end">
+                        {openEmp ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                </ListItemButton>
+            </ListItem>
+            <Collapse in={openEmp} timeout="auto" unmountOnExit>
+                {Employee.map((item) => (
                     <ListItem key={item.text} disablePadding>
                         <Link href={item.href} passHref legacyBehavior>
                             <ListItemButton component="a">

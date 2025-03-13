@@ -97,9 +97,8 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
         try {
             setLoading(true)
             const res = await getPurchaseOrderByID({ po_id });
-            const res_pr = await getPurchaseRequestByID({ pr_id: res.pr_id });
-            setProduct(JSON.parse(res_pr.product))
-            setMaterial(JSON.parse(res_pr.material))
+            setProduct(JSON.parse(res.product || '[]'))
+            setMaterial(JSON.parse(res.material || '[]'))
         } catch (error) {
         } finally {
             setLoading(false)
@@ -253,28 +252,37 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell>ชื่อสินค้า</TableCell>
-                                                        <TableCell align="center">จำนวน</TableCell>
-                                                        <TableCell align="center">หน่วย</TableCell>
-                                                        <TableCell align="center">ราคาทั้งหมด</TableCell>
+                                                        <TableCell>จำนวน</TableCell>
+                                                        <TableCell>ราคาทั้งหมด</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
                                                     {product.map((product, index) => (
                                                         <TableRow key={index}>
                                                             <TableCell>{product.product_name}</TableCell>
-                                                            <TableCell align="center">{product.product_quantity}</TableCell>
-                                                            <TableCell align="center">
-                                                                {unit.find(unit => unit.id === product.unit_id)?.name}
-                                                            </TableCell>
-                                                            <TableCell align="center">{product.product_price}</TableCell>
+                                                            <TableCell>{product.product_quantity} {unit.find(unit => unit.id === product.unit_id)?.name}</TableCell>
+                                                            <TableCell>{product.product_price} ฿</TableCell>
                                                         </TableRow>
                                                     ))}
+                                                    {/* แถวสรุป */}
+                                                    <TableRow>
+                                                        <TableCell><strong>รวม</strong></TableCell>
+                                                        <TableCell><strong>
+                                                            {product.length} ชิ้น
+                                                        </strong></TableCell>
+                                                        <TableCell>
+                                                            <strong>
+                                                                {decimalFix(product.reduce((total, item) => total + item.product_price, 0))} ฿
+                                                            </strong>
+                                                        </TableCell>
+                                                    </TableRow>
                                                 </TableBody>
                                             </Table>
                                         </TableContainer>
                                     </Grid>
                                 </>
                             )}
+
                             {material.length > 0 && (
                                 <>
                                     <FormLabel component="legend">วัสดุ <span className="text-red-500">*</span></FormLabel>
@@ -285,22 +293,30 @@ const AddStockIn: React.FC<AddStockInProps> = ({ onClose, open, onRefresh }) => 
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell>ชื่อวัสดุ</TableCell>
-                                                        <TableCell align="center">จำนวน</TableCell>
-                                                        <TableCell align="center">หน่วย</TableCell>
-                                                        <TableCell align="center">ราคาทั้งหมด</TableCell>
+                                                        <TableCell >จำนวน</TableCell>
+                                                        <TableCell >ราคาทั้งหมด</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
                                                     {material.map((material, index) => (
                                                         <TableRow key={index}>
                                                             <TableCell>{material.material_name}</TableCell>
-                                                            <TableCell align="center">{material.material_quantity}</TableCell>
-                                                            <TableCell align="center">
-                                                                {unit.find(unit => unit.id === material.unit_id)?.name}
-                                                            </TableCell>
-                                                            <TableCell align="center">{material.material_price}</TableCell>
+                                                            <TableCell >{material.material_quantity} {unit.find(unit => unit.id === material.unit_id)?.name}</TableCell>
+                                                            <TableCell >{material.material_price} ฿</TableCell>
                                                         </TableRow>
                                                     ))}
+                                                    <TableRow>
+                                                        <TableCell><strong>รวม</strong></TableCell>
+                                                        <TableCell>
+                                                            <strong>
+                                                                {material.length} ชิ้น
+                                                            </strong></TableCell>
+                                                        <TableCell>
+                                                            <strong>
+                                                                {decimalFix(material.reduce((total, item) => total + item.material_price, 0))} ฿
+                                                            </strong>
+                                                        </TableCell>
+                                                    </TableRow>
                                                 </TableBody>
                                             </Table>
                                         </TableContainer>

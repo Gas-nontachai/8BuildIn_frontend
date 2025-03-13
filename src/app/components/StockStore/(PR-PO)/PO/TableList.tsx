@@ -1,12 +1,11 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import Swal from 'sweetalert2';
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/date-helper"
 
-import { Check, Close, MoreVert, Visibility } from "@mui/icons-material";
+import { Visibility, Description } from "@mui/icons-material";
 import {
-    Chip, Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell,
+    Chip, Button, Table, TableBody, TableCell,
     TableContainer, TableHead, TablePagination, TableRow, TextField
 } from "@mui/material";
 
@@ -16,7 +15,7 @@ import { usePagination } from "@/context/PaginationContext";
 import { PurchaseOrder, Employee } from '@/misc/types';
 import { usePurchaseOrder, useEmployee } from "@/hooks/hooks";
 
-const { getPurchaseOrderBy, updatePurchaseOrderBy } = usePurchaseOrder();
+const { getPurchaseOrderBy } = usePurchaseOrder();
 const { getEmployeeBy } = useEmployee();
 
 const TableListPO = () => {
@@ -24,12 +23,6 @@ const TableListPO = () => {
     const [loading, setLoading] = useState(false);
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
-    const [employee, setEmployee] = useState<Employee[]>([]);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-    };
 
     useEffect(() => {
         fetchData();
@@ -40,9 +33,6 @@ const TableListPO = () => {
             setLoading(true);
             const { docs: res } = await getPurchaseOrderBy();
             setPurchaseOrders(res);
-            const emp_arr = res.map((item) => item.addby);
-            const { docs: emp } = await getEmployeeBy({ match: { $in: emp_arr } });
-            setEmployee(emp);
         }
         catch (error) {
             console.log("Error fetching Purchase Request:", error);
@@ -52,36 +42,9 @@ const TableListPO = () => {
         }
     };
 
-    const handleNotAppoove = async (po_id: string, index: number) => {
-        try {
-            const { isConfirmed } = await Swal.fire({
-                title: 'ไม่อนุมัติ PO นี้?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'ใช่',
-                cancelButtonText: 'ไม่',
-            });
-            if (isConfirmed) {
-                const updateStatus = {
-                    ...purchaseOrders[index],
-                    po_id: po_id,
-                    po_status: 'not-appoeove'
-                }
-                await updatePurchaseOrderBy(updateStatus);
-            }
-        } catch (error) {
-            console.log("Error disappoove PO:", error);
-        }
-    };
-
     const handleDetail = (po_id: string) => {
         router.push('/purchase-order/detail/?po_id=' + po_id);
     }
-
-    const getEmployeeName = (id: any) => {
-        const emp = employee.find(e => e.employee_id === id);
-        return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "-";
-    };
 
     return (
         <>
@@ -140,7 +103,9 @@ const TableListPO = () => {
                                         <TableCell>{item.po_note}</TableCell>
                                         <TableCell>{item.addby}</TableCell>
                                         <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                        <TableCell></TableCell>
+                                        <TableCell>
+                                            <Button color="info" size="small"><Description /> PDF</Button>
+                                        </TableCell>
                                         <TableCell align="center">
                                             <Button
                                                 onClick={() => handleDetail(item.po_id)}
