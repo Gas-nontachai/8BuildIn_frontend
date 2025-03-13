@@ -14,6 +14,8 @@ import { usePagination } from "@/context/PaginationContext";
 
 import { PurchaseRequest, Employee } from '@/misc/types';
 import { usePurchaseRequest, useEmployee } from "@/hooks/hooks";
+import { pdf } from '@react-pdf/renderer';
+import PR from "@/app/components/StockStore/(PDF)/PR";
 
 const { getPurchaseRequestBy } = usePurchaseRequest();
 const { getEmployeeBy } = useEmployee();
@@ -53,6 +55,17 @@ const TableListPR = () => {
     const getEmployeeName = (id: any) => {
         const emp = employee.find(e => e.employee_id === id);
         return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "-";
+    };
+
+    const openPDF = async (purchaseRequest: PurchaseRequest) => {
+        console.log(purchaseRequest);
+        try {
+            const blob = await pdf(<PR prData={purchaseRequest} />).toBlob();
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        }
     };
 
     return (
@@ -121,7 +134,10 @@ const TableListPR = () => {
                                             <Box display="flex" justifyContent="center" alignItems="center">
                                                 <Button
                                                     size="small"
-                                                    // onClick={openPDF}
+                                                    onClick={() => {
+                                                        console.log(item); // ตรวจสอบค่า item
+                                                        openPDF(item);
+                                                    }}
                                                     color="info"
                                                     variant="contained"
                                                     startIcon={<Description />}

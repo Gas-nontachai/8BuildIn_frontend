@@ -35,6 +35,7 @@ const PurchaseOrderPage = () => {
             setLoading(true);
             const { docs: res } = await getPurchaseOrderBy();
             setPurchaseOrders(res);
+            console.log("res", res);
         } catch (error) {
             console.log("Error fetching Purchase Order:", error);
         } finally {
