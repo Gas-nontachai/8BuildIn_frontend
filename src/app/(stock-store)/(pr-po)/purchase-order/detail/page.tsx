@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Swal from 'sweetalert2';
 import { useSearchParams } from "next/navigation";
 import {
     Typography,
@@ -12,20 +14,44 @@ import {
     Paper,
     CircularProgress,
     Box,
-    Chip
+    Button,
+    Breadcrumbs,
+    Link,
+    Stack,
+    Grid,
+    Tooltip,
+    TextField,
+    Divider,
+    MenuItem,
+    Select,
+    FormLabel,
+    FormControl
 } from "@mui/material";
+import { ListAlt, ReceiptLong } from "@mui/icons-material";
 
 import { decimalFix } from "@/utils/number-helper";
-import { PurchaseOrder, Unit } from "@/misc/types";
-import { usePurchaseOrder, usePurchaseRequest } from "@/hooks/hooks";
+import { PurchaseOrder, Supplier } from "@/misc/types";
 
-const { getPurchaseOrderByID } = usePurchaseOrder();
+import { usePurchaseOrder, usePurchaseRequest, useSupplier } from "@/hooks/hooks";
+
+const { getPurchaseOrderByID, updatePurchaseOrderBy } = usePurchaseOrder();
 const { getPurchaseRequestByID } = usePurchaseRequest();
+const { getSupplierBy } = useSupplier();
 
 const PurchaseOrderDetailPage = () => {
+    const router = useRouter()
     const searchParams = useSearchParams();
     const purchase_order_id = searchParams.get("po_id");
     const [po, setPO] = useState<PurchaseOrder | null>(null);
+    const [supplier, setSupplier] = useState<Supplier[]>([])
+    const [PRID, setPRID] = useState('')
+    const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrder>({
+        po_id: purchase_order_id || '',
+        pr_id: '',
+        supplier_id: '',
+        po_status: 'buying',
+        po_note: ''
+    });
     const [material, setMaterial] = useState<{
         material_name: string;
         material_quantity: number;
@@ -58,10 +84,14 @@ const PurchaseOrderDetailPage = () => {
     const fetchData = async () => {
         try {
             const res = await getPurchaseOrderByID({ po_id: purchase_order_id || "" });
-            setPO(res);
             const res_pr = await getPurchaseRequestByID({ pr_id: res.pr_id });
+            const { docs: resSup } = await getSupplierBy()
+            setSupplier(resSup)
+
+            setPO(res);
             setMaterial(parseJSON(res_pr.material));
             setProduct(parseJSON(res_pr.product));
+            setPRID(res_pr.pr_id)
         } catch (error) {
             console.error("Error fetching purchase order:", error);
         }
@@ -76,79 +106,181 @@ const PurchaseOrderDetailPage = () => {
         }
     };
 
-    return (
-        <Box sx={{ p: 4 }}>
-            {po ? (
-                <>
-                    <Typography variant="h5" fontWeight="bold" gutterBottom>
-                        หมายเลขคำขอซื้อ: {po.po_id}
-                    </Typography>
-                    <Chip label={`สถานะ: ${po.po_status}`} color="warning" variant="outlined" sx={{ mb: 2 }} />
-                    <Typography variant="body1" gutterBottom>
-                        หมายเหตุ: {po.po_note}
-                    </Typography>
-                    {product.length > 0 && ( // Check if product has any items
-                        <Box mt={3}>
-                            <Typography variant="h6">Products</Typography>
-                            <TableContainer component={Paper} elevation={2}>
-                                <Table size="small">
-                                    <TableHead sx={{ bgcolor: "#f5f5f5" }}>
-                                        <TableRow>
-                                            <TableCell>ชื่อสินค้า</TableCell>
-                                            <TableCell>จำนวน</TableCell>
-                                            <TableCell>ราคาต่อหน่วย (บาท)</TableCell>
-                                            <TableCell>ราคารวม (บาท)</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {product.map((item, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{item.product_name}</TableCell>
-                                                <TableCell>{item.product_quantity}</TableCell>
-                                                <TableCell>{decimalFix(item.product_price / item.product_quantity)} ฿</TableCell>
-                                                <TableCell>{decimalFix(item.product_price)} ฿</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Box>
-                    )}
+    const handleSubmit = async () => {
+        try {
+            const updateData = {
+                ...purchaseOrder,
+                po_id: purchase_order_id || '',
+                po_status: 'buying',
+                pr_id: PRID
+            }
+            await updatePurchaseOrderBy(updateData)
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกสำเร็จ',
+                text: 'การสั่งซื้อถูกบันทึกเรียบร้อยแล้ว',
+                confirmButtonText: 'ตกลง'
+            })
+            router.push('/pr-po-list')
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-                    {material.length > 0 && ( // Check if material has any items
-                        <Box mt={3}>
-                            <Typography variant="h6">Materials</Typography>
-                            <TableContainer component={Paper} elevation={2}>
-                                <Table size="small">
-                                    <TableHead sx={{ bgcolor: "#f5f5f5" }}>
-                                        <TableRow>
-                                            <TableCell>ชื่อวัสดุ</TableCell>
-                                            <TableCell>จำนวน</TableCell>
-                                            <TableCell>ราคาต่อหน่วย (บาท)</TableCell>
-                                            <TableCell>ราคารวม (บาท)</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {material.map((item, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{item.material_name}</TableCell>
-                                                <TableCell>{item.material_quantity}</TableCell>
-                                                <TableCell>{decimalFix(item.material_price / item.material_quantity)} ฿</TableCell>
-                                                <TableCell>{decimalFix(item.material_price)} ฿</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+
+    return (
+        <>
+            <Box sx={{ p: 4 }}>
+                {po ? (
+                    <>
+                        <div className="flex justify-between items-center mb-4" >
+                            <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
+                                <Link underline="hover" href="/pr-po-list">
+                                    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
+                                        <ListAlt fontSize="small" />
+                                        <Typography variant="body1" color="primary">จัดการคำขอซื้อและใบสั่งซื้อ</Typography>
+                                    </Stack>
+                                </Link>
+                                <Stack direction="row" alignItems="center" spacing={0.5}>
+                                    <ReceiptLong fontSize="small" />
+                                    <Typography variant="body1" color="text.secondary">รายละเอียดใบสั่งซื้อ</Typography>
+                                </Stack>
+                            </Breadcrumbs>
+                            <FormControl size="small" sx={{ width: '300px' }}>
+                                <FormLabel component="legend">เลือกผู้จัดจำหน่าย
+                                    <span className="text-red-500">*</span>
+                                </FormLabel>
+                                <Select
+                                    name="supplier_id"
+                                    onChange={(e) => setPurchaseOrder({ ...purchaseOrder, supplier_id: e.target.value })}
+                                    value={po.supplier_id}
+                                >
+                                    {supplier.map((sup) => (
+                                        <MenuItem key={sup.supplier_id} value={sup.supplier_id}>
+                                            {sup.supplier_name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </div>
+                        <div className="mb-5 -mt-2">
+                            <Divider />
+                        </div>
+                        <Box display="inline-flex" alignItems="center" gap={2}>
+                            <Typography variant="h5" fontWeight="bold" gutterBottom>
+                                หมายเลขคำขอซื้อ: {po.po_id}
+                            </Typography>
+                            <span
+                                className={`inline-block px-3 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
+                                                ${po.po_status === "not-approved" ? "bg-red-500 text-white" :
+                                        po.po_status === "approved" ? "bg-green-500 text-white" :
+                                            po.po_status === "pending" ? "bg-yellow-500 text-white" : ""}`}
+                            >
+                                {po.po_status === "not-approved" ? "ไม่อนุมัติ" :
+                                    po.po_status === "approved" ? "อนุมัติ" :
+                                        po.po_status === "pending" ? "รอดำเนินการ" : ""}
+                            </span>
                         </Box>
-                    )}
-                </>
-            ) : (
-                <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
-                    <CircularProgress />
-                </Box>
-            )}
-        </Box>
+                        {po.po_note && (
+                            <Typography variant="body1" gutterBottom>
+                                หมายเหตุ: {po.po_note}
+                            </Typography>
+                        )}
+                        <Grid container spacing={2}>
+                            {product.length > 0 && (
+                                <Grid item xs={6}>
+                                    <Box mt={3}>
+                                        <Typography variant="h6" sx={{ mb: 1 }}>สินค้า</Typography>
+                                        <TableContainer component={Paper} elevation={2}>
+                                            <Table size="small">
+                                                <TableHead sx={{ bgcolor: "#f5f5f5" }}>
+                                                    <TableRow>
+                                                        <TableCell>ชื่อสินค้า</TableCell>
+                                                        <TableCell>จำนวน</TableCell>
+                                                        <TableCell>ราคาต่อหน่วย (บาท)</TableCell>
+                                                        <TableCell>ราคารวม (บาท)</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {product.map((item, index) => (
+                                                        <TableRow key={index}>
+                                                            <TableCell>{item.product_name}</TableCell>
+                                                            <TableCell>{item.product_quantity}</TableCell>
+                                                            <TableCell>{decimalFix(item.product_price / item.product_quantity)} ฿</TableCell>
+                                                            <TableCell>{decimalFix(item.product_price)} ฿</TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                                    </Box>
+                                </Grid>
+                            )}
+
+                            {material.length > 0 && (
+                                <Grid item xs={6}>
+                                    <Box mt={3}>
+                                        <Typography variant="h6" sx={{ mb: 1 }}>วัสดุ</Typography>
+                                        <TableContainer component={Paper} elevation={2}>
+                                            <Table size="small">
+                                                <TableHead sx={{ bgcolor: "#f5f5f5" }}>
+                                                    <TableRow>
+                                                        <TableCell>ชื่อวัสดุ</TableCell>
+                                                        <TableCell>จำนวน</TableCell>
+                                                        <TableCell>ราคาต่อหน่วย (บาท)</TableCell>
+                                                        <TableCell>ราคารวม (บาท)</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {material.map((item, index) => (
+                                                        <TableRow key={index}>
+                                                            <TableCell>{item.material_name}</TableCell>
+                                                            <TableCell>{item.material_quantity}</TableCell>
+                                                            <TableCell>{decimalFix(item.material_price / item.material_quantity)} ฿</TableCell>
+                                                            <TableCell>{decimalFix(item.material_price)} ฿</TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                                    </Box>
+                                </Grid>
+                            )}
+                            <Grid item xs={12} sx={{ justifyContent: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 2, mt: 2 }}>
+                                <TextField
+                                    label="หมายเหตุ (ถ้ามี)"
+                                    multiline
+                                    value={po.po_note}
+                                    onChange={(e) => setPurchaseOrder({ ...purchaseOrder, po_note: e.target.value })}
+                                    rows={4}
+                                    variant="outlined"
+                                    fullWidth
+                                />
+                                <div className="flex gap-2">
+                                    <Tooltip title="อนุมัติคำขอ" arrow>
+                                        <Button variant="contained" onClick={handleSubmit} color="success">
+                                            อนุมัติ
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title="ไม่อนุมัติคำขอ" arrow>
+                                        <Button variant="contained" color="error">
+                                            ไม่อนุมัติ
+                                        </Button>
+                                    </Tooltip>
+                                </div>
+                            </Grid>
+                        </Grid>
+
+                    </>
+                ) : (
+                    <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
+                        <CircularProgress />
+                    </Box>
+                )
+                }
+            </Box >
+        </>
+
     );
 };
 

@@ -86,7 +86,8 @@ const PurchaseRequestPage = () => {
                 <TableCell>สถานะ PR</TableCell>
                 <TableCell>หมายเหตุ</TableCell>
                 <TableCell>เพิ่มโดย</TableCell>
-                <TableCell align="center">วันที่เพิ่ม</TableCell>
+                <TableCell>วันที่เพิ่ม</TableCell>
+                <TableCell>อัพเดทล่าสุด</TableCell>
                 <TableCell align="center">ออกบิล</TableCell>
               </TableRow >
             </TableHead >
@@ -117,6 +118,7 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.pr_note}</TableCell>
                   <TableCell>{item.addby}</TableCell>
                   <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                  <TableCell>{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                   <TableCell align="center"><Button onClick={openPDF} color="error"><Description /> PDF</Button></TableCell>
                 </TableRow>
               ))}

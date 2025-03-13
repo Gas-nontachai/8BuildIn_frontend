@@ -70,8 +70,9 @@ const TableListPR = () => {
                                 <TableCell>สถานะ PR</TableCell>
                                 <TableCell>เพิ่มโดย</TableCell>
                                 <TableCell>วันที่เพิ่ม</TableCell>
+                                <TableCell>อัพเดทล่าสุด</TableCell>
                                 <TableCell>ดูบิล</TableCell>
-                                <TableCell align="center">จัดการคำขอซื้อ</TableCell>
+                                <TableCell align="center">รายละเอียดคำขอซื้อ</TableCell>
                             </TableRow >
                         </TableHead >
                         <TableBody>
@@ -99,14 +100,9 @@ const TableListPR = () => {
                                         )}
                                     </TableCell>
                                     <TableCell>{getEmployeeName(item.addby)}</TableCell>
+                                    <TableCell>{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                                     <TableCell>
                                         {formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}
-                                        <br />
-                                        {item.lastupdate && (
-                                            <>
-                                                อัปเดตล่าสุด:({formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')})
-                                            </>
-                                        )}
                                     </TableCell>
                                     <TableCell></TableCell>
                                     <TableCell align="center">
@@ -135,7 +131,7 @@ const TableListPR = () => {
                             ))}
                         </TableBody>
                     </Table >
-                </TableContainer>
+                </TableContainer >
             )}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 15]}

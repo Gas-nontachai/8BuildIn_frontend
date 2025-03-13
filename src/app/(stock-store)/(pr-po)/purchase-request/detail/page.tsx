@@ -215,7 +215,7 @@ const PurchaseRequestDetailPage = () => {
                         )}
                         <Grid item xs={12} sx={{ justifyContent: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 2, mt: 2 }}>
                             <TextField
-                                label="หมายเหตุ"
+                                label="หมายเหตุ (ถ้ามี)"
                                 multiline
                                 value={purchaseRequests.pr_note}
                                 onChange={(e) => setPurchaseRequests({ ...purchaseRequests, pr_note: e.target.value })}
@@ -235,9 +235,7 @@ const PurchaseRequestDetailPage = () => {
                                     </Button>
                                 </Tooltip>
                             </div>
-                        </Grid>
-
-
+                        </Grid> 
                     </Grid>
                 </>
             ) : (

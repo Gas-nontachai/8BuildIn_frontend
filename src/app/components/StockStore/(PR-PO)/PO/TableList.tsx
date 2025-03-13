@@ -123,7 +123,7 @@ const TableListPO = () => {
                                 <TableCell>เพิ่มโดย</TableCell>
                                 <TableCell>วันที่เพิ่ม</TableCell>
                                 <TableCell>ดูบิล</TableCell>
-                                <TableCell align="center">จัดการใบสั่งซื้อ</TableCell>
+                                <TableCell align="center">รายละเอียดใบสั่งซื้อ</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -131,6 +131,7 @@ const TableListPO = () => {
                                 <TableRow key={item.po_id} hover>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                     <TableCell>{item.po_id}</TableCell>
+                                    <TableCell>{item.pr_id}</TableCell>
                                     <TableCell>{item.po_status}</TableCell>
                                     <TableCell>{item.po_note}</TableCell>
                                     <TableCell>{item.addby}</TableCell>
@@ -138,6 +139,9 @@ const TableListPO = () => {
                                     <TableCell></TableCell>
                                     <TableCell align="center">
                                         <Button
+                                            onClick={() => handleDetail(item.po_id)}
+                                            color="info"
+                                            variant="contained"
                                             size="small"
                                             startIcon={<Visibility />}
                                             sx={{
