@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import Swal from 'sweetalert2';
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import {
     Typography,
@@ -29,6 +30,7 @@ import { PurchaseRequest, Unit } from "@/misc/types";
 import { usePurchaseRequest } from "@/hooks/hooks";
 
 const PurchaseRequestDetailPage = () => {
+    const router = useRouter()
     const searchParams = useSearchParams();
     const purchase_request_id = searchParams.get("pr_id");
     const [pr, setPR] = useState<PurchaseRequest | null>(null);
@@ -99,18 +101,34 @@ const PurchaseRequestDetailPage = () => {
                 cancelButtonText: 'ไม่',
             });
             if (isConfirmed) {
+                Swal.fire({
+                    title: 'กำลังดำเนินการ...',
+                    text: 'กรุณารอสักครู่',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 const updatedData = {
                     ...purchaseRequests,
                     pr_id: pr_id,
                     pr_status: 'approve',
                 };
                 await updatePurchaseRequestBy(updatedData);
+                Swal.fire({
+                    title: 'อนุมัติ PR สำเร็จ',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500,
+                }).then(() => {
+                    router.push("/pr-po-list");
+                });
             }
         } catch (error) {
             console.log("Error approve PR:", error);
         }
     };
-
 
     return (
         <Box sx={{ p: 4 }}>
@@ -225,17 +243,19 @@ const PurchaseRequestDetailPage = () => {
                             />
                             <div className="flex gap-2">
                                 <Tooltip title="อนุมัติคำขอ" arrow>
-                                    <Button variant="contained" color="success">
+                                    <Button variant="contained" color="success"
+                                        onClick={() => handleApprove(pr.pr_id)}>
                                         อนุมัติ
                                     </Button>
                                 </Tooltip>
                                 <Tooltip title="ไม่อนุมัติคำขอ" arrow>
-                                    <Button variant="contained" color="error">
+                                    <Button variant="contained" color="error"
+                                        onClick={() => handleNotApprove(pr.pr_id)}>
                                         ไม่อนุมัติ
                                     </Button>
                                 </Tooltip>
                             </div>
-                        </Grid> 
+                        </Grid>
                     </Grid>
                 </>
             ) : (

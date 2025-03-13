@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2';
 import { useSearchParams } from "next/navigation";
@@ -32,26 +32,28 @@ import { ListAlt, ReceiptLong } from "@mui/icons-material";
 import { decimalFix } from "@/utils/number-helper";
 import { PurchaseOrder, Supplier } from "@/misc/types";
 
-import { usePurchaseOrder, usePurchaseRequest, useSupplier } from "@/hooks/hooks";
+import { usePurchaseOrder, useSupplier } from "@/hooks/hooks";
 
 const { getPurchaseOrderByID, updatePurchaseOrderBy } = usePurchaseOrder();
-const { getPurchaseRequestByID } = usePurchaseRequest();
 const { getSupplierBy } = useSupplier();
 
 const PurchaseOrderDetailPage = () => {
     const router = useRouter()
     const searchParams = useSearchParams();
     const purchase_order_id = searchParams.get("po_id");
-    const [po, setPO] = useState<PurchaseOrder | null>(null);
+    const [po, setPO] = useState<PurchaseOrder>({
+        po_id: "",
+        pr_id: "",
+        supplier_id: "",
+        po_status: "",
+        po_note: "",
+        addby: "",
+        adddate: "",
+        updateby: "",
+        lastupdate: ""
+    });
     const [supplier, setSupplier] = useState<Supplier[]>([])
     const [PRID, setPRID] = useState('')
-    const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrder>({
-        po_id: purchase_order_id || '',
-        pr_id: '',
-        supplier_id: '',
-        po_status: 'buying',
-        po_note: ''
-    });
     const [material, setMaterial] = useState<{
         material_name: string;
         material_quantity: number;
@@ -66,32 +68,27 @@ const PurchaseOrderDetailPage = () => {
         product_price: number;
     }[]>([]);
 
+    const [Note, setNote] = useState('')
+
     useEffect(() => {
         if (purchase_order_id) {
             fetchData();
         }
     }, [purchase_order_id]);
 
-    useEffect(() => {
-        if (product.length > 0) {
-            console.log("product", product);
-        }
-        if (material.length > 0) {
-            console.log("material", material);
-        }
-    }, [material, product]);
+    // useEffect(() => { 
+    // }, [material, product]);
 
     const fetchData = async () => {
         try {
             const res = await getPurchaseOrderByID({ po_id: purchase_order_id || "" });
-            const res_pr = await getPurchaseRequestByID({ pr_id: res.pr_id });
-            const { docs: resSup } = await getSupplierBy()
-            setSupplier(resSup)
-
+            const { docs: res_sup } = await getSupplierBy()
+            setSupplier(res_sup)
             setPO(res);
-            setMaterial(parseJSON(res_pr.material));
-            setProduct(parseJSON(res_pr.product));
-            setPRID(res_pr.pr_id)
+            setMaterial(parseJSON(res.material ?? null));
+            setProduct(parseJSON(res.product ?? null));
+            setPRID(res.pr_id)
+            setNote(res.po_note)
         } catch (error) {
             console.error("Error fetching purchase order:", error);
         }
@@ -106,27 +103,51 @@ const PurchaseOrderDetailPage = () => {
         }
     };
 
+    const handlePriceChange = (e: any, index: any, type: string) => {
+        const updatedPrice = parseFloat(e.target.value);
+        if (!isNaN(updatedPrice) && updatedPrice >= 0) {
+            if (type === 'material') {
+                const updatedMaterials = [...material];
+                updatedMaterials[index].material_price = updatedPrice;
+                setMaterial(updatedMaterials);
+            } else if (type === 'product') {
+                const updatedProducts = [...product];
+                updatedProducts[index].product_price = updatedPrice;
+                setProduct(updatedProducts);
+
+            }
+        }
+
+    }
+
     const handleSubmit = async () => {
         try {
-            const updateData = {
-                ...purchaseOrder,
-                po_id: purchase_order_id || '',
+            const updatedPO = {
+                ...po,
+                po_id: purchase_order_id || "",
                 po_status: 'buying',
-                pr_id: PRID
-            }
-            await updatePurchaseOrderBy(updateData)
+                pr_id: PRID || '',
+                product: JSON.stringify(product),
+                material: JSON.stringify(material)
+            }; 
+            await updatePurchaseOrderBy(updatedPO);
             Swal.fire({
                 icon: 'success',
                 title: 'บันทึกสำเร็จ',
                 text: 'การสั่งซื้อถูกบันทึกเรียบร้อยแล้ว',
                 confirmButtonText: 'ตกลง'
-            })
-            router.push('/pr-po-list')
+            });
+            router.push('/pr-po-list');
         } catch (error) {
             console.log(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถบันทึกการสั่งซื้อได้',
+                confirmButtonText: 'ลองอีกครั้ง'
+            });
         }
     }
-
 
     return (
         <>
@@ -146,29 +167,13 @@ const PurchaseOrderDetailPage = () => {
                                     <Typography variant="body1" color="text.secondary">รายละเอียดใบสั่งซื้อ</Typography>
                                 </Stack>
                             </Breadcrumbs>
-                            <FormControl size="small" sx={{ width: '300px' }}>
-                                <FormLabel component="legend">เลือกผู้จัดจำหน่าย
-                                    <span className="text-red-500">*</span>
-                                </FormLabel>
-                                <Select
-                                    name="supplier_id"
-                                    onChange={(e) => setPurchaseOrder({ ...purchaseOrder, supplier_id: e.target.value })}
-                                    value={po.supplier_id}
-                                >
-                                    {supplier.map((sup) => (
-                                        <MenuItem key={sup.supplier_id} value={sup.supplier_id}>
-                                            {sup.supplier_name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
                         </div>
                         <div className="mb-5 -mt-2">
                             <Divider />
                         </div>
                         <Box display="inline-flex" alignItems="center" gap={2}>
                             <Typography variant="h5" fontWeight="bold" gutterBottom>
-                                หมายเลขคำขอซื้อ: {po.po_id}
+                                หมายเลขใบสั่งซื้อ: {po.po_id}
                             </Typography>
                             <span
                                 className={`inline-block px-3 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
@@ -181,14 +186,30 @@ const PurchaseOrderDetailPage = () => {
                                         po.po_status === "pending" ? "รอดำเนินการ" : ""}
                             </span>
                         </Box>
-                        {po.po_note && (
+                        {Note && (
                             <Typography variant="body1" gutterBottom>
-                                หมายเหตุ: {po.po_note}
+                                หมายเหตุคำขอซื้อ: {Note}
                             </Typography>
                         )}
+                        <FormControl size="small" sx={{ width: '300px' }}>
+                            <FormLabel component="legend">
+                                เลือกผู้จัดจำหน่าย <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <Select
+                                name="supplier_id"
+                                onChange={(e) => setPO({ ...po, supplier_id: e.target.value || "" })}
+                                value={po.supplier_id || ""}
+                            >
+                                {supplier.map((sup) => (
+                                    <MenuItem key={sup.supplier_id} value={sup.supplier_id}>
+                                        {sup.supplier_name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <Grid container spacing={2}>
                             {product.length > 0 && (
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     <Box mt={3}>
                                         <Typography variant="h6" sx={{ mb: 1 }}>สินค้า</Typography>
                                         <TableContainer component={Paper} elevation={2}>
@@ -207,7 +228,15 @@ const PurchaseOrderDetailPage = () => {
                                                             <TableCell>{item.product_name}</TableCell>
                                                             <TableCell>{item.product_quantity}</TableCell>
                                                             <TableCell>{decimalFix(item.product_price / item.product_quantity)} ฿</TableCell>
-                                                            <TableCell>{decimalFix(item.product_price)} ฿</TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    type="number"
+                                                                    value={item.product_price}
+                                                                    onChange={(e) => handlePriceChange(e, index, 'product')}
+                                                                    size="small"
+                                                                    sx={{ width: '100px' }}
+                                                                />
+                                                            </TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -218,7 +247,7 @@ const PurchaseOrderDetailPage = () => {
                             )}
 
                             {material.length > 0 && (
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     <Box mt={3}>
                                         <Typography variant="h6" sx={{ mb: 1 }}>วัสดุ</Typography>
                                         <TableContainer component={Paper} elevation={2}>
@@ -237,7 +266,15 @@ const PurchaseOrderDetailPage = () => {
                                                             <TableCell>{item.material_name}</TableCell>
                                                             <TableCell>{item.material_quantity}</TableCell>
                                                             <TableCell>{decimalFix(item.material_price / item.material_quantity)} ฿</TableCell>
-                                                            <TableCell>{decimalFix(item.material_price)} ฿</TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    type="number"
+                                                                    value={item.material_price}
+                                                                    onChange={(e) => handlePriceChange(e, index, 'material')}
+                                                                    size="small"
+                                                                    sx={{ width: '100px' }}
+                                                                />
+                                                            </TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -251,7 +288,7 @@ const PurchaseOrderDetailPage = () => {
                                     label="หมายเหตุ (ถ้ามี)"
                                     multiline
                                     value={po.po_note}
-                                    onChange={(e) => setPurchaseOrder({ ...purchaseOrder, po_note: e.target.value })}
+                                    onChange={(e) => setPO({ ...po, po_note: e.target.value })}
                                     rows={4}
                                     variant="outlined"
                                     fullWidth
