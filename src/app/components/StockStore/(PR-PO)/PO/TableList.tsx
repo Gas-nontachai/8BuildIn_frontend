@@ -72,30 +72,7 @@ const TableListPO = () => {
         } catch (error) {
             console.log("Error disappoove PO:", error);
         }
-    };
-
-    const handleAppoove = async (po_id: string, index: number) => {
-        try {
-            const { isConfirmed } = await Swal.fire({
-                title: 'อนุมัติ PO นี้?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'ใช่',
-                cancelButtonText: 'ไม่',
-            });
-            if (isConfirmed) {
-                const updateStatus = {
-                    ...purchaseOrders[index],
-                    po_id: po_id,
-                    po_status: 'buying'
-                }
-                await updatePurchaseOrderBy(updateStatus);
-            }
-        }
-        catch (error) {
-            console.log("Error appoove PO:", error);
-        }
-    }
+    }; 
 
     const handleDetail = (po_id: string) => {
         router.push('/purchase-order/detail/?po_id=' + po_id);
