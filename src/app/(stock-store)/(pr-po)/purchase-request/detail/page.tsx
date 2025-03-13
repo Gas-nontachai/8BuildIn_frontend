@@ -19,7 +19,8 @@ import {
     Stack,
     Grid,
     Tooltip,
-    TextField
+    TextField,
+    Divider
 } from "@mui/material";
 import { ListAlt, EventNote } from "@mui/icons-material";
 
@@ -128,6 +129,9 @@ const PurchaseRequestDetailPage = () => {
                                 <Typography variant="body1" color="text.secondary">รายละเอียดคำขอซื้อ</Typography>
                             </Stack>
                         </Breadcrumbs>
+                    </div>
+                    <div className="mb-5 -mt-2">
+                        <Divider />
                     </div>
                     <Box display="inline-flex" alignItems="center" gap={2}>
                         <Typography variant="h5" fontWeight="bold" gutterBottom>

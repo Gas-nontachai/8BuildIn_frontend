@@ -6,7 +6,7 @@ import { formatDate } from "@/utils/date-helper"
 import { Add, Home, Assignment, Description } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, IconButton, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
+  TableContainer, TableHead, TableRow, Divider, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
@@ -71,6 +71,9 @@ const PurchaseRequestPage = () => {
           เปิดใบคำขอซื้อ
         </Button>
       </div>
+      <div className="mb-4 -mt-3">
+        <Divider />
+      </div>
       {loading ? (
         <Loading />
       ) : (
@@ -83,8 +86,8 @@ const PurchaseRequestPage = () => {
                 <TableCell>สถานะ PR</TableCell>
                 <TableCell>หมายเหตุ</TableCell>
                 <TableCell>เพิ่มโดย</TableCell>
-                <TableCell>วันที่เพิ่ม</TableCell>
-                <TableCell>ออกบิล</TableCell>
+                <TableCell align="center">วันที่เพิ่ม</TableCell>
+                <TableCell align="center">ออกบิล</TableCell>
               </TableRow >
             </TableHead >
             <TableBody>
@@ -113,10 +116,8 @@ const PurchaseRequestPage = () => {
                   </TableCell>
                   <TableCell>{item.pr_note}</TableCell>
                   <TableCell>{item.addby}</TableCell>
-                  <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={openPDF} color="primary"><Description /></IconButton> 
-                  </TableCell>
+                  <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                  <TableCell align="center"><Button onClick={openPDF} color="error"><Description /> PDF</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>

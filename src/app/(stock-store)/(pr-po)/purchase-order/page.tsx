@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
 import { pdf } from '@react-pdf/renderer';
 
-import { MoreVert, Store, Delete, Add, Home, Description, Timeline } from "@mui/icons-material";
+import { MoreVert, Store, Delete, Add, Home, Description, ReceiptLong } from "@mui/icons-material";
 import {
     MenuItem, Menu, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, IconButton, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
+    TableContainer, TableHead, TableRow, Divider, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import Swal from 'sweetalert2';
@@ -63,13 +63,13 @@ const PurchaseOrderPage = () => {
                         </Stack>
                     </Link>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
-                        <Timeline fontSize="small" />
-                        <Typography variant="body1" color="text.secondary">เปิด PR</Typography>
+                        <ReceiptLong fontSize="small" />
+                        <Typography variant="body1" color="text.secondary">ใบสั่งซื้อ</Typography>
                     </Stack>
                 </Breadcrumbs>
-                <Button variant="contained" color="info" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
-                    สร้าง PR
-                </Button>
+            </div>
+            <div className="mb-4 -mt-3">
+                <Divider />
             </div>
             {loading ? (
                 <Loading />
@@ -83,8 +83,8 @@ const PurchaseOrderPage = () => {
                                 <TableCell>สถานะ PR</TableCell>
                                 <TableCell>หมายเหตุ</TableCell>
                                 <TableCell>เพิ่มโดย</TableCell>
-                                <TableCell>วันที่เพิ่ม</TableCell>
-                                <TableCell>ออกบิล</TableCell>
+                                <TableCell align="center">วันที่เพิ่ม</TableCell>
+                                <TableCell align="center">ออกบิล</TableCell>
                             </TableRow >
                         </TableHead >
                         <TableBody>
@@ -97,9 +97,9 @@ const PurchaseOrderPage = () => {
                                             <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-yellow-500">
                                                 รอดำเนินการ
                                             </span>
-                                        ) : item.po_status === 'success' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-green-500">
-                                                สำเร็จ
+                                        ) : item.po_status === 'buying' ? (
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-orange-500">
+                                                กำลังสั่งซื้อ
                                             </span>
                                         ) : item.po_status === 'not-approved' ? (
                                             <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-red-500">
@@ -113,8 +113,8 @@ const PurchaseOrderPage = () => {
                                     </TableCell>
                                     <TableCell>{item.po_note}</TableCell>
                                     <TableCell>{item.addby}</TableCell>
-                                    <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    <TableCell><IconButton onClick={openPDF} color="primary"><Description /></IconButton></TableCell>
+                                    <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                    <TableCell align="center"><Button onClick={openPDF} color="error"><Description /> PDF</Button></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

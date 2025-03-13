@@ -3,19 +3,11 @@ import { useState } from "react";
 
 import { ListAlt, Home, Assignment, ReceiptLong } from "@mui/icons-material";
 import {
-    Tabs, Tab, Button, Breadcrumbs, Typography, Stack, Link, Chip
+    Tabs, Tab, Button, Breadcrumbs, Typography, Stack, Link, Divider
 } from "@mui/material";
 
 import TableListPR from "@/app/components/StockStore/(PR-PO)/PR/TableList";
 import TableListPO from "@/app/components/StockStore/(PR-PO)/PO/TableList";
-
-const PRComponent = () => {
-    return <div>PR Content</div>;
-};
-
-const POComponent = () => {
-    return <div>PO Content</div>;
-};
 
 const PRPOList = () => {
     const [value, setValue] = useState<string>("pr");
@@ -42,6 +34,9 @@ const PRPOList = () => {
                 {/* <Button variant="contained" color="info" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
                     สร้าง PR
                 </Button> */}
+            </div>
+            <div className="mb-4 -mt-3">
+                <Divider />
             </div>
             <Tabs
                 className="mb-4"

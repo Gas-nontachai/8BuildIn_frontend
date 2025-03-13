@@ -1,34 +1,44 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
-import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/date-helper"
 
-import { Check, Close, MoreVert, Visibility } from "@mui/icons-material";
+import { Check, Close, MoreVert } from "@mui/icons-material";
 import {
-    Chip, Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell,
-    TableContainer, TableHead, TablePagination, TableRow, Typography
+    Table, TableBody, TableCell,
+    TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Menu, MenuItem
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
 import { usePagination } from "@/context/PaginationContext";
 
-import { PurchaseOrder, Employee } from '@/misc/types';
-import { usePurchaseOrder, useEmployee } from "@/hooks/hooks";
+import { PurchaseOrder } from '@/misc/types';
+import { usePurchaseOrder } from "@/hooks/hooks";
 
 const { getPurchaseOrderBy, updatePurchaseOrderBy } = usePurchaseOrder();
-const { getEmployeeBy } = useEmployee();
 
-const TableListPO = () => {
-    const router = useRouter();
+const ListTablePO = () => {
+    const [purchaseorder, setPurchaseOrder] = useState<PurchaseOrder>({
+        po_id: '',
+        pr_id: '',
+        supplier_id: '',
+        po_status: '',
+        po_note: '',
+    });
     const [loading, setLoading] = useState(false);
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
-    const [employee, setEmployee] = useState<Employee[]>([]);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [selected, setSelected] = useState<PurchaseOrder | null>(null);
+    const po_id = useRef('');
 
+    const handleClickMenu = (event: React.MouseEvent<HTMLElement>, purchaseorder: PurchaseOrder) => {
+        setAnchorEl(event.currentTarget);
+        setSelected(purchaseorder);
+    };
     const handleCloseMenu = () => {
         setAnchorEl(null);
+        setSelected(null);
     };
 
     useEffect(() => {
@@ -40,9 +50,6 @@ const TableListPO = () => {
             setLoading(true);
             const { docs: res } = await getPurchaseOrderBy();
             setPurchaseOrders(res);
-            const emp_arr = res.map((item) => item.addby);
-            const { docs: emp } = await getEmployeeBy({ match: { $in: emp_arr } });
-            setEmployee(emp);
         }
         catch (error) {
             console.log("Error fetching Purchase Request:", error);
@@ -52,7 +59,7 @@ const TableListPO = () => {
         }
     };
 
-    const handleNotAppoove = async (po_id: string, index: number) => {
+    const handleNotApprove = async (po_id: string) => {
         try {
             const { isConfirmed } = await Swal.fire({
                 title: 'ไม่อนุมัติ PO นี้?',
@@ -63,18 +70,18 @@ const TableListPO = () => {
             });
             if (isConfirmed) {
                 const updateStatus = {
-                    ...purchaseOrders[index],
+                    ...purchaseorder,
                     po_id: po_id,
-                    po_status: 'not-appoeove'
+                    pr_status: 'not-appreove'
                 }
                 await updatePurchaseOrderBy(updateStatus);
             }
         } catch (error) {
-            console.log("Error disappoove PO:", error);
+            console.log("Error disapprove PR:", error);
         }
     };
 
-    const handleAppoove = async (po_id: string, index: number) => {
+    const handleApprove = async (po_id: string) => {
         try {
             const { isConfirmed } = await Swal.fire({
                 title: 'อนุมัติ PO นี้?',
@@ -85,26 +92,17 @@ const TableListPO = () => {
             });
             if (isConfirmed) {
                 const updateStatus = {
-                    ...purchaseOrders[index],
+                    ...purchaseorder,
                     po_id: po_id,
-                    po_status: 'buying'
+                    pr_status: 'approve'
                 }
                 await updatePurchaseOrderBy(updateStatus);
             }
         }
         catch (error) {
-            console.log("Error appoove PO:", error);
+            console.log("Error approve PR:", error);
         }
     }
-
-    const handleDetail = (po_id: string) => {
-        router.push('/purchase-order/detail/?po_id=' + po_id);
-    }
-
-    const getEmployeeName = (id: any) => {
-        const emp = employee.find(e => e.employee_id === id);
-        return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "-";
-    };
 
     return (
         <>
@@ -116,14 +114,13 @@ const TableListPO = () => {
                         <TableHead>
                             <TableRow className="bg-gray-200">
                                 <TableCell>#</TableCell>
-                                <TableCell>รหัส PO</TableCell>
                                 <TableCell>รหัส PR</TableCell>
-                                <TableCell>สถานะ PO</TableCell>
+                                <TableCell>สถานะ PR</TableCell>
                                 <TableCell>หมายเหตุ</TableCell>
                                 <TableCell>เพิ่มโดย</TableCell>
                                 <TableCell>วันที่เพิ่ม</TableCell>
                                 <TableCell>ดูบิล</TableCell>
-                                <TableCell align="center">จัดการใบสั่งซื้อ</TableCell>
+                                <TableCell>อนุมัติ</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -131,35 +128,52 @@ const TableListPO = () => {
                                 <TableRow key={item.po_id} hover>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                     <TableCell>{item.po_id}</TableCell>
-                                    <TableCell>{item.po_status}</TableCell>
-                                    <TableCell>{item.po_note}</TableCell>
+                                    {/* <TableCell>
+                                        {item.pr_status === 'pending' ? (
+                                            <Chip label="Pending" color="warning" size="small" />
+                                        ) : item.pr_status === 'success' ? (
+                                            <Chip label="Success" color="success" size="small" />
+                                        ) : (
+                                            <Chip label={item.pr_status} />
+                                        )}
+                                    </TableCell>
+                                    <TableCell>{item.pr_note}</TableCell> */}
                                     <TableCell>{item.addby}</TableCell>
                                     <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                                     <TableCell></TableCell>
-                                    <TableCell align="center">
-                                        <Button
+                                    <TableCell>
+                                        <IconButton
                                             size="small"
-                                            startIcon={<Visibility />}
-                                            sx={{
-                                                borderRadius: "12px",
-                                                textTransform: "none",
-                                                fontWeight: "bold",
-                                                boxShadow: 3,
-                                                transition: "all 0.3s ease",
-                                                "&:hover": {
-                                                    boxShadow: 6,
-                                                    transform: "scale(1.05)",
-                                                }
-                                            }}
+                                            onClick={(e) => handleClickMenu(e, item)}
                                         >
-                                            ดูรายละเอียด
-                                        </Button>
+                                            <MoreVert />
+                                        </IconButton>
+                                        <Menu
+                                            anchorEl={anchorEl}
+                                            open={Boolean(anchorEl)}
+                                            onClose={handleCloseMenu}
+                                        >
+                                            <MenuItem onClick={() => {
+                                                po_id.current = selected?.po_id!;
+                                                handleApprove(po_id.current);
+                                                handleCloseMenu();
+                                            }}>
+                                                <Check className="mr-2" /> อนุมัติ
+                                            </MenuItem>
+                                            <MenuItem onClick={() => {
+                                                po_id.current = selected?.po_id!;
+                                                handleNotApprove(po_id.current);
+                                                handleCloseMenu();
+                                            }}>
+                                                <Close className="mr-2" /> ไม่อนุมัติ
+                                            </MenuItem>
+                                        </Menu>
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table >
-                </TableContainer >
+                </TableContainer>
             )}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 15]}
@@ -173,4 +187,4 @@ const TableListPO = () => {
         </>
     )
 }
-export default TableListPO
+export default ListTablePO
