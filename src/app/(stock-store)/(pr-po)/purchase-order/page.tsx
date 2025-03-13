@@ -9,19 +9,23 @@ import {
     TableContainer, TableHead, TableRow, Box, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, TextField
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
-
+import { useRouter } from 'next/navigation';
 import Loading from "@/app/components/Loading";
 import PurchaseOrderAdd from "@/app/components/StockStore/(PR-PO)/PR/Add";
 
-import { PurchaseOrder } from '@/misc/types';
-import { usePurchaseOrder } from "@/hooks/hooks";
+import { PurchaseOrder, Employee } from '@/misc/types';
+import { usePurchaseOrder, useEmployee } from "@/hooks/hooks";
 import PO from "@/app/components/StockStore/(PDF)/PO";
 
 const { getPurchaseOrderBy } = usePurchaseOrder();
+const { getEmployeeBy } = useEmployee();
 
 const PurchaseOrderPage = () => {
+    const router = useRouter();
+
     const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+    const [employee, setEmployee] = useState<Employee[]>([]);
 
     const [isDialogAdd, setIsDialogAdd] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -34,7 +38,14 @@ const PurchaseOrderPage = () => {
         try {
             setLoading(true);
             const { docs: res } = await getPurchaseOrderBy();
+            const { docs: res_emp } = await getEmployeeBy({
+                match: {
+                    $in: res.map((item) => item.addby)
+                }
+            });
+            setEmployee(res_emp);
             setPurchaseOrders(res);
+            console.log("res", res);
         } catch (error) {
             console.log("Error fetching Purchase Order:", error);
         } finally {
@@ -123,7 +134,14 @@ const PurchaseOrderPage = () => {
 
                                     </TableCell>
                                     <TableCell align="center">{item.po_note}</TableCell>
-                                    <TableCell align="center">{item.addby}</TableCell>
+                                    <TableCell align="center">
+                                        <Button onClick={() => router.push(`/profile/detail?id=${item.addby}`)}>
+                                            {(() => {
+                                                const emp = employee.find((e) => e.employee_id === item.addby);
+                                                return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "";
+                                            })()}
+                                        </Button >
+                                    </TableCell>
                                     <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                                     <TableCell align="center">{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                                     <TableCell align="center">
