@@ -5,7 +5,7 @@ import { formatDate } from "@/utils/date-helper"
 
 import { ArrowDownward, ArrowUpward, Clear, Description, Search, Sort, Visibility } from "@mui/icons-material";
 import {
-    Box,Chip, Button, Table, TableBody, TableCell,
+    Box, Chip, Button, Table, TableBody, TableCell,
     TableContainer, TableHead, TablePagination, TableRow, TextField,
     InputAdornment,
     Menu,
@@ -126,104 +126,103 @@ const TableListPO = () => {
 
     return (
         <>
+            <div className="flex gap-2 mb-5">
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="ค้นหารหัสใบสั่งซื้อ..."
+                    className="w-64"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment
+                                position="start"
+                                onClick={() => fetchData()}
+                                className="cursor-pointer"
+                            >
+                                <Search />
+                            </InputAdornment>
+                        ),
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            fetchData();
+                        }
+                    }}
+                />
+
+                {/* Clear Button */}
+                {(search || selectedPurchaseOrders) && (
+                    <button
+                        className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
+                        onClick={() => {
+                            setSearch('');
+                            setSelectedPurchaseOrders('');
+                        }}
+                    >
+                        <Clear />
+                    </button>
+                )}
+
+                {/* Filter Button & Menu */}
+                <div className="flex gap-2">
+                    <Button
+                        className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
+                        onClick={(event) => setFilterAnchorEl(event.currentTarget)}
+                        endIcon={<Sort />}
+                    >
+                        Filter
+                    </Button>
+
+                    <Menu
+                        anchorEl={filterAnchorEl}
+                        open={Boolean(filterAnchorEl)}
+                        onClose={() => setFilterAnchorEl(null)}
+                    >
+                        {statusOptions.map((option) => (
+                            <MenuItem
+                                key={option.value}
+                                onClick={() => handleToggle(option.value)}
+                            >
+                                <Checkbox checked={selectedStatuses.includes(option.value)} />
+                                <ListItemText primary={option.label} />
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </div>
+
+                {/* Sort Button & Menu */}
+                <div className="flex gap-2">
+                    <Button
+                        className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
+                        onClick={(event) => setSortAnchorEl(event.currentTarget)}
+                        endIcon={<Sort />}
+                    >
+                        Sort
+                    </Button>
+
+                    <Menu
+                        anchorEl={sortAnchorEl}
+                        open={Boolean(sortAnchorEl)}
+                        onClose={() => setSortAnchorEl(null)}
+                    >
+                        <MenuItem onClick={() => toggleSort("name", "adddate")}>
+                            จัดเรียงตามวันที่
+                            {sort.name === "adddate" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+                        </MenuItem>
+
+                        <MenuItem onClick={() => toggleSort("name", "po_id")}>
+                            จัดเรียงตามรหัสใบสั่งซื้อ
+                            {sort.name === "po_id" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+                        </MenuItem>
+                    </Menu>
+                </div>
+            </div>
             {loading ? (
                 <Loading />
             ) : (
                 <>
-                    <div className="flex gap-2 mb-5">
-                        <TextField
-                            variant="outlined"
-                            size="small"
-                            placeholder="ค้นหารหัสใบสั่งซื้อ..."
-                            className="w-64"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment
-                                        position="start"
-                                        onClick={() => fetchData()}
-                                        className="cursor-pointer"
-                                    >
-                                        <Search />
-                                    </InputAdornment>
-                                ),
-                            }}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    fetchData();
-                                }
-                            }}
-                        />
-
-                        {/* Clear Button */}
-                        {(search || selectedPurchaseOrders) && (
-                            <button
-                                className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
-                                onClick={() => {
-                                    setSearch('');
-                                    setSelectedPurchaseOrders('');
-                                }}
-                            >
-                                <Clear />
-                            </button>
-                        )}
-
-                        {/* Filter Button & Menu */}
-                        <div className="flex gap-2">
-                            <Button
-                                className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
-                                onClick={(event) => setFilterAnchorEl(event.currentTarget)}
-                                endIcon={<Sort />}
-                            >
-                                Filter
-                            </Button>
-
-                            <Menu
-                                anchorEl={filterAnchorEl}
-                                open={Boolean(filterAnchorEl)}
-                                onClose={() => setFilterAnchorEl(null)}
-                            >
-                                {statusOptions.map((option) => (
-                                    <MenuItem
-                                        key={option.value}
-                                        onClick={() => handleToggle(option.value)}
-                                    >
-                                        <Checkbox checked={selectedStatuses.includes(option.value)} />
-                                        <ListItemText primary={option.label} />
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </div>
-
-                        {/* Sort Button & Menu */}
-                        <div className="flex gap-2">
-                            <Button
-                                className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
-                                onClick={(event) => setSortAnchorEl(event.currentTarget)}
-                                endIcon={<Sort />}
-                            >
-                                Sort
-                            </Button>
-
-                            <Menu
-                                anchorEl={sortAnchorEl}
-                                open={Boolean(sortAnchorEl)}
-                                onClose={() => setSortAnchorEl(null)}
-                            >
-                                <MenuItem onClick={() => toggleSort("name", "adddate")}>
-                                    จัดเรียงตามวันที่
-                                    {sort.name === "adddate" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
-                                </MenuItem>
-
-                                <MenuItem onClick={() => toggleSort("name", "po_id")}>
-                                    จัดเรียงตามรหัสใบสั่งซื้อ
-                                    {sort.name === "po_id" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
-                                </MenuItem>
-                            </Menu>
-                        </div>
-                    </div>
-
                     <TableContainer style={{ minHeight: "24rem" }}>
                         <Table>
                             <TableHead>
