@@ -172,7 +172,7 @@ const PurchaseOrderDetailPage = () => {
                     <Link underline="hover" href="/pr-po-list">
                         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
                             <ListAlt fontSize="small" />
-                            <Typography variant="body1" color="primary">จัดการคำขอซื้อและใบสั่งซื้อ</Typography>
+                            <Typography variant="body1" color="primary">จัดการใบขอซื้อและใบสั่งซื้อ</Typography>
                         </Stack>
                     </Link>
                     <Stack direction="row" alignItems="center" spacing={0.5}>

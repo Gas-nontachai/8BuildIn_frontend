@@ -139,7 +139,7 @@ const PurchaseRequestAdd: React.FC<Props> = ({ onRefresh, onClose, open }) => {
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" >
             <DialogTitle>
-                เปิดใบคำขอซื้อ
+                เปิดใบขอซื้อ
                 <IconButton onClick={handleClose} style={{ position: "absolute", right: 10, top: 10 }}>
                     <Close />
                 </IconButton>

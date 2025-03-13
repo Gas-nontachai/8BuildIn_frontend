@@ -138,12 +138,12 @@ const PurchaseRequestDetailPage = () => {
                             <Link underline="hover" href="/pr-po-list">
                                 <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
                                     <ListAlt fontSize="small" />
-                                    <Typography variant="body1" color="primary">จัดการคำขอซื้อและใบสั่งซื้อ</Typography>
+                                    <Typography variant="body1" color="primary">จัดการใบขอซื้อและใบสั่งซื้อ</Typography>
                                 </Stack>
                             </Link>
                             <Stack direction="row" alignItems="center" spacing={0.5}>
                                 <EventNote fontSize="small" />
-                                <Typography variant="body1" color="text.secondary">รายละเอียดคำขอซื้อ</Typography>
+                                <Typography variant="body1" color="text.secondary">รายละเอียดใบขอซื้อ</Typography>
                             </Stack>
                         </Breadcrumbs>
                     </div>
@@ -152,7 +152,7 @@ const PurchaseRequestDetailPage = () => {
                     </div>
                     <Box display="inline-flex" alignItems="center" gap={2}>
                         <Typography variant="h5" fontWeight="bold" gutterBottom>
-                            หมายเลขคำขอซื้อ: {pr.pr_id}
+                            หมายเลขใบขอซื้อ: {pr.pr_id}
                         </Typography>
                         <span
                             className={`inline-block px-2 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
@@ -233,13 +233,13 @@ const PurchaseRequestDetailPage = () => {
                                 fullWidth
                             />
                             <div className="flex gap-2">
-                                <Tooltip title="อนุมัติคำขอ" arrow>
+                                <Tooltip title="อนุมัติใบขอ" arrow>
                                     <Button variant="contained" color="success"
                                         onClick={() => handleApprove(pr.pr_id)}>
                                         อนุมัติ
                                     </Button>
                                 </Tooltip>
-                                <Tooltip title="ไม่อนุมัติคำขอ" arrow>
+                                <Tooltip title="ไม่อนุมัติใบขอ" arrow>
                                     <Button variant="contained" color="error"
                                         onClick={() => handleNotApprove(pr.pr_id)}>
                                         ไม่อนุมัติ

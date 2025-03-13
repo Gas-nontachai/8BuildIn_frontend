@@ -66,7 +66,7 @@ const TableListPR = () => {
                         <TextField
                             variant="outlined"
                             size="small"
-                            placeholder="ค้นหารหัสคำขอซื้อ..."
+                            placeholder="ค้นหารหัสใบขอซื้อ..."
                             className="w-64"
                         />
                     </div>
@@ -75,13 +75,13 @@ const TableListPR = () => {
                             <TableHead>
                                 <TableRow className="bg-gray-200">
                                     <TableCell>#</TableCell>
-                                    <TableCell align="center">รหัสคำขอซื้อ</TableCell>
-                                    <TableCell align="center">สถานะคำขอซื้อ</TableCell>
+                                    <TableCell align="center">รหัสใบขอซื้อ</TableCell>
+                                    <TableCell align="center">สถานะใบขอซื้อ</TableCell>
                                     <TableCell align="center">เพิ่มโดย</TableCell>
                                     <TableCell align="center">วันที่เพิ่ม</TableCell>
                                     <TableCell align="center">อัพเดทล่าสุด</TableCell>
                                     <TableCell align="center">ดูบิล</TableCell>
-                                    <TableCell align="center">จัดการคำขอซื้อ</TableCell>
+                                    <TableCell align="center">จัดการใบขอซื้อ</TableCell>
                                 </TableRow >
                             </TableHead >
                             <TableBody>
@@ -161,7 +161,7 @@ const TableListPR = () => {
                                                     }
                                                 }}
                                             >
-                                                จัดการคำขอซื้อ
+                                                จัดการใบขอซื้อ
                                             </Button>
                                         </TableCell>
                                     </TableRow>

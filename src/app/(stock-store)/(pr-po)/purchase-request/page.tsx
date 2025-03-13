@@ -63,7 +63,7 @@ const PurchaseRequestPage = () => {
           </Link>
           <Stack direction="row" alignItems="center" spacing={0.5}>
             <Assignment fontSize="small" />
-            <Typography variant="body1" color="text.secondary">คำขอซื้อ</Typography>
+            <Typography variant="body1" color="text.secondary">ใบขอซื้อ</Typography>
           </Stack>
         </Breadcrumbs>
       </div>
@@ -71,11 +71,11 @@ const PurchaseRequestPage = () => {
         <TextField
           variant="outlined"
           size="small"
-          placeholder="ค้นหารหัสคำขอซื้อ..."
+          placeholder="ค้นหารหัสใบขอซื้อ..."
           className="w-64"
         />
         <Button variant="contained" color="info" size="small" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
-          เปิดใบคำขอซื้อ
+          เปิดใบขอซื้อ
         </Button>
       </div>
       {loading ? (
@@ -86,8 +86,8 @@ const PurchaseRequestPage = () => {
             <TableHead>
               <TableRow className="bg-gray-200">
                 <TableCell>#</TableCell>
-                <TableCell align="center">รหัสคำขอซื้อ</TableCell>
-                <TableCell align="center">สถานะคำขอซื้อ</TableCell>
+                <TableCell align="center">รหัสใบขอซื้อ</TableCell>
+                <TableCell align="center">สถานะใบขอซื้อ</TableCell>
                 <TableCell align="center">หมายเหตุ</TableCell>
                 <TableCell align="center">เพิ่มโดย</TableCell>
                 <TableCell align="center">วันที่เพิ่ม</TableCell>

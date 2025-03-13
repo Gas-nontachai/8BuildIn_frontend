@@ -70,9 +70,9 @@ export default function SidebarMenu() {
         { text: "ฝ่ายขาย", href: "/sales", icon: <SupportAgent /> },
     ];
     const PRPOList = [
-        { text: "คำขอซื้อ", href: "/purchase-request", icon: <Assignment /> },
+        { text: "ใบขอซื้อ", href: "/purchase-request", icon: <Assignment /> },
         { text: "ใบสั่งซื้อ", href: "/purchase-order", icon: <ReceiptLong /> },
-        { text: "คำขอซื้อและใบสั่งซื้อ", href: "/pr-po-list", icon: <ListAlt /> }
+        { text: "ใบขอซื้อและใบสั่งซื้อ", href: "/pr-po-list", icon: <ListAlt /> }
     ];
 
 

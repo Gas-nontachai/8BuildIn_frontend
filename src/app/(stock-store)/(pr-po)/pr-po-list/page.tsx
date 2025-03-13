@@ -28,7 +28,7 @@ const PRPOList = () => {
                     </Link>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
                         <ListAlt fontSize="small" />
-                        <Typography variant="body1" color="text.secondary">จัดการคำขอซื้อและใบสั่งซื้อ</Typography>
+                        <Typography variant="body1" color="text.secondary">จัดการใบขอซื้อและใบสั่งซื้อ</Typography>
                     </Stack>
                 </Breadcrumbs>
                 {/* <Button variant="contained" color="info" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
@@ -49,7 +49,7 @@ const PRPOList = () => {
                 <Tab
                     value="pr"
                     icon={<Assignment />}
-                    label="คำขอซื้อ"
+                    label="ใบขอซื้อ"
                     sx={{ color: value === "pr" ? '#1976d2' : '#000', backgroundColor: value === "pr" ? '#e3f2fd' : 'transparent' }}
                 />
                 <Tab
