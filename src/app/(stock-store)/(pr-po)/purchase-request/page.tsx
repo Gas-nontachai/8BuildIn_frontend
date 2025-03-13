@@ -131,10 +131,11 @@ const PurchaseRequestPage = () => {
                     <Box display="flex" justifyContent="center" alignItems="center">
                       <Button
                         size="small"
-                        // onClick={openPDF}
+                        onClick={() => openPDF(item)}
                         color="info"
                         variant="contained"
                         startIcon={<Description />}
+                        aria-label="Open PDF"
                         sx={{
                           backgroundColor: "#ef4036",
                           color: "#fff",
