@@ -1,39 +1,30 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/date-helper"
 
-import { Check, Close, MoreVert, EventNote } from "@mui/icons-material";
+import { MoreVert, EventNote, Visibility } from "@mui/icons-material";
 import {
     Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Menu, MenuItem
+    TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Menu, MenuItem, Button
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
 import { usePagination } from "@/context/PaginationContext";
 
-import { PurchaseRequest } from '@/misc/types';
-import { usePurchaseRequest } from "@/hooks/hooks";
+import { PurchaseRequest, Employee } from '@/misc/types';
+import { usePurchaseRequest, useEmployee } from "@/hooks/hooks";
 
-const { getPurchaseRequestBy, updatePurchaseRequestBy } = usePurchaseRequest();
+const { getPurchaseRequestBy } = usePurchaseRequest();
+const { getEmployeeBy } = useEmployee();
 
 const TableListPR = () => {
-    const router = useRouter(); 
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequest[]>([]);
+    const [employee, setEmployee] = useState<Employee[]>([]);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [selected, setSelected] = useState<PurchaseRequest | null>(null);
-    const pr_id = useRef('');
-
-    const handleClickMenu = (event: React.MouseEvent<HTMLElement>, purchaserequest: PurchaseRequest) => {
-        setAnchorEl(event.currentTarget);
-        setSelected(purchaserequest);
-    };
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-        setSelected(null);
-    };
 
     useEffect(() => {
         fetchData();
@@ -44,6 +35,9 @@ const TableListPR = () => {
             setLoading(true);
             const { docs: res } = await getPurchaseRequestBy();
             setPurchaseRequests(res);
+            const emp_arr = res.map((item) => item.addby);
+            const { docs: emp } = await getEmployeeBy({ match: { $in: emp_arr } });
+            setEmployee(emp);
         }
         catch (error) {
             console.log("Error fetching Purchase Request:", error);
@@ -57,6 +51,10 @@ const TableListPR = () => {
         router.push('/purchase-request/detail/?pr_id=' + pr_id);
     }
 
+    const getEmployeeName = (id: any) => {
+        const emp = employee.find(e => e.employee_id === id);
+        return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "-";
+    };
 
     return (
         <>
@@ -100,29 +98,38 @@ const TableListPR = () => {
                                             </span>
                                         )}
                                     </TableCell>
-                                    <TableCell>{item.addby}</TableCell>
-                                    <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                    <TableCell>{getEmployeeName(item.addby)}</TableCell>
+                                    <TableCell>
+                                        {formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}
+                                        <br />
+                                        {item.lastupdate && (
+                                            <>
+                                                อัปเดตล่าสุด:({formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')})
+                                            </>
+                                        )}
+                                    </TableCell>
                                     <TableCell></TableCell>
                                     <TableCell align="center">
-                                        <IconButton
+                                        <Button
+                                            onClick={() => handleDetail(item.pr_id)}
+                                            color="info"
+                                            variant="contained"
                                             size="small"
-                                            onClick={(e) => handleClickMenu(e, item)}
+                                            startIcon={<Visibility />}
+                                            sx={{
+                                                borderRadius: "12px",
+                                                textTransform: "none",
+                                                fontWeight: "bold",
+                                                boxShadow: 3,
+                                                transition: "all 0.3s ease",
+                                                "&:hover": {
+                                                    boxShadow: 6,
+                                                    transform: "scale(1.05)",
+                                                }
+                                            }}
                                         >
-                                            <MoreVert />
-                                        </IconButton>
-                                        <Menu
-                                            anchorEl={anchorEl}
-                                            open={Boolean(anchorEl)}
-                                            onClose={handleCloseMenu}
-                                        >
-                                            <MenuItem onClick={() => {
-                                                pr_id.current = selected?.pr_id!;
-                                                handleDetail(pr_id.current);
-                                                handleCloseMenu();
-                                            }}>
-                                                <EventNote className="mr-2" /> ดูรายละเอียด
-                                            </MenuItem>
-                                        </Menu>
+                                            ดูรายละเอียด
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))}

@@ -1,44 +1,34 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Swal from 'sweetalert2';
+import { useRouter } from "next/navigation";
 import { formatDate } from "@/utils/date-helper"
 
-import { Check, Close, MoreVert } from "@mui/icons-material";
+import { Check, Close, MoreVert, Visibility } from "@mui/icons-material";
 import {
-    Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Menu, MenuItem
+    Chip, Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell,
+    TableContainer, TableHead, TablePagination, TableRow, Typography
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
 import { usePagination } from "@/context/PaginationContext";
 
-import { PurchaseOrder } from '@/misc/types';
-import { usePurchaseOrder } from "@/hooks/hooks";
+import { PurchaseOrder, Employee } from '@/misc/types';
+import { usePurchaseOrder, useEmployee } from "@/hooks/hooks";
 
 const { getPurchaseOrderBy, updatePurchaseOrderBy } = usePurchaseOrder();
+const { getEmployeeBy } = useEmployee();
 
 const TableListPO = () => {
-    const [purchaseorder, setPurchaseOrder] = useState<PurchaseOrder>({
-        po_id: '',
-        pr_id: '',
-        supplier_id: '',
-        po_status: '',
-        po_note: '',
-    });
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+    const [employee, setEmployee] = useState<Employee[]>([]);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [selected, setSelected] = useState<PurchaseOrder | null>(null);
-    const pr_id = useRef('');
 
-    const handleClickMenu = (event: React.MouseEvent<HTMLElement>, purchaseorder: PurchaseOrder) => {
-        setAnchorEl(event.currentTarget);
-        setSelected(purchaseorder);
-    };
     const handleCloseMenu = () => {
         setAnchorEl(null);
-        setSelected(null);
     };
 
     useEffect(() => {
@@ -50,6 +40,9 @@ const TableListPO = () => {
             setLoading(true);
             const { docs: res } = await getPurchaseOrderBy();
             setPurchaseOrders(res);
+            const emp_arr = res.map((item) => item.addby);
+            const { docs: emp } = await getEmployeeBy({ match: { $in: emp_arr } });
+            setEmployee(emp);
         }
         catch (error) {
             console.log("Error fetching Purchase Request:", error);
@@ -59,7 +52,7 @@ const TableListPO = () => {
         }
     };
 
-    const handleNotApprove = async (pr_id: string) => {
+    const handleNotAppoove = async (po_id: string, index: number) => {
         try {
             const { isConfirmed } = await Swal.fire({
                 title: 'ไม่อนุมัติ PO นี้?',
@@ -70,18 +63,18 @@ const TableListPO = () => {
             });
             if (isConfirmed) {
                 const updateStatus = {
-                    ...purchaseorder,
-                    pr_id: pr_id,
-                    pr_status: 'not-appreove'
+                    ...purchaseOrders[index],
+                    po_id: po_id,
+                    po_status: 'not-appoeove'
                 }
                 await updatePurchaseOrderBy(updateStatus);
             }
         } catch (error) {
-            console.log("Error disapprove PR:", error);
+            console.log("Error disappoove PO:", error);
         }
     };
 
-    const handleApprove = async (po_id: string) => {
+    const handleAppoove = async (po_id: string, index: number) => {
         try {
             const { isConfirmed } = await Swal.fire({
                 title: 'อนุมัติ PO นี้?',
@@ -92,17 +85,26 @@ const TableListPO = () => {
             });
             if (isConfirmed) {
                 const updateStatus = {
-                    ...purchaseorder,
+                    ...purchaseOrders[index],
                     po_id: po_id,
-                    pr_status: 'approve'
+                    po_status: 'buying'
                 }
                 await updatePurchaseOrderBy(updateStatus);
             }
         }
         catch (error) {
-            console.log("Error approve PR:", error);
+            console.log("Error appoove PO:", error);
         }
     }
+
+    const handleDetail = (po_id: string) => {
+        router.push('/purchase-order/detail/?po_id=' + po_id);
+    }
+
+    const getEmployeeName = (id: any) => {
+        const emp = employee.find(e => e.employee_id === id);
+        return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "-";
+    };
 
     return (
         <>
@@ -114,60 +116,62 @@ const TableListPO = () => {
                         <TableHead>
                             <TableRow className="bg-gray-200">
                                 <TableCell>#</TableCell>
-                                <TableCell>รหัส PR</TableCell>
-                                <TableCell>สถานะ PR</TableCell>
+                                <TableCell>รหัส PO</TableCell>
+                                <TableCell>สถานะ PO</TableCell>
                                 <TableCell>หมายเหตุ</TableCell>
                                 <TableCell>เพิ่มโดย</TableCell>
                                 <TableCell>วันที่เพิ่ม</TableCell>
                                 <TableCell>ดูบิล</TableCell>
-                                <TableCell>อนุมัติ</TableCell>
+                                <TableCell>จัดการคำขอซื้อ</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {purchaseOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
                                 <TableRow key={item.po_id} hover>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                    <TableCell>{item.pr_id}</TableCell>
-                                    {/* <TableCell>
-                                        {item.pr_status === 'pending' ? (
+                                    <TableCell>{item.po_id}</TableCell>
+                                    <TableCell>
+                                        {item.po_status === 'pending' ? (
                                             <Chip label="Pending" color="warning" size="small" />
-                                        ) : item.pr_status === 'success' ? (
+                                        ) : item.po_status === 'success' ? (
                                             <Chip label="Success" color="success" size="small" />
                                         ) : (
-                                            <Chip label={item.pr_status} />
+                                            <Chip label={item.po_status} />
                                         )}
                                     </TableCell>
-                                    <TableCell>{item.pr_note}</TableCell> */}
-                                    <TableCell>{item.addby}</TableCell>
-                                    <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    <TableCell></TableCell>
+                                    <TableCell>{item.po_note}</TableCell>
+                                    <TableCell>{getEmployeeName(item.addby)}</TableCell>
                                     <TableCell>
-                                        <IconButton
+                                        {formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}
+                                        <br />
+                                        {item.lastupdate && (
+                                            <>
+                                                อัปเดตล่าสุด:({formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')})
+                                            </>
+                                        )}
+                                    </TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell align="center">
+                                        <Button
+                                            onClick={() => handleDetail(item.po_id)}
+                                            color="info"
+                                            variant="contained"
                                             size="small"
-                                            onClick={(e) => handleClickMenu(e, item)}
+                                            startIcon={<Visibility />}
+                                            sx={{
+                                                borderRadius: "12px",
+                                                textTransform: "none",
+                                                fontWeight: "bold",
+                                                boxShadow: 3,
+                                                transition: "all 0.3s ease",
+                                                "&:hover": {
+                                                    boxShadow: 6,
+                                                    transform: "scale(1.05)",
+                                                }
+                                            }}
                                         >
-                                            <MoreVert />
-                                        </IconButton>
-                                        <Menu
-                                            anchorEl={anchorEl}
-                                            open={Boolean(anchorEl)}
-                                            onClose={handleCloseMenu}
-                                        >
-                                            <MenuItem onClick={() => {
-                                                pr_id.current = selected?.pr_id!;
-                                                handleApprove(pr_id.current);
-                                                handleCloseMenu();
-                                            }}>
-                                                <Check className="mr-2" /> อนุมัติ
-                                            </MenuItem>
-                                            <MenuItem onClick={() => {
-                                                pr_id.current = selected?.pr_id!;
-                                                handleNotApprove(pr_id.current);
-                                                handleCloseMenu();
-                                            }}>
-                                                <Close className="mr-2" /> ไม่อนุมัติ
-                                            </MenuItem>
-                                        </Menu>
+                                            ดูรายละเอียด
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
