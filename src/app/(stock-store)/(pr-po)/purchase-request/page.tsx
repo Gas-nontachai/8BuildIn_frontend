@@ -10,16 +10,20 @@ import {
 import Loading from "@/app/components/Loading";
 import PurchaseRequestAdd from "@/app/components/StockStore/(PR-PO)/PR/Add";
 import { usePagination } from "@/context/PaginationContext";
-
-import { PurchaseRequest } from '@/misc/types';
-import { usePurchaseRequest } from "@/hooks/hooks";
+import { useRouter } from 'next/navigation';
+import { Employee, PurchaseRequest } from '@/misc/types';
+import { usePurchaseRequest, useEmployee } from "@/hooks/hooks";
 import { pdf } from '@react-pdf/renderer';
 import PR from "@/app/components/StockStore/(PDF)/PR";
+
 const { getPurchaseRequestBy } = usePurchaseRequest();
+const { getEmployeeBy } = useEmployee();
 
 const PurchaseRequestPage = () => {
+  const router = useRouter();
   const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
   const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequest[]>([]);
+  const [employee, setEmployee] = useState<Employee[]>([]);
 
   const [isDialogAdd, setIsDialogAdd] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,8 +36,13 @@ const PurchaseRequestPage = () => {
     try {
       setLoading(true);
       const { docs: res } = await getPurchaseRequestBy();
+      const { docs: res_emp } = await getEmployeeBy({
+        match: {
+          $in: res.map((item) => item.addby)
+        }
+      });
+      setEmployee(res_emp);
       setPurchaseRequests(res);
-      console.log("res", res);
     } catch (error) {
       console.log("Error fetching Purchase Request:", error);
     } finally {
@@ -124,7 +133,14 @@ const PurchaseRequestPage = () => {
                     )}
                   </TableCell>
                   <TableCell align="center">{item.pr_note}</TableCell>
-                  <TableCell align="center">{item.addby}</TableCell>
+                  <TableCell align="center">
+                    <Button onClick={() => router.push(`/profile/detail?id=${item.addby}`)}>
+                      {(() => {
+                        const emp = employee.find((e) => e.employee_id === item.addby);
+                        return emp ? `${emp.employee_firstname} ${emp.employee_lastname}` : "";
+                      })()}
+                    </Button >
+                  </TableCell>
                   <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                   <TableCell align="center">{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                   <TableCell align="center">

@@ -125,7 +125,11 @@ const TableListPR = () => {
                                                 </span>
                                             )}
                                         </TableCell>
-                                        <TableCell align="center">{getEmployeeName(item.addby)}</TableCell>
+                                        <TableCell align="center">
+                                            <Button onClick={() => router.push(`/profile/detail?id=${item.addby}`)}>
+                                                {getEmployeeName(item.addby)}
+                                            </Button >
+                                        </TableCell>
                                         <TableCell align="center">{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                                         <TableCell align="center">
                                             {formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}

@@ -25,8 +25,10 @@ import {
 } from "@mui/material";
 import { ListAlt, EventNote } from "@mui/icons-material";
 
-import { PurchaseRequest, Unit } from "@/misc/types";
+import { PurchaseRequest } from "@/misc/types";
 import { usePurchaseRequest } from "@/hooks/hooks";
+
+const { getPurchaseRequestByID, updatePurchaseRequestBy } = usePurchaseRequest();
 
 const PurchaseRequestDetailPage = () => {
     const router = useRouter()
@@ -40,7 +42,7 @@ const PurchaseRequestDetailPage = () => {
         product: '',
         material: '',
     });
-    const { getPurchaseRequestByID, updatePurchaseRequestBy } = usePurchaseRequest();
+
 
     useEffect(() => {
         if (purchase_request_id) {
@@ -52,8 +54,6 @@ const PurchaseRequestDetailPage = () => {
         try {
             const res = await getPurchaseRequestByID({ pr_id: purchase_request_id || "" });
             setPR(res);
-            console.log("data product", parseJSON(res.product));
-            console.log("data material", parseJSON(res.material));
         } catch (error) {
             console.error("Error fetching purchase request:", error);
         }
