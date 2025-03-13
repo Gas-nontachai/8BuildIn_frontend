@@ -6,7 +6,7 @@ import { formatDate } from "@/utils/date-helper"
 import { Add, Home, Assignment, Description } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Divider, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
+  TableContainer, TableHead, TableRow, TextField, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
@@ -54,7 +54,7 @@ const PurchaseRequestPage = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4" >
+      <div className="flex justify-between items-center mb-3" >
         <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
           <Link underline="hover" href="/product">
             <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
@@ -71,8 +71,13 @@ const PurchaseRequestPage = () => {
           เปิดใบคำขอซื้อ
         </Button>
       </div>
-      <div className="mb-4 -mt-3">
-        <Divider />
+      <div className="flex justify-between mb-3">
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="ค้นหารหัสคำขอซื้อ..."
+          className="w-64"
+        />
       </div>
       {loading ? (
         <Loading />
@@ -98,19 +103,19 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.pr_id}</TableCell>
                   <TableCell>
                     {item.pr_status === 'pending' ? (
-                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-yellow-500">
+                      <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
                         รอดำเนินการ
                       </span>
-                    ) : item.pr_status === 'success' ? (
-                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-green-500">
-                        สำเร็จ
+                    ) : item.pr_status === 'approved' ? (
+                      <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-green-600">
+                        อนุมัติแล้ว
                       </span>
                     ) : item.pr_status === 'not-approved' ? (
-                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-red-500">
+                      <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
                         ไม่อนุมัติ
                       </span>
                     ) : (
-                      <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-black bg-gray-300">
+                      <span className="inline-block px-1 py-0.5 rounded-md text-[13px] font-[400] text-black bg-gray-300">
                         {item.pr_status}
                       </span>
                     )}
@@ -119,7 +124,7 @@ const PurchaseRequestPage = () => {
                   <TableCell>{item.addby}</TableCell>
                   <TableCell align="center">{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                   <TableCell>{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                  <TableCell align="center"><Button onClick={openPDF} color="error"><Description /> PDF</Button></TableCell>
+                  <TableCell align="center"><Button size="small" onClick={openPDF} color="info"><Description /> PDF</Button></TableCell>
                 </TableRow>
               ))}
             </TableBody>

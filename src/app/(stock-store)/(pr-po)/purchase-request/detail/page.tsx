@@ -156,13 +156,13 @@ const PurchaseRequestDetailPage = () => {
                             หมายเลขคำขอซื้อ: {pr.pr_id}
                         </Typography>
                         <span
-                            className={`inline-block px-3 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
+                            className={`inline-block px-2 py-1 mb-2 rounded-md text-[17px] font-bold shadow-md
                             ${pr.pr_status === "not-approved" ? "bg-red-500 text-white" :
-                                    pr.pr_status === "approved" ? "bg-green-500 text-white" :
+                                    pr.pr_status === "approved" ? "bg-green-600 text-white" :
                                         pr.pr_status === "pending" ? "bg-yellow-500 text-white" : ""}`}
                         >
                             {pr.pr_status === "not-approved" ? "ไม่อนุมัติ" :
-                                pr.pr_status === "approved" ? "อนุมัติ" :
+                                pr.pr_status === "approved" ? "อนุมัติแล้ว" :
                                     pr.pr_status === "pending" ? "รอดำเนินการ" : ""}
                         </span>
                     </Box>

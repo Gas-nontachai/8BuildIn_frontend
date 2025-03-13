@@ -7,7 +7,7 @@ import { formatDate } from "@/utils/date-helper"
 import { Check, Close, MoreVert, Visibility } from "@mui/icons-material";
 import {
     Chip, Button, IconButton, Menu, MenuItem, Table, TableBody, TableCell,
-    TableContainer, TableHead, TablePagination, TableRow, Typography
+    TableContainer, TableHead, TablePagination, TableRow, TextField
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
@@ -72,7 +72,7 @@ const TableListPO = () => {
         } catch (error) {
             console.log("Error disappoove PO:", error);
         }
-    }; 
+    };
 
     const handleDetail = (po_id: string) => {
         router.push('/purchase-order/detail/?po_id=' + po_id);
@@ -88,59 +88,87 @@ const TableListPO = () => {
             {loading ? (
                 <Loading />
             ) : (
-                <TableContainer style={{ minHeight: "24rem" }}>
-                    <Table>
-                        <TableHead>
-                            <TableRow className="bg-gray-200">
-                                <TableCell>#</TableCell>
-                                <TableCell>รหัส PO</TableCell>
-                                <TableCell>รหัส PR</TableCell>
-                                <TableCell>สถานะ PO</TableCell>
-                                <TableCell>หมายเหตุ</TableCell>
-                                <TableCell>เพิ่มโดย</TableCell>
-                                <TableCell>วันที่เพิ่ม</TableCell>
-                                <TableCell>ดูบิล</TableCell>
-                                <TableCell align="center">รายละเอียดใบสั่งซื้อ</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {purchaseOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
-                                <TableRow key={item.po_id} hover>
-                                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                    <TableCell>{item.po_id}</TableCell>
-                                    <TableCell>{item.pr_id}</TableCell>
-                                    <TableCell>{item.po_status}</TableCell>
-                                    <TableCell>{item.po_note}</TableCell>
-                                    <TableCell>{item.addby}</TableCell>
-                                    <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell align="center">
-                                        <Button
-                                            onClick={() => handleDetail(item.po_id)}
-                                            color="info"
-                                            variant="contained"
-                                            size="small"
-                                            startIcon={<Visibility />}
-                                            sx={{
-                                                borderRadius: "12px",
-                                                textTransform: "none",
-                                                fontWeight: "bold",
-                                                boxShadow: 3,
-                                                transition: "all 0.3s ease",
-                                                "&:hover": {
-                                                    boxShadow: 6,
-                                                    transform: "scale(1.05)",
-                                                }
-                                            }}
-                                        >
-                                            ดูรายละเอียด
-                                        </Button>
-                                    </TableCell>
+                <>
+                    <div className="flex justify-between mb-3">
+                        <TextField
+                            variant="outlined"
+                            size="small"
+                            placeholder="ค้นหารหัสใบสั่งซื้อ..."
+                            className="w-64"
+                        />
+                    </div>
+                    <TableContainer style={{ minHeight: "24rem" }}>
+                        <Table>
+                            <TableHead>
+                                <TableRow className="bg-gray-200">
+                                    <TableCell>#</TableCell>
+                                    <TableCell>รหัส PO</TableCell>
+                                    <TableCell>รหัส PR</TableCell>
+                                    <TableCell>สถานะ PO</TableCell>
+                                    <TableCell>หมายเหตุ</TableCell>
+                                    <TableCell>เพิ่มโดย</TableCell>
+                                    <TableCell>วันที่เพิ่ม</TableCell>
+                                    <TableCell>ดูบิล</TableCell>
+                                    <TableCell align="center">รายละเอียดใบสั่งซื้อ</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table >
-                </TableContainer >
+                            </TableHead>
+                            <TableBody>
+                                {purchaseOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item, index) => (
+                                    <TableRow key={item.po_id} hover>
+                                        <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                                        <TableCell>{item.po_id}</TableCell>
+                                        <TableCell>{item.pr_id}</TableCell>
+                                        <TableCell>
+                                            {item.po_status === 'pending' ? (
+                                                <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
+                                                    รอดำเนินการ
+                                                </span>
+                                            ) : item.po_status === 'buying' ? (
+                                                <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-orange-500">
+                                                    กำลังสั่งซื้อ
+                                                </span>
+                                            ) : item.po_status === 'not-approved' ? (
+                                                <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
+                                                    ไม่อนุมัติ
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-black bg-gray-300">
+                                                    {item.po_status}
+                                                </span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>{item.po_note}</TableCell>
+                                        <TableCell>{item.addby}</TableCell>
+                                        <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell align="center">
+                                            <Button
+                                                onClick={() => handleDetail(item.po_id)}
+                                                color="info"
+                                                variant="contained"
+                                                size="small"
+                                                startIcon={<Visibility />}
+                                                sx={{
+                                                    borderRadius: "12px",
+                                                    textTransform: "none",
+                                                    fontWeight: "bold",
+                                                    boxShadow: 3,
+                                                    transition: "all 0.3s ease",
+                                                    "&:hover": {
+                                                        boxShadow: 6,
+                                                        transform: "scale(1.05)",
+                                                    }
+                                                }}
+                                            >
+                                                ดูรายละเอียด
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table >
+                    </TableContainer >
+                </>
             )}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 15]}

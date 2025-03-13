@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
 import { pdf } from '@react-pdf/renderer';
 
-import { MoreVert, Store, Delete, Add, Home, Description, ReceiptLong } from "@mui/icons-material";
+import { CheckCircle, ShoppingCart, Cancel, HourglassEmpty, Home, Description, ReceiptLong } from "@mui/icons-material";
 import {
     MenuItem, Menu, Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Divider, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip
+    TableContainer, TableHead, TableRow, Divider, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, TextField
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import Swal from 'sweetalert2';
@@ -54,7 +54,7 @@ const PurchaseOrderPage = () => {
 
     return (
         <>
-            <div className="flex justify-between items-center mb-4" >
+            <div className="flex justify-between items-center mb-3">
                 <Breadcrumbs aria-label="breadcrumb" separator="›" sx={{ fontSize: '1rem', my: 2 }}>
                     <Link underline="hover" href="/product">
                         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'primary.main' }}>
@@ -68,8 +68,13 @@ const PurchaseOrderPage = () => {
                     </Stack>
                 </Breadcrumbs>
             </div>
-            <div className="mb-4 -mt-3">
-                <Divider />
+            <div className="flex justify-between mb-3">
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="ค้นหารหัสใบสั่งซื้อ..."
+                    className="w-64"
+                />
             </div>
             {loading ? (
                 <Loading />
@@ -95,28 +100,29 @@ const PurchaseOrderPage = () => {
                                     <TableCell>{item.pr_id}</TableCell>
                                     <TableCell>
                                         {item.po_status === 'pending' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-yellow-500">
+                                            <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-yellow-500">
                                                 รอดำเนินการ
                                             </span>
                                         ) : item.po_status === 'buying' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-orange-500">
+                                            <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-orange-500">
                                                 กำลังสั่งซื้อ
                                             </span>
                                         ) : item.po_status === 'not-approved' ? (
-                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-white bg-red-500">
+                                            <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-white bg-red-500">
                                                 ไม่อนุมัติ
                                             </span>
                                         ) : (
-                                            <span className="inline-block px-2 py-0.5 rounded-md text-[15px] font-[400] text-black bg-gray-300">
+                                            <span className="inline-flex items-center px-1 py-0.5 rounded-md text-[13px] font-[400] text-black bg-gray-300">
                                                 {item.po_status}
                                             </span>
                                         )}
+
                                     </TableCell>
                                     <TableCell>{item.po_note}</TableCell>
                                     <TableCell>{item.addby}</TableCell>
                                     <TableCell>{formatDate(item.adddate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                                     <TableCell>{formatDate(item.lastupdate, 'dd/MM/yyyy HH:mm:ss')}</TableCell>
-                                    <TableCell align="center"><Button onClick={openPDF} color="error"><Description /> PDF</Button></TableCell>
+                                    <TableCell align="center"><Button onClick={openPDF} color="info" size="small"><Description /> PDF</Button></TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
