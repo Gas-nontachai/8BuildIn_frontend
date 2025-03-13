@@ -15,6 +15,7 @@ import PurchaseOrderAdd from "@/app/components/StockStore/(PR-PO)/PR/Add";
 
 import { PurchaseOrder } from '@/misc/types';
 import { usePurchaseOrder } from "@/hooks/hooks";
+import PO from "@/app/components/StockStore/(PDF)/PO";
 
 const { getPurchaseOrderBy } = usePurchaseOrder();
 
@@ -41,11 +42,11 @@ const PurchaseOrderPage = () => {
         }
     };
 
-    const openPDF = async () => {
+    const openPDF = async (purchaseOrder: PurchaseOrder) => {
         try {
-            // const blob = await pdf(<PR />).toBlob();
-            // const url = URL.createObjectURL(blob);
-            // window.open(url, '_blank');
+            const blob = await pdf(<PO purchaseOrder={purchaseOrder} />).toBlob();
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
         } catch (error) {
             console.error("Error generating PDF:", error);
         }
@@ -129,7 +130,7 @@ const PurchaseOrderPage = () => {
                                         <Box display="flex" justifyContent="center" alignItems="center">
                                             <Button
                                                 size="small"
-                                                onClick={openPDF}
+                                                onClick={() => openPDF(item)}
                                                 color="info"
                                                 variant="contained"
                                                 startIcon={<Description />}
