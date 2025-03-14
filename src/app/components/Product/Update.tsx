@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
-import Loading from "../Loading";
+import Loading from "@/app/components/Loading";
 
 import { decimalFix } from "@/utils/number-helper"
 import { API_URL } from "@/utils/config"

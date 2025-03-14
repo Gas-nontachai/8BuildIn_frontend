@@ -14,7 +14,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import Swal from 'sweetalert2';
 
-import Loading from "../Loading";
+import Loading from "@/app/components/Loading";
 
 import useUnit from "@/hooks/useUnit";
 import { Unit } from '@/misc/types';

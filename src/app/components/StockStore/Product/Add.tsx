@@ -47,7 +47,6 @@ const AddProduct: React.FC<AddProductProps> = ({ onClose, open, onRefresh }) => 
     const [option_unit, setOptionUnit] = useState<{ title: string, value: string }[]>([]);
     const [option_material, setOptionMaterial] = useState<Material[]>([]);
     const [material, setMaterial] = useState<{ material_id: string, material_quantity: number, material_price: number }[]>([]);
-    const [selectedUnit, setSelectedUnit] = useState<{ title: string, value: string } | null>(null);
     const [files, setFiles] = useState<File[]>([]);
 
     useEffect(() => {

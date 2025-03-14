@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
-import { Add, Home, Assignment, Description, Search } from "@mui/icons-material";
+import { Add, Home, Assignment, Description, Search, ArrowDownward, ArrowUpward, Sort, Clear } from "@mui/icons-material";
 import {
   Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, TextField, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, Chip, Box,
-  InputAdornment
+  InputAdornment, MenuItem, Menu, ListItemText, Checkbox
 } from "@mui/material";
 
 import Loading from "@/app/components/Loading";
@@ -29,35 +29,52 @@ const PurchaseRequestPage = () => {
   const [isDialogAdd, setIsDialogAdd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState<string>("");
-  const [selectedPurchaseRequest] = useState<string>("");
+  const [selectedPurchaseRequest, setSelectedPurchaseRequest] = useState<string>("");
 
-  const fatchPurchaseRequest = async () => {
-    setLoading(true);
-    try {
-      const { docs } = await getPurchaseRequestBy({
-        search: {
-          text: search,
-          columns: ["pr_id"],
-          condition: "LIKE",
-        },
-        match: selectedPurchaseRequest ? { pr_id: selectedPurchaseRequest } : {}
-      });
-      setPurchaseRequests(docs)
-    } catch (error) {
-      console.error("Error fetching customer:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
+  const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
+
+  const [sort, setSort] = useState<{ name: string; order: "ASC" | "DESC" }>({
+    name: "adddate",
+    order: "DESC",
+  });
+
+  const statusOptions: {
+    label: string;
+    value: string;
+  }[] = [
+      { label: "รอดำเนินการ", value: "pending" },
+      { label: "อนุมัติแล้ว", value: "approved" },
+      { label: "ไม่อนุมัติ", value: "not-approved" },
+      { label: "สั่งซื้อสำเร็จ", value: "success" },
+    ];
+
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(
+    statusOptions.map((option) => option.value)
+  );
 
   useEffect(() => {
     fetchData();
   }, [])
 
+  useEffect(() => {
+    fetchData();
+  }, [sort, selectedStatuses]);
+
   const fetchData = async () => {
     try {
       setLoading(true);
-      const { docs: res } = await getPurchaseRequestBy();
+      const { docs: res } = await getPurchaseRequestBy({
+        search: {
+          text: search,
+          columns: ["pr_id"],
+          condition: "LIKE",
+        },
+        match: {
+          pr_status: { $in: selectedStatuses }
+        },
+        sorter: [{ key: sort.name, order: sort.order }]
+      });
       const { docs: res_emp } = await getEmployeeBy({
         match: {
           $in: res.map((item) => item.addby)
@@ -82,6 +99,34 @@ const PurchaseRequestPage = () => {
     }
   };
 
+  const toggleSort = (key: "name" | "order", value: string) => {
+    setSort((prevSort) => {
+      if (prevSort.name === value) {
+        return {
+          ...prevSort,
+          order: prevSort.order === "ASC" ? "DESC" : "ASC",
+        };
+      } else {
+        return {
+          name: value,
+          order: "ASC",
+        };
+      }
+    });
+  };
+
+  const handleToggle = (value: string) => {
+    const currentIndex = selectedStatuses.indexOf(value);
+    const newSelected = [...selectedStatuses];
+
+    if (currentIndex === -1) {
+      newSelected.push(value);
+    } else {
+      newSelected.splice(currentIndex, 1);
+    }
+
+    setSelectedStatuses(newSelected);
+  };
   return (
     <>
       <div className="flex justify-between items-center mb-3" >
@@ -99,26 +144,100 @@ const PurchaseRequestPage = () => {
         </Breadcrumbs>
       </div>
       <div className="flex justify-between item-center mb-3">
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="ค้นหารหัสใบขอซื้อ..."
-          className="w-64"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start" onClick={fatchPurchaseRequest} className="cursor-pointer">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              fatchPurchaseRequest();
-            }
-          }}
-        />
+        <div className="flex gap-2 mb-5">
+          {/* Search Field */}
+          <TextField
+            variant="outlined"
+            size="small"
+            placeholder="ค้นหารหัสคำขอซื้อ..."
+            className="w-64"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  position="start"
+                  onClick={() => fetchData()}
+                  className="cursor-pointer"
+                >
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                fetchData();
+              }
+            }}
+          />
+
+          {/* Clear Button */}
+          {(search || selectedPurchaseRequest) && (
+            <button
+              className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center"
+              onClick={() => {
+                setSearch('');
+                setSelectedPurchaseRequest('');
+              }}
+            >
+              <Clear />
+            </button>
+          )}
+
+          {/* Filter Button & Menu */}
+          <div className="flex gap-2">
+            <Button
+              className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
+              onClick={(event) => setFilterAnchorEl(event.currentTarget)}
+              endIcon={<Sort />}
+            >
+              Filter
+            </Button>
+
+            <Menu
+              anchorEl={filterAnchorEl}
+              open={Boolean(filterAnchorEl)}
+              onClose={() => setFilterAnchorEl(null)}
+            >
+              {statusOptions.map((option) => (
+                <MenuItem
+                  key={option.value}
+                  onClick={() => handleToggle(option.value)}
+                >
+                  <Checkbox checked={selectedStatuses.includes(option.value)} />
+                  <ListItemText primary={option.label} />
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+
+          {/* Sort Button & Menu */}
+          <div className="flex gap-2">
+            <Button
+              className="bg-gray-200 p-2 rounded-md text-sm text-gray-700 flex items-center gap-1"
+              onClick={(event) => setSortAnchorEl(event.currentTarget)}
+              endIcon={<Sort />}
+            >
+              Sort
+            </Button>
+
+            <Menu
+              anchorEl={sortAnchorEl}
+              open={Boolean(sortAnchorEl)}
+              onClose={() => setSortAnchorEl(null)}
+            >
+              <MenuItem onClick={() => toggleSort("name", "adddate")}>
+                จัดเรียงตามวันที่
+                {sort.name === "adddate" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+              </MenuItem>
+
+              <MenuItem onClick={() => toggleSort("name", "pr_id")}>
+                จัดเรียงตามรหัสใบขอซื้อ
+                {sort.name === "pr_id" && (sort.order === "ASC" ? <ArrowUpward fontSize="small" /> : <ArrowDownward fontSize="small" />)}
+              </MenuItem>
+            </Menu>
+          </div>
+        </div>
         <Button variant="contained" color="info" size="small" onClick={() => setIsDialogAdd(true)} startIcon={<Add />}>
           เปิดใบขอซื้อ
         </Button>
