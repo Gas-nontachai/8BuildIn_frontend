@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { formatDate } from "@/utils/date-helper"
 import { pdf } from '@react-pdf/renderer';
 
-import { Home, Description, ReceiptLong } from "@mui/icons-material";
+import { Home, Description, ReceiptLong, Search } from "@mui/icons-material";
 import {
     Table, TableBody, TableCell,
-    TableContainer, TableHead, TableRow, Box, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, TextField
+    TableContainer, TableHead, TableRow, Box, TablePagination, Button, Breadcrumbs, Typography, Stack, Link, TextField, InputAdornment
 } from "@mui/material";
 import { usePagination } from "@/context/PaginationContext";
 import { useRouter } from 'next/navigation';
@@ -23,7 +23,8 @@ const { getEmployeeBy } = useEmployee();
 const PurchaseOrderPage = () => {
     const router = useRouter();
 
-    const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+    const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = usePagination();
+    const [search, setSearch] = useState<string>("");
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
     const [employee, setEmployee] = useState<Employee[]>([]);
 
@@ -37,7 +38,13 @@ const PurchaseOrderPage = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const { docs: res } = await getPurchaseOrderBy();
+            const { docs: res } = await getPurchaseOrderBy({
+                search: {
+                    text: search,
+                    columns: ["po_id"],
+                    condition: "LIKE",
+                },
+            });
             const { docs: res_emp } = await getEmployeeBy({
                 match: {
                     $in: res.map((item) => item.addby)
@@ -79,12 +86,26 @@ const PurchaseOrderPage = () => {
                     </Stack>
                 </Breadcrumbs>
             </div>
-            <div className="flex justify-between mb-3">
+            <div className="flex justify-between item-center mb-3">
                 <TextField
                     variant="outlined"
                     size="small"
-                    placeholder="ค้นหารหัสใบสั่งซื้อ..."
+                    placeholder="ค้นหารหัสใบขอซื้อ..."
                     className="w-64"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start" onClick={fetchData} className="cursor-pointer">
+                                <Search />
+                            </InputAdornment>
+                        ),
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            fetchData();
+                        }
+                    }}
                 />
             </div>
             {loading ? (
